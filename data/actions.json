@@ -1,0 +1,83 @@
+{
+    "action_agent":[
+        {
+            "name": "has_key",
+            "comment": "黑板中是否存在对应的key，如果有返回true， 否则返回false",
+            "args": [
+                ["bb_key", "str", "需要查询的key"]
+            ]
+        },
+        {
+            "name": "set_key_value",
+            "comment": "设置黑板值 永远返回true",
+            "args": [
+                ["bb_key", "str", "黑板的key"],
+                ["value", "str", "需要设置进去的值"]
+            ]
+        },
+        {
+            "name": "number_add",
+            "comment": "将特定黑板key对应的数值加上特定值， 如果不存在对应key或者值不是数值类型返回false，否则返回true",
+            "args": [
+                ["bb_key", "str", "黑板的key"],
+                ["value", "str", "增加的值，不是数值的话返回false"]
+            ]
+        },
+        {
+            "name": "number_dec",
+            "comment": "将特定黑板key对应的数值减去特定值， 如果不存在对应key或者值不是数值类型返回false，否则返回true",
+            "args": [
+                ["bb_key", "str", "黑板的key"],
+                ["value", "str", "增加的值，不是数值的话返回false"]
+            ]
+        },
+        {
+            "name": "number_multiply",
+            "comment": "将特定黑板key对应的数值乘以特定值， 如果不存在对应key或者值不是数值类型返回false，否则返回true",
+            "args": [
+                ["bb_key", "str", "黑板的key"],
+                ["value", "str", "增加的值，不是数值的话返回false"]
+            ]
+        },
+        {
+            "name": "number_div",
+            "comment": "将特定黑板key对应的数值乘以特定值， 如果不存在对应key或者值不是数值类型返回false，被除数为0返回false 否则返回true",
+            "args": [
+                ["bb_key", "str", "黑板的key"],
+                ["value", "str", "增加的值，不是数值的话返回false"]
+            ]
+        },
+        {
+            "name": "number_larger_than",
+            "comment": "判断特定黑板值是否大于对应的数值， 如果不存在对应key或者值不是数值类型返回false， 否则返回true",
+            "args": [
+                ["bb_key", "str", "黑板的key"],
+                ["value", "str", "比较的值，不是数值的话返回false"]
+            ]
+        },
+        {
+            "name": "number_less_than",
+            "comment": "判断特定黑板值是否小于对应的数值， 如果不存在对应key或者值不是数值类型返回false， 否则返回true",
+            "args": [
+                ["bb_key", "str", "黑板的key"],
+                ["value", "str", "比较的值，不是数值的话返回false"]
+            ]
+        },
+        {
+            "name": "wait_for_seconds",
+            "comment": "等待特定秒之后继续执行，永远返回true，如果参数错误，默认等待1s",
+            "args": [
+                ["duration", "double", "等待的秒数"]
+            ]
+        },
+        {
+            "name": "log",
+            "comment": "打印特定信息，永远返回true",
+            "args": [
+                ["log_level", "str", "log等级 debug info warn error"],
+                ["log_info", "str", "打印的信息"]
+            ]
+        }
+
+    ]
+}
