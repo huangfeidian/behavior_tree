@@ -250,7 +250,7 @@ namespace behavior_tree::runtime
 	}
 	bool probility::init_prob_parameters()
 	{
-		auto prob_iter = node_config.extra.find("prob");
+		auto prob_iter = node_config.extra.find("weight");
 		if (prob_iter == node_config.extra.end())
 		{
 			return false;
@@ -266,11 +266,11 @@ namespace behavior_tree::runtime
 		}
 		for (auto& one_prob : prob_vec)
 		{
-			if (!one_prob.is_int64())
+			if (!one_prob.is_int())
 			{
 				return false;
 			}
-			_probilities.push_back(static_cast<std::uint32_t>(std::get<std::int64_t>(one_prob)));
+			_probilities.push_back(static_cast<std::uint32_t>(std::get<any_int_type>(one_prob)));
 		}
 		return true;
 	}
@@ -452,12 +452,31 @@ namespace behavior_tree::runtime
 		{
 			if (!load_action_config())
 			{
-				_logger->warn("{} fail to load action args with extra {}", debug_info(), std::string(encode(node_config.extra)));
+				_logger->warn("{} fail to load action args with extra {}", debug_info(), encode(node_config.extra).dump());
 				_agent->notify_stop();
 				return;
 			}
 		}
-		std::optional<bool> action_result = _agent->agent_action(action_name, action_args);
+		any_vector real_action_args;
+		for (const auto& one_arg : action_args)
+		{
+			if (one_arg.first == action_arg_type::blackboard)
+			{
+				auto cur_bb_iter = _agent->_blackboard.find(std::get<std::string>(one_arg.second));
+				if (cur_bb_iter == _agent->_blackboard.end())
+				{
+					_logger->warn("{} invalid blackboard arg name {}", debug_info(), std::get<std::string>(one_arg.second));
+					_agent->notify_stop();
+					return;
+				}
+				real_action_args.push_back(cur_bb_iter->second);
+			}
+			else
+			{
+				real_action_args.push_back(one_arg.second);
+			}
+		}
+		std::optional<bool> action_result = _agent->agent_action(action_name, real_action_args);
 		if (_agent->during_poll)
 		{
 			if (!action_result)
@@ -500,38 +519,49 @@ namespace behavior_tree::runtime
 		const behavior_tree::common::any_vector& args_vec = std::get<behavior_tree::common::any_vector>(action_args_iter->second);
 		for (auto& one_arg : args_vec)
 		{
-			if (!one_arg.is_vector())
+			if (!one_arg.is_str_map())
 			{
 				return false;
 			}
-			auto& one_arg_vec = std::get<behavior_tree::common::any_vector>(one_arg);
-			if (one_arg_vec.size() != 2)
+			auto& one_arg_map = std::get<behavior_tree::common::any_str_map>(one_arg);
+			if (one_arg_map.size() != 2)
 			{
 				return false;
 			}
-			if (!one_arg_vec[0].is_str())
+			auto arg_type_iter = one_arg_map.find("arg_type");
+			if (arg_type_iter == one_arg_map.end())
 			{
 				return false;
 			}
-			auto& cur_arg_type_str = std::get<std::string>(one_arg_vec[0]);
-			if (cur_arg_type_str == "blackboard")
+			if (!arg_type_iter->second.is_str())
 			{
-				if (!one_arg_vec[1].is_str())
-				{
-					return false;
-				}
-				auto& cur_bb_key = std::get<std::string>(one_arg_vec[1]);
-				auto cur_bb_iter = _agent->_blackboard.find(cur_bb_key);
-				if (cur_bb_iter == _agent->_blackboard.end())
-				{
-					return false;
-				}
-				action_args.push_back(cur_bb_iter->second);
+				return false;
+			}
+			auto arg_value_iter = one_arg_map.find("arg_value");
+			if (arg_value_iter == one_arg_map.end())
+			{
+				return false;
+			}
+			if (!arg_value_iter->second.is_str())
+			{
+				return false;
+			}
+			auto cur_arg_type = std::get<std::string>(arg_type_iter->second);
+			auto cur_arg_value = std::get<std::string>(arg_value_iter->second);
 
-			}
-			else if (cur_arg_type_str == "plain")
+			if (cur_arg_type == "blackboard")
 			{
-				action_args.push_back(one_arg_vec[1]);
+				action_args.emplace_back(action_arg_type::blackboard, cur_arg_value);
+			}
+			else if (cur_arg_type == "plain")
+			{
+				auto cur_arg_value_json = json::parse(cur_arg_value);
+				if (cur_arg_value_json.is_null())
+				{
+					return false;
+				}
+				any_value_type cur_arg_any_value = any_encode(cur_arg_value_json);
+				action_args.emplace_back(action_arg_type::plain, cur_arg_any_value);
 			}
 			else
 			{
@@ -544,23 +574,23 @@ namespace behavior_tree::runtime
 	void wait_event::on_enter()
 	{
 		node::on_enter();
-		if (expetced_event.empty())
+		if (event.empty())
 		{
-			auto event_iter = node_config.extra.find("expected_event");
+			auto event_iter = node_config.extra.find("event");
 			if (event_iter == node_config.extra.end())
 			{
-				_logger->warn("{} fail to load expected event", debug_info());
+				_logger->warn("{} fail to load event", debug_info());
 				_agent->notify_stop();
 				return;
 			}
 			if (!event_iter->second.is_str())
 			{
-				_logger->warn("{} fail to load expected event form value {}", debug_info(), 
-					std::string(behavior_tree::common::encode(event_iter->second)));
+				_logger->warn("{} fail to load event form value {}", debug_info(), 
+					event_iter->second.to_string());
 				_agent->notify_stop();
 				return;
 			}
-			expetced_event = std::get<std::string>(event_iter->second);
+			event = std::get<std::string>(event_iter->second);
 		}
 		_state = node_state::blocking;
 	}

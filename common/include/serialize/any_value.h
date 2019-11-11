@@ -9,7 +9,7 @@
 #include <optional>
 #include <nlohmann/json.hpp>
 #include <ostream>
-
+#include <sstream>
 
 using json = nlohmann::json;
 
@@ -17,7 +17,7 @@ using json = nlohmann::json;
 bool numeric_cal_##op_name(const T& other_value)				\
 {																\
 	auto& cur_any_value = *this;								\
-	if (cur_any_value.is_int64())								\
+	if (cur_any_value.is_int())								\
 	{															\
 		any_int_type& pre = std::get<any_int_type>(cur_any_value);\
 		pre = static_cast<any_int_type>(pre op_val other_value);\
@@ -40,7 +40,7 @@ bool numeric_cal_##op_name(const any_value_type& other_value)	\
 	{															\
 		return numeric_cal_##op_name(std::get<double>(other_value)); \
 	}															\
-	else if (other_value.is_int64())							\
+	else if (other_value.is_int())							\
 	{															\
 		return numeric_cal_##op_name(std::get<any_int_type>(other_value));\
 	}															\
@@ -114,7 +114,7 @@ namespace behavior_tree::common
 		{
 			return std::holds_alternative<any_str_map>(*this);
 		}
-		bool is_int64() const
+		bool is_int() const
 		{
 			return std::holds_alternative<any_int_type>(*this);
 		}
@@ -136,12 +136,12 @@ namespace behavior_tree::common
 		}
 		bool is_numeric() const
 		{
-			return is_int64() || is_double();
+			return is_int() || is_double();
 		}
 		template <typename T>
 		bool numeric_value(T dst) const
 		{
-			if (is_int64())
+			if (is_int())
 			{
 				dst = static_cast<T>(std::get<any_int_type>(*this));
 				return true;
@@ -170,7 +170,7 @@ namespace behavior_tree::common
 			{
 				return cur_raw_value > std::get<double>(other_value);
 			}
-			else if (other_value.is_int64())
+			else if (other_value.is_int())
 			{
 				return cur_raw_value > std::get<any_int_type>(other_value);
 			}
@@ -186,7 +186,7 @@ namespace behavior_tree::common
 				return std::nullopt;
 			}
 			
-			if(cur_any_value.is_int64())
+			if(cur_any_value.is_int())
 			{
 				return cur_any_value.numeric_larger_than_impl<any_int_type>(other_value);
 			}
@@ -248,7 +248,7 @@ friend std::ostream& operator<<(std::ostream& buffer, const any_value_type& cur_
 	{
 		buffer << std::get<bool>(cur_value);
 	}
-	else if (cur_value.is_int64())
+	else if (cur_value.is_int())
 	{
 		buffer << std::get<any_int_type>(cur_value);
 	}
@@ -288,6 +288,12 @@ friend std::ostream& operator<<(std::ostream& buffer, const any_value_type& cur_
 		buffer << "}";
 	}
 	return buffer;
+}
+std::string to_string() const
+{
+	std::ostringstream buffer;
+	buffer<<*this;
+	return buffer.str();
 }
 	};
 	//template <typename T>
@@ -674,7 +680,7 @@ friend std::ostream& operator<<(std::ostream& buffer, const any_value_type& cur_
 			dst = std::get<double>(data);
 			return true;
 		}
-		else if (data.is_int64())
+		else if (data.is_int())
 		{
 			dst = std::get<any_int_type>(data);
 			return true;

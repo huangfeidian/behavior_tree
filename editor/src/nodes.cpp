@@ -904,7 +904,7 @@ node* node::from_desc(const behavior_tree::common::node_desc& data, std::shared_
 		std::vector<std::uint32_t> probs;
 		for (const auto& one_prob : std::get<any_vector>(prob_iter->second))
 		{
-			if (!one_prob.is_int64())
+			if (!one_prob.is_int())
 			{
 				return nullptr;
 			}
@@ -1061,13 +1061,13 @@ node* node::from_btree(const btree_desc& _btree_desc, std::shared_ptr<spdlog::lo
 		}
 		new_node->comment = one_node_desc.comment;
 		auto color_iter = one_node_desc.editor.find("color");
-		if(color_iter == one_node_desc.editor.end() || !color_iter->second.is_int64())
+		if(color_iter == one_node_desc.editor.end() || !color_iter->second.is_int())
 		{
 			new_node->color = 0;
 		}
 		else
 		{
-			new_node->color = static_cast<std::uint32_t>(std::get<std::int64_t>(color_iter->second));
+			new_node->color = static_cast<std::uint32_t>(std::get<any_int_type>(color_iter->second));
 		}
 
 		auto collapsed_iter = one_node_desc.editor.find("is_collapsed");

@@ -58,7 +58,7 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "counter"
+                        "arg_value": "\"counter\""
                     },
                     {
                         "arg_type": "plain",
@@ -97,11 +97,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "debug"
+                        "arg_value": "\"debug\""
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": "finish one round"
+                        "arg_value": "\"finish one round\""
                     }
                 ],
                 "action_name": "log"
@@ -121,7 +121,7 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "counter"
+                        "arg_value": "\"counter\""
                     },
                     {
                         "arg_type": "plain",
@@ -162,11 +162,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "debug"
+                        "arg_value": "\"debug\""
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": "value for counter is:"
+                        "arg_value": "\"value for counter is:\""
                     }
                 ],
                 "action_name": "log"
@@ -186,11 +186,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "debug"
+                        "arg_value": "\"debug\""
                     },
                     {
                         "arg_type": "blackboard",
-                        "arg_value": "counter"
+                        "arg_value": "\"counter\""
                     }
                 ],
                 "action_name": "log"
@@ -210,7 +210,7 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "counter"
+                        "arg_value": "\"counter\""
                     },
                     {
                         "arg_type": "plain",

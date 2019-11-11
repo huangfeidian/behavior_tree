@@ -59,7 +59,7 @@ namespace behavior_tree::common
 				_logger->error("cant find key idx in node data ");
 				return;
 			}
-			if (!idx_iter->second.is_int64())
+			if (!idx_iter->second.is_int())
 			{
 				_logger->error("value for key idx is not int ");
 				return;
@@ -79,7 +79,7 @@ namespace behavior_tree::common
 			}
 			for (auto& one_child : std::get<any_vector>(children_iter->second))
 			{
-				if (!one_child.is_int64())
+				if (!one_child.is_int())
 				{
 					_logger->error("one_child idx is not int ");
 					return;

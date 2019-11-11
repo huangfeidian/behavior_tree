@@ -206,7 +206,7 @@ namespace behavior_tree::runtime
 	{
 		using node::node;
 		std::string action_name;
-		behavior_tree::common::any_vector action_args;
+		std::vector<std::pair<action_arg_type, any_value_type>> action_args;
 		void on_enter();
 		bool load_action_config();
 		friend class node;
@@ -214,12 +214,12 @@ namespace behavior_tree::runtime
 	class wait_event : public node
 	{
 	public:
-		event_type expetced_event;
+		event_type event;
 		using node::node;
 		void on_enter();
 		virtual bool handle_event(const event_type& cur_event)
 		{
-			return cur_event == expetced_event;
+			return cur_event == event;
 		}
 		friend class node;
 	};
