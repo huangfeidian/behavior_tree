@@ -11,6 +11,8 @@
 #include <qlabel.h>
 #include <qcolordialog.h>
 #include <qstylefactory.h>
+#include <qtextbrowser.h>
+
 #include <iostream>
 
 #include <choice_manager.h>
@@ -682,7 +684,6 @@ QWidget* choice_item::to_editor_long(std::string _identifier,
 	auto cur_button = new QPushButton(u8"搜索");
 	cur_button->setStyleSheet("border:1px groove gray;border-radius:5px;padding:1px 2px;");
 	auto cur_text = new QPushButton(QString::fromStdString(_value.get<std::string>()));
-	cur_text->setToolTip(QString::fromStdString(_choice_text[current_index()]));
 	cur_text->setStyleSheet("border:1px groove gray;border-radius:5px;padding:1px 2px;");
 	QPalette pa;
 	pa.setColor(QPalette::WindowText, Qt::red);
@@ -690,7 +691,12 @@ QWidget* choice_item::to_editor_long(std::string _identifier,
 	auto cur_layout = new QHBoxLayout();
 	cur_layout->addWidget(cur_text);
 	cur_layout->addWidget(cur_button);
-	cur_dialog->setLayout(cur_layout);
+	auto cur_tooltips = new QTextBrowser();
+	cur_tooltips->setText(QString::fromStdString(_choice_text[current_index()]));
+	auto final_layout = new QVBoxLayout();
+	final_layout->addLayout(cur_layout);
+	final_layout->addWidget(cur_tooltips);
+	cur_dialog->setLayout(final_layout);
 	cur_button->connect(cur_button, &QPushButton::clicked, [=, self = shared_from_this()]()
 		{
 

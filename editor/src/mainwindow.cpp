@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 	init_widgets();
 	init_actions();
 	load_config();
+	showMaximized();
 }
 
 void MainWindow::init_widgets()

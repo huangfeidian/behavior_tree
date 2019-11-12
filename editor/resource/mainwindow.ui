@@ -19,7 +19,7 @@
      <widget class="QMdiArea" name="mdiArea">
       <property name="minimumSize">
        <size>
-        <width>1000</width>
+        <width>1200</width>
         <height>800</height>
        </size>
       </property>
@@ -95,7 +95,7 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>400</width>
+     <width>500</width>
      <height>800</height>
     </size>
    </property>
@@ -126,7 +126,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>396</width>
+          <width>496</width>
           <height>793</height>
          </rect>
         </property>
