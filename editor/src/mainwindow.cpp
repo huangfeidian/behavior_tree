@@ -16,13 +16,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , _logger(behavior_tree::common::logger_mgr::instance().create_logger("btree"))
 {
-	
     ui->setupUi(this);
-    
 	init_widgets();
 	init_actions();
 	load_config();
 	showMaximized();
+	
 }
 
 void MainWindow::init_widgets()
@@ -53,6 +52,10 @@ bool MainWindow::load_config()
 	_config.export_foler = "../../data/export/";
 	if (!_config.load_actions("../../data/actions.json", _logger))
 	{
+		auto notify_info = fmt::format("cant load actions.json in ../../data/");
+		QMessageBox::about(this, QString("Error"),
+			QString::fromStdString(notify_info));
+		exit(1);
 		return false;
 	}
 	_config.base_agent_name = "action_agent";

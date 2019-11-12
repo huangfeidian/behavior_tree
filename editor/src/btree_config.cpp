@@ -16,8 +16,12 @@ bool btree_config::load_actions(const fs::path& action_file_path,
 	std::string file_content = std::string(std::istreambuf_iterator<char>(action_file),
 		std::istreambuf_iterator<char>());
 	action_file.close();
+	if (!json::accept(file_content))
+	{
+		_logger->error("load_actions {} failed config data is not json", action_file_path.string());
+		return false;
+	}
 	auto config_json = json::parse(file_content);
-
 	if (!config_json.is_object())
 	{
 		_logger->error("load_actions {} failed config data is not dict", action_file_path.string());
