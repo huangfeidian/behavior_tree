@@ -333,6 +333,7 @@ std::uint32_t tree_instance::next_node_seq()
 void tree_instance::display_tree()
 {
 	parent->_logger->debug("tree_instance display tree {}", file_name.string());
+	update_title();
 	_graph_root = _build_tree_impl(_root);
 	auto layouter = tree_layouter(_graph_root);
 	layouter.run();
@@ -628,6 +629,10 @@ std::string tree_instance::save_handler()
 {
 	parent->_logger->debug("tree_instance {} save_handler",
 		file_name.string());
+	if (!modified)
+	{
+		return "";
+	}
 	node_seq_idx = 0;
 	std::deque<node*> all_nodes;
 	std::vector<node*> indexed_nodes;

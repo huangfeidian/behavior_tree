@@ -241,7 +241,12 @@ void MainWindow::action_save_handler()
 		if (one_tree->window == cur_window)
 		{
 			auto invalid_info = one_tree->save_handler();
-			one_tree->refresh();
+			if (invalid_info.empty())
+			{
+				one_tree->refresh();
+				one_tree->set_modfied(false);
+				one_tree->update_title();
+			}
 			return;
 		}
 	}
@@ -265,6 +270,8 @@ void MainWindow::action_save_all_handler()
 	if (cur_ins)
 	{
 		cur_ins->refresh();
+		cur_ins->set_modfied(false);
+		cur_ins->update_title();
 	}
 	return;
 }
@@ -326,6 +333,33 @@ void MainWindow::action_close_all_handler()
 	{
 		remove_instance(one_ins);
 	}
+}
+
+void MainWindow::closeEvent(QCloseEvent* ev)
+{
+	_logger->debug("main_window closeEvent");
+	bool modified = false;
+	for (auto one_ins : _instances)
+	{
+		if (one_ins->modified)
+		{
+			modified = true;
+			break;
+		}
+	}
+	if (modified)
+	{
+		QMessageBox::StandardButton  defaultBtn = QMessageBox::NoButton; //缺省按钮
+		QMessageBox::StandardButton result;//返回选择的按钮
+		result = QMessageBox::question(this, QString("Confirm"),
+			QString("close without saving"), QMessageBox::Yes | QMessageBox::No, defaultBtn);
+		if (result == QMessageBox::No)
+		{
+			ev->ignore();
+			return;
+		}
+	}
+	action_close_all_handler();
 }
 void MainWindow::action_insert_handler()
 {
@@ -461,6 +495,7 @@ void MainWindow::remove_instance(tree_instance* _cur_instance)
 			break;
 		}
 	}
+	_cur_instance->_root->destroy();
 	_instances.erase(_instances.begin() + i);
 	if (_instances.empty())
 	{

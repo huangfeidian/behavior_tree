@@ -13,7 +13,7 @@
 #include <qmdisubwindow.h>
 #include <qmessagebox.h>
 #include <filesystem>
-
+#include <QCloseEvent>
 #include <logger.h>
 
 QT_BEGIN_NAMESPACE
@@ -62,6 +62,8 @@ public:
 	std::optional<std::size_t> already_open(const std::string& file_path);
 public slots:
 	void sub_window_activated(QMdiSubWindow* cur_window);
+
+	void closeEvent(QCloseEvent* e);
 	// file actions
 	void action_new_handler();
 	void action_open_handler();
