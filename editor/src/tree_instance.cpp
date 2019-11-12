@@ -385,6 +385,10 @@ void tree_instance::_display_links_impl(node_graph* cur_node)
 		//new_line->setZValue(1.0);
 		_display_links_impl(one_child);
 	}
+	if (cur_node->_model->_is_collapsed)
+	{
+		cur_node->draw_cross(Qt::magenta);
+	}
 }
 
 
