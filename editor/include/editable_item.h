@@ -35,8 +35,6 @@ namespace behavior_tree::editor
 	};
 	QColor color_from_uint(std::uint32_t rgba);
 
-	std::string editable_type_to_str(editable_item_type _type);
-	editable_item_type editable_str_to_type(const std::string& _name);
 
 	class editable_item;
 	using modify_callback_func_t = std::function<void(const std::string&, std::shared_ptr<editable_item>, QWidget*)>;

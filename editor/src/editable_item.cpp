@@ -18,64 +18,11 @@
 #include <choice_manager.h>
 #include <editable_item.h>
 #include <search_select_dialog.h>
-
+#include <magic_enum.hpp>
 using namespace behavior_tree::editor;
 
-std::string behavior_tree::editor::editable_type_to_str(editable_item_type _type)
-{
-	switch (_type)
-	{
-	case editable_item_type::invalid:
-		return "invalid";
-	case editable_item_type::line_text:
-		return "line_text";
-	case editable_item_type::single_line_text:
-		return "single_line_text";
-	case editable_item_type::multi_line_text:
-		return "multi_line_text";
-	case editable_item_type::_bool:
-		return "bool_item";
-	case editable_item_type::_color:
-		return "color_item";
-	case editable_item_type::_int:
-		return "int_item";
-	case editable_item_type::_float:
-		return "float_item";
-	case editable_item_type::_choice:
-		return "choice_item";
-	case editable_item_type::_list:
-		return "list_items";
-	case editable_item_type::_struct:
-		return "struct_items";
-	default:
-		return "invalid";
-	}
-}
-editable_item_type behavior_tree::editor::editable_str_to_type(const std::string& _name)
-{
-	static std::unordered_map<std::string, editable_item_type> mapper = {
-		{"invalid", editable_item_type::invalid},
-		{"line_text", editable_item_type::line_text},
-		{"single_line_text", editable_item_type::single_line_text},
-		{"multi_line_text", editable_item_type::multi_line_text},
-		{"bool_item", editable_item_type::_bool},
-		{"color_item", editable_item_type::_color},
-		{"int_item", editable_item_type::_int},
-		{"float_item", editable_item_type::_float},
-		{"choice_item", editable_item_type::_choice},
-		{"list_items", editable_item_type::_list},
-		{"struct_items", editable_item_type::_struct}
-	};
-	auto cur_iter = mapper.find(_name);
-	if (cur_iter == mapper.end())
-	{
-		return editable_item_type::invalid;
-	}
-	else
-	{
-		return cur_iter->second;
-	}
-}
+
+
 QColor behavior_tree::editor::color_from_uint(std::uint32_t rgba)
 {
 	std::uint8_t a = rgba & 0xff;
@@ -128,7 +75,7 @@ json editable_item::to_json() const
 {
 	json result;
 	result["name"] = _name;
-	result["type"] = editable_type_to_str(_type);
+	result["type"] = magic_enum::enum_name(_type);
 	result["value"] = _value;
 	return result;
 }
@@ -1019,7 +966,12 @@ std::shared_ptr<editable_item> editable_item::from_json(const json& data)
 	{
 		return {};
 	}
-	editable_item_type cur_type = editable_str_to_type(type_iter->get<std::string>());
+	auto cur_type_opt = magic_enum::enum_cast<editable_item_type>(type_iter->get<std::string>());
+	if (!cur_type_opt)
+	{
+		return;
+	}
+	editable_item_type cur_type = cur_type_opt.value();
 	if (cur_type == editable_item_type::invalid)
 	{
 		return {};

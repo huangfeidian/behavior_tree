@@ -189,12 +189,12 @@ node::node(node_type _in_type,  node* _in_parent, std::uint32_t _in_idx):
 void node::refresh_editable_items()
 {
 	json comment_item = json::object_t();
-	comment_item["type"] = editable_type_to_str(editable_item_type::multi_line_text);
+	comment_item["type"] = magic_enum::enum_name(editable_item_type::multi_line_text);
 	comment_item["name"] = "comment";
 	comment_item["value"] = comment;
 	_show_widget->push(comment_item);
 	json _color_item = json::object_t();
-	_color_item["type"] = editable_type_to_str(editable_item_type::_color);
+	_color_item["type"] = magic_enum::enum_name(editable_item_type::_color);
 	_color_item["name"] = "color";
 	_color_item["value"] = color;
 	_show_widget->push(_color_item);
@@ -393,11 +393,11 @@ void probility_node::refresh_editable_items()
 {
 	node::refresh_editable_items();
 	json item_base = json::object_t();
-	item_base["type"] = editable_type_to_str(editable_item_type::_int);
+	item_base["type"] = magic_enum::enum_name(editable_item_type::_int);
 	item_base["name"] = "item";
 	item_base["value"] = 1;
 	json list_item = json::object_t();
-	list_item["type"] = editable_type_to_str(editable_item_type::_list);
+	list_item["type"] = magic_enum::enum_name(editable_item_type::_list);
 	list_item["name"] = "weight";
 	list_item["value"] = weights;
 	list_item["item_base"] = item_base;
@@ -544,7 +544,7 @@ void wait_node::refresh_editable_items()
 	node::refresh_editable_items();
 	json temp_item = json::object_t();
 	temp_item["name"] = "event";
-	temp_item["type"] = editable_type_to_str(editable_item_type::single_line_text);
+	temp_item["type"] = magic_enum::enum_name(editable_item_type::single_line_text);
 	temp_item["value"] = cur_event;
 	_show_widget->push(temp_item);
 
@@ -568,7 +568,7 @@ void sub_tree_node::refresh_editable_items()
 	node::refresh_editable_items();
 	json temp_item = json::object_t();
 	temp_item["name"] = "sub_tree";
-	temp_item["type"] = editable_type_to_str(editable_item_type::single_line_text);
+	temp_item["type"] = magic_enum::enum_name(editable_item_type::single_line_text);
 	temp_item["value"] = sub_tree_name;
 	_show_widget->push(temp_item);
 
@@ -651,7 +651,7 @@ void action_node::refresh_editable_items()
 	}
 	json::object_t action_base;
 	action_base["name"] = "action";
-	action_base["type"] = editable_type_to_str(editable_item_type::_choice);
+	action_base["type"] = magic_enum::enum_name(editable_item_type::_choice);
 	
 	action_base["choice_type"] = agent_name;
 	action_base["value"] = action_name;
@@ -659,22 +659,22 @@ void action_node::refresh_editable_items()
 
 	json::object_t arg_list;
 	arg_list["name"] = "args";
-	arg_list["type"] = editable_type_to_str(editable_item_type::_struct);
+	arg_list["type"] = magic_enum::enum_name(editable_item_type::_struct);
 	arg_list["value"] = json::array_t();
 	std::shared_ptr<struct_items> arg_list_widget = std::dynamic_pointer_cast<struct_items>(
 		_show_widget->push(arg_list));
 	json arg_base = json::object_t();
-	arg_base["type"] = editable_type_to_str(editable_item_type::_struct);
+	arg_base["type"] = magic_enum::enum_name(editable_item_type::_struct);
 	arg_base["name"] = "arg";
 	arg_base["value"] = "";
 	json arg_param_type = json::object_t();
 	arg_param_type["name"] = "type";
-	arg_param_type["type"] = editable_type_to_str(editable_item_type::_choice);
+	arg_param_type["type"] = magic_enum::enum_name(editable_item_type::_choice);
 	arg_param_type["choice_type"] = "action_arg_type";
 	arg_param_type["value"] = "";
 	json arg_param_value = json::object_t();
 	arg_param_value["name"] = "value";
-	arg_param_value["type"] = editable_type_to_str(editable_item_type::single_line_text);
+	arg_param_value["type"] = magic_enum::enum_name(editable_item_type::single_line_text);
 	arg_param_value["value"] = "";
 	json::array_t temp_array;
 	temp_array.push_back(arg_param_type);
