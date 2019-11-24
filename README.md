@@ -18,7 +18,8 @@ spdlog https://github.com/gabime/spdlog
 
 The behavior tree editor require Qt5
 
-##dependency for action parser
+## dependency for action parser
+
 c++ 17
 
 json https://github.com/nlohmann/json
