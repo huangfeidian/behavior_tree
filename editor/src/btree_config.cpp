@@ -62,21 +62,39 @@ bool btree_config::load_actions(const fs::path& action_file_path,
 			}
 			std::string cur_action_name = name_iter->get<std::string>();
 			temp_action.name = cur_action_name;
-			auto comment_iter = one_action.find("comment");
-			if (comment_iter == one_action.end())
+
+			auto brief_iter = one_action.find("brief");
+			if (brief_iter == one_action.end())
 			{
-				_logger->error("load_actions {} failed actions for agent {}  action  {} cant find comment",
+				_logger->error("load_actions {} failed actions for agent {}  action  {} cant find brief",
 					action_file_path.string(), agent_name, cur_action_name);
 				return false;
 			}
-			if (!comment_iter->is_string())
+			if (!brief_iter->is_string())
 			{
-				_logger->error("load_actions {} failed actions for agent {}  action  {} cant find comment",
+				_logger->error("load_actions {} failed actions for agent {}  action  {} cant find brief",
 					action_file_path.string(), agent_name, cur_action_name);
 				return false;
 			}
-			std::string cur_action_comment = comment_iter->get<std::string>();
-			temp_action.comment = cur_action_comment;
+			std::string cur_action_brief = brief_iter->get<std::string>();
+			temp_action.brief = cur_action_brief;
+
+			auto return_iter = one_action.find("return");
+			if (return_iter == one_action.end())
+			{
+				_logger->error("load_actions {} failed actions for agent {}  action  {} cant find return",
+					action_file_path.string(), agent_name, cur_action_name);
+				return false;
+			}
+			if (!return_iter->is_string())
+			{
+				_logger->error("load_actions {} failed actions for agent {}  action  {} cant find return",
+					action_file_path.string(), agent_name, cur_action_name);
+				return false;
+			}
+			std::string cur_action_return = return_iter->get<std::string>();
+			temp_action.return_info = cur_action_return;
+
 			auto arg_array_iter = one_action.find("args");
 			if (arg_array_iter == one_action.end())
 			{
@@ -95,27 +113,36 @@ bool btree_config::load_actions(const fs::path& action_file_path,
 			
 			for (const auto& one_arg_info : cur_arg_array)
 			{
-				if (!one_arg_info.is_array() || one_arg_info.size() != 3)
+				if (!one_arg_info.is_object() || one_arg_info.size() != 3)
 				{
 					_logger->error("load_actions {} failed actions for agent {}  \
-						action  {} one_arg is not array",
+						action  {} one_arg is not size 3 dict",
 						action_file_path.string(), agent_name, cur_action_name);
 					return false;
 				}
-				for (auto i = 0; i < 3; i++)
+				std::vector<std::string> arg_info_values;
+				std::vector<std::string> arg_info_keys = { "comment", "name", "type" };
+				for (const auto& one_key : arg_info_keys)
 				{
-					if (!one_arg_info[i].is_string())
+					auto cur_key_iter = one_arg_info.find(one_key);
+					if (cur_key_iter == one_arg_info.end())
 					{
-						_logger->error("load_actions {} failed actions for agent {}  \
-						action  {} one_arg idx {} is not string",
-							action_file_path.string(), agent_name, cur_action_name, i);
+						_logger->error("load actions {} failed action for agent {} action {} cant find key {}",
+							action_file_path.string(), agent_name, cur_action_name, one_key);
 						return false;
 					}
+					if (!cur_key_iter->is_string())
+					{
+						_logger->error("load actions {} failed action for agent {} action {} cant value for  key {} is not string",
+							action_file_path.string(), agent_name, cur_action_name, one_key);
+						return false;
+					}
+					arg_info_values.push_back(cur_key_iter->get<std::string>());
 				}
 				action_arg temp_arg;
-				temp_arg.name = one_arg_info[0].get<std::string>();
-				temp_arg.type = one_arg_info[1].get<std::string>();
-				temp_arg.comment = one_arg_info[2].get<std::string>();
+				temp_arg.comment = arg_info_values[0];
+				temp_arg.name = arg_info_values[1];
+				temp_arg.type = arg_info_values[2];
 				temp_action.args.push_back(temp_arg);
 			}
 			temp_agent_actions[temp_action.name] = temp_action;
@@ -134,7 +161,7 @@ bool btree_config::load_actions(const fs::path& action_file_path,
 		for (const auto&[action_name, action_info] : agent_actions)
 		{
 			actions.push_back(action_name);
-			action_comments.push_back(fmt::format("{}:{}", action_name, action_info.comment));
+			action_comments.push_back(fmt::format("{}:{}", action_name, action_info.brief));
 		}
 		if (!choice_manager::instance().add_choice(agent_name, actions, action_comments))
 		{

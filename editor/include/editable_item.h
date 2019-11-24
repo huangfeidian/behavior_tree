@@ -86,6 +86,7 @@ namespace behavior_tree::editor
 	{
 		friend class editable_item;
 	public:
+		std::string input_valid() const;
 		multi_line(const std::string& _in_name, const std::string& _in_value);
 		json str_convert(const QString& input) const;
 		QWidget* to_editor(std::string,

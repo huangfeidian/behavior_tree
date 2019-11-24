@@ -199,6 +199,10 @@ QWidget* multi_line::to_editor(std::string _identifier, modify_callback_func_t m
 	cur_text->_modify_func = modify_callback;
 	return cur_text;
 }
+std::string multi_line::input_valid() const
+{
+	return "";
+}
 bool_item::bool_item(const std::string& _in_name, bool _in_value)
 	: editable_item(editable_item_type::_bool, false, _in_name)
 {
@@ -969,7 +973,7 @@ std::shared_ptr<editable_item> editable_item::from_json(const json& data)
 	auto cur_type_opt = magic_enum::enum_cast<editable_item_type>(type_iter->get<std::string>());
 	if (!cur_type_opt)
 	{
-		return;
+		return {};
 	}
 	editable_item_type cur_type = cur_type_opt.value();
 	if (cur_type == editable_item_type::invalid)

@@ -21,9 +21,8 @@ file(GLOB_RECURSE COMMON_SRC "${BTREE_COMMON_SRC_DIR}/*.cpp" )
 INCLUDE_DIRECTORIES(${BTREE_COMMON_INCLUDE_DIR})
 
 
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/include/*.cpp")
 
-file(GLOB HEADER_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 # add log support
 find_package(spdlog CONFIG REQUIRED)
@@ -36,6 +35,6 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 
-add_executable(behavior_tree_runtime ${COMMON_SRC} ${SRC_FILES} ${HEADER_FILES})
+add_executable(behavior_tree_runtime ${COMMON_SRC} ${SRC_FILES})
 
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json)

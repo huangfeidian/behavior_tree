@@ -1,0 +1,16 @@
+private:
+using action_func_type = std::optional<bool> ({{class_name}}::*)(const behavior_tree::common::any_vector&);
+
+static std::unordered_map<std::string, action_func_type> action_funcs_map;
+
+static void init_action_funcs_map(); // called in _static_constructor_
+
+{{#behavior_actions}}
+{{^is_inherited}}
+std::optional<bool> {{func_name}}_action_wrapper(const behavior_tree::common::any_vector& data);
+{{/is_inherited}}
+{{/behavior_actions}}
+
+
+
+

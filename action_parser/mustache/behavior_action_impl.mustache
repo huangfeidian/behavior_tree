@@ -1,0 +1,35 @@
+
+
+std::unordered_map<std::string, {{class_full_name}}::action_func_type> {{class_full_name}}::action_funcs_map;
+
+void {{class_full_name}}::init_action_funcs_map()
+{
+    {{#behavior_actions}}
+    action_funcs_map["{{func_name}}"] = &{{class_name}}::{{func_name}}_action_wrapper;
+    {{/behavior_actions}}
+}
+
+{{#behavior_actions}}
+{{^is_inherited}}
+std::optional<bool> {{class_full_name}}::{{func_name}}_action_wrapper(const behavior_tree::common::any_vector& data)
+{
+	{{#func_args}}
+    std::remove_const_t<std::remove_reference_t<{{{arg_type}}}>> tmp_{{arg_name}};
+    if({{arg_idx}} >= data.size())
+    {
+        _logger->warn("fail to call action {{func_name}} when convert {{arg_idx}}  to type {{{arg_type}}} fail, vector access fail");
+        notify_stop();
+        return std::nullopt;
+    }
+    if(!behavior_tree::common::any_decode(data[{{arg_idx}}], tmp_{{arg_name}}))
+    {
+        _logger->warn("fail to call action {{func_name}} when convert arg {{arg_idx}} with value {} to type {{{arg_type}}} fail", std::string(behavior_tree::common::encode(data[{{arg_idx}}])));
+        notify_stop();
+        return std::nullopt;
+    }
+	{{/func_args}}
+    return {{func_name}}({{#func_args}}tmp_{{arg_name}}{{^last_idx}}, {{/last_idx}}{{/func_args}});
+}
+{{/is_inherited}}
+{{/behavior_actions}}
+

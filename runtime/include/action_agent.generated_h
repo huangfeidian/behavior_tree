@@ -1,4 +1,4 @@
-﻿private:
+private:
 friend class static_constructor_for_action_agent;
 struct static_constructor_for_action_agent
 {
@@ -14,6 +14,8 @@ static void init_action_funcs_map(); // called in _static_constructor_
 
 std::optional<bool> has_key_action_wrapper(const behavior_tree::common::any_vector& data);
 std::optional<bool> has_key_value_action_wrapper(const behavior_tree::common::any_vector& data);
+std::optional<bool> log_action_wrapper(const behavior_tree::common::any_vector& data);
+std::optional<bool> log_bb_action_wrapper(const behavior_tree::common::any_vector& data);
 std::optional<bool> number_add_action_wrapper(const behavior_tree::common::any_vector& data);
 std::optional<bool> number_dec_action_wrapper(const behavior_tree::common::any_vector& data);
 std::optional<bool> number_div_action_wrapper(const behavior_tree::common::any_vector& data);
@@ -22,7 +24,6 @@ std::optional<bool> number_less_than_action_wrapper(const behavior_tree::common:
 std::optional<bool> number_multiply_action_wrapper(const behavior_tree::common::any_vector& data);
 std::optional<bool> set_key_value_action_wrapper(const behavior_tree::common::any_vector& data);
 std::optional<bool> wait_for_seconds_action_wrapper(const behavior_tree::common::any_vector& data);
-std::optional<bool> log_wrapper(const behavior_tree::common::any_vector& data);
 
 
 

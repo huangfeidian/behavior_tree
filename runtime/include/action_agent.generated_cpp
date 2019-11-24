@@ -1,4 +1,4 @@
-﻿
+
 
 std::unordered_map<std::string, behavior_tree::runtime::action_agent::action_func_type> behavior_tree::runtime::action_agent::action_funcs_map;
 
@@ -6,6 +6,8 @@ void behavior_tree::runtime::action_agent::init_action_funcs_map()
 {
     action_funcs_map["has_key"] = &action_agent::has_key_action_wrapper;
     action_funcs_map["has_key_value"] = &action_agent::has_key_value_action_wrapper;
+    action_funcs_map["log"] = &action_agent::log_action_wrapper;
+    action_funcs_map["log_bb"] = &action_agent::log_bb_action_wrapper;
     action_funcs_map["number_add"] = &action_agent::number_add_action_wrapper;
     action_funcs_map["number_dec"] = &action_agent::number_dec_action_wrapper;
     action_funcs_map["number_div"] = &action_agent::number_div_action_wrapper;
@@ -14,7 +16,6 @@ void behavior_tree::runtime::action_agent::init_action_funcs_map()
     action_funcs_map["number_multiply"] = &action_agent::number_multiply_action_wrapper;
     action_funcs_map["set_key_value"] = &action_agent::set_key_value_action_wrapper;
     action_funcs_map["wait_for_seconds"] = &action_agent::wait_for_seconds_action_wrapper;
-	action_funcs_map["log"] = &action_agent::log_wrapper;
 }
 
 std::optional<bool> behavior_tree::runtime::action_agent::has_key_action_wrapper(const behavior_tree::common::any_vector& data)
@@ -63,6 +64,66 @@ std::optional<bool> behavior_tree::runtime::action_agent::has_key_value_action_w
         return std::nullopt;
     }
     return has_key_value(tmp_bb_key, tmp_value);
+}
+std::optional<bool> behavior_tree::runtime::action_agent::log_action_wrapper(const behavior_tree::common::any_vector& data)
+{
+    std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_log_level;
+    if(0 >= data.size())
+    {
+        _logger->warn("fail to call action log when convert 0  to type const std::string & fail, vector access fail");
+        notify_stop();
+        return std::nullopt;
+    }
+    if(!behavior_tree::common::any_decode(data[0], tmp_log_level))
+    {
+        _logger->warn("fail to call action log when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        notify_stop();
+        return std::nullopt;
+    }
+    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_log_info;
+    if(1 >= data.size())
+    {
+        _logger->warn("fail to call action log when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        notify_stop();
+        return std::nullopt;
+    }
+    if(!behavior_tree::common::any_decode(data[1], tmp_log_info))
+    {
+        _logger->warn("fail to call action log when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        notify_stop();
+        return std::nullopt;
+    }
+    return log(tmp_log_level, tmp_log_info);
+}
+std::optional<bool> behavior_tree::runtime::action_agent::log_bb_action_wrapper(const behavior_tree::common::any_vector& data)
+{
+    std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_log_level;
+    if(0 >= data.size())
+    {
+        _logger->warn("fail to call action log_bb when convert 0  to type const std::string & fail, vector access fail");
+        notify_stop();
+        return std::nullopt;
+    }
+    if(!behavior_tree::common::any_decode(data[0], tmp_log_level))
+    {
+        _logger->warn("fail to call action log_bb when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        notify_stop();
+        return std::nullopt;
+    }
+    std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
+    if(1 >= data.size())
+    {
+        _logger->warn("fail to call action log_bb when convert 1  to type const std::string & fail, vector access fail");
+        notify_stop();
+        return std::nullopt;
+    }
+    if(!behavior_tree::common::any_decode(data[1], tmp_bb_key))
+    {
+        _logger->warn("fail to call action log_bb when convert arg 1 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[1])));
+        notify_stop();
+        return std::nullopt;
+    }
+    return log_bb(tmp_log_level, tmp_bb_key);
 }
 std::optional<bool> behavior_tree::runtime::action_agent::number_add_action_wrapper(const behavior_tree::common::any_vector& data)
 {
@@ -290,31 +351,6 @@ std::optional<bool> behavior_tree::runtime::action_agent::wait_for_seconds_actio
         return std::nullopt;
     }
     return wait_for_seconds(tmp_duration);
-}
-
-std::optional<bool> behavior_tree::runtime::action_agent::log_wrapper(const behavior_tree::common::any_vector& data)
-{
-    std::remove_const_t<std::remove_reference_t<std::string>> tmp_log_level;
-	std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_log_info;
-    if(1 >= data.size())
-    {
-        _logger->warn("fail to call action log when convert 0  to type std::string fail, vector access fail");
-        notify_stop();
-        return std::nullopt;
-    }
-    if(!behavior_tree::common::any_decode(data[0], tmp_log_level))
-    {
-        _logger->warn("fail to call action log when convert arg 0 with value {} to type std::string fail", std::string(behavior_tree::common::encode(data[0])));
-        notify_stop();
-        return std::nullopt;
-    }
-	 if(!behavior_tree::common::any_decode(data[1], tmp_log_info))
-    {
-        _logger->warn("fail to call action log when convert arg 1 with value {} to type any_value_type fail", std::string(behavior_tree::common::encode(data[1])));
-        notify_stop();
-        return std::nullopt;
-    }
-    return log(tmp_log_level, tmp_log_info);
 }
 
 // this file should be end of generated cpp file

@@ -140,6 +140,51 @@ namespace behavior_tree::runtime
 		}
 		return true;
 	}
+	bool action_agent::log_bb(const std::string& log_level, const std::string& bb_key)
+	{
+		auto bb_iter = _blackboard.find(bb_key);
+		if(bb_iter == _blackboard.end())
+		{
+			if (log_level == "debug")
+			{
+				_logger->debug("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
+			}
+			else if (log_level == "info")
+			{
+				_logger->info("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
+			}
+			else if (log_level == "warn")
+			{
+				_logger->warn("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
+			}
+			else if (log_level == "error")
+			{
+				_logger->error("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
+			}
+		}
+		else
+		{
+			auto log_info = bb_iter->second;
+			if (log_level == "debug")
+			{
+				_logger->debug("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			}
+			else if (log_level == "info")
+			{
+				_logger->info("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			}
+			else if (log_level == "warn")
+			{
+				_logger->warn("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			}
+			else if (log_level == "error")
+			{
+				_logger->error("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			}
+		}
+		
+		return true;
+	}
 	std::optional<bool> action_agent::agent_action(const std::string& action_name, 
 		const any_vector& action_args)
 	{

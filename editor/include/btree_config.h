@@ -18,8 +18,9 @@ namespace behavior_tree::editor
 	{
 	public:
 		std::string name;
-		std::string comment;
+		std::string brief;
 		std::vector<action_arg> args;
+		std::string return_info;
 	};
 
 	using agent_actions = std::unordered_map<std::string, action_desc>;

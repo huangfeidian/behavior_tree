@@ -1,0 +1,8 @@
+// this file should be end of generated cpp file
+{{class_full_name}}::static_constructor_for_{{class_name}} {{class_full_name}}::_static_constructor_;
+{{class_full_name}}::static_constructor_for_{{class_name}}::static_constructor_for_{{class_name}}()
+{
+	{{#static_construct_funcs}}
+	{{func_name}}();
+	{{/static_construct_funcs}}
+}

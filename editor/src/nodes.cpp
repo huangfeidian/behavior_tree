@@ -663,6 +663,7 @@ void action_node::refresh_editable_items()
 	arg_list["value"] = json::array_t();
 	std::shared_ptr<struct_items> arg_list_widget = std::dynamic_pointer_cast<struct_items>(
 		_show_widget->push(arg_list));
+
 	json arg_base = json::object_t();
 	arg_base["type"] = magic_enum::enum_name(editable_item_type::_struct);
 	arg_base["name"] = "arg";
@@ -680,6 +681,7 @@ void action_node::refresh_editable_items()
 	temp_array.push_back(arg_param_type);
 	temp_array.push_back(arg_param_value);
 	arg_base["value"] = temp_array;
+
 	auto all_actions = btree_config::instance().actions_by_agent[agent_name];
 	auto cur_action_iter = all_actions.find(action_name);
 	if (cur_action_iter == all_actions.end())
@@ -688,6 +690,12 @@ void action_node::refresh_editable_items()
 			_idx, action_name, agent_name) << std::endl;
 		return;
 	}
+	json action_return_info = json::object_t();
+	action_return_info["type"] = magic_enum::enum_name(editable_item_type::multi_line_text);
+	action_return_info["name"] = "return";
+	action_return_info["value"] = cur_action_iter->second.return_info;
+	_show_widget->push(action_return_info);
+
 	const auto& cur_arg_names = cur_action_iter->second.args;
 	if (action_args.size() > cur_arg_names.size())
 	{
