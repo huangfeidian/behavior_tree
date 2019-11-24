@@ -6,7 +6,7 @@
 
 ### 概览
 
-![](D:\Github\behavior_tree\doc\images\editor_preview.png)
+![](images\editor_preview.png)
 
 本编辑器支持多文件以tab形式同时编辑，编辑窗口分为了两个部分：
 
@@ -23,13 +23,13 @@
 
 ### 文件的打开与保存
 
-![](D:\Github\behavior_tree\doc\images\editor_file_edit.png)
+![](images\editor_file_edit.png)
 
 如果文件被修改了，则标题栏显示的文件名后面会有*符号
 
 ### 节点的编辑
 
-![](D:\Github\behavior_tree\doc\images\editor_node_edit.png)
+![](images\editor_node_edit.png)
 
 节点编辑时，首先需要选中一个节点，然后按下对应的快捷键：
 
@@ -43,11 +43,11 @@
 
 下图就是按下Insert的时候的截图， 这里有个搜索框，双击对应的行就会创建对应类型的节点：
 
-![](D:\Github\behavior_tree\doc\images\editor_node_select.png)
+![](images\editor_node_select.png)
 
 另外如果树里面的节点太多，可以通过双击这个节点，将对应的子树进行折叠，同时这个节点上面会有一个十字交叉表示，再双击则会展开折叠：
 
-![](D:\Github\behavior_tree\doc\images\editor_node_collapse.png)
+![](images\editor_node_collapse.png)
 
 ### 节点参数编辑
 
@@ -55,25 +55,25 @@
 
 1. 选择颜色按钮
 
-![](D:\Github\behavior_tree\doc\images\editor_color_select.png)
+![](images\editor_color_select.png)
 
 2. action的搜索按钮
 
    由于action后面有很多，我们项目组已经有400多个，所以有搜索的需求，所以这里提供了action的搜索框，支持中英文搜索，双击对应行之后就会设置为当前action，同时对应的args编辑区域也会更新
 
-![](D:\Github\behavior_tree\doc\images\editor_action_select.png)
+![](images\editor_action_select.png)
 
 ### 导航
 
 导航这里有两个按钮，一个是搜索，一个是跳转。
 
-![](D:\Github\behavior_tree\doc\images\editor_navigate.png)
+![](images\editor_navigate.png)
 
 跳转这里会让你输入节点编号，然后就会使这个节点出现在图形区域中。
 
 而导航，则会以搜索框的形式跳转：
 
-![](D:\Github\behavior_tree\doc\images\editor_navigate_search.png)
+![](images\editor_navigate_search.png)
 
 ## action parser
 
@@ -89,6 +89,4 @@
 ## 调试器
 
 调试器这个暂时没空去完成了，因为会涉及到网络相关的内容，等我把后续的几篇关于行为树理论相关的写完看看有没有空。如果谁有兴趣想去先做的话，可以参考腾讯的behaviac:  [https://www.behaviac.com](https://www.behaviac.com/language/zh/首页/) 
-
-
 
