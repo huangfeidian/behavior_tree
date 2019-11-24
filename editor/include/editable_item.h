@@ -29,6 +29,7 @@ namespace behavior_tree::editor
 		_color,
 		_int,
 		_float,
+		_json,
 		_choice,
 		_list,
 		_struct,
@@ -143,6 +144,8 @@ namespace behavior_tree::editor
 		bool assign(const json& other);
 		virtual json str_convert(const QString& input) const;
 		static std::shared_ptr<int_item> from_json(const json& data);
+		QWidget* int_item::to_editor(std::string _cur_name,
+			modify_callback_func_t modify_callback);
 	};
 
 	class float_item :public line_text
@@ -154,8 +157,21 @@ namespace behavior_tree::editor
 		bool assign(const json& other);
 		virtual json str_convert(const QString& input) const;
 		static std::shared_ptr<float_item> from_json(const json& data);
+		QWidget* float_item::to_editor(std::string _cur_name,
+			modify_callback_func_t modify_callback);
 	};
-
+	class json_item : public line_text
+	{
+		friend class editable_item;
+	public:
+		json_item(const std::string& _in_name, const json& _in_value);
+		std::string input_valid() const;
+		bool assign(const json& other);
+		virtual json str_convert(const QString& input) const;
+		static std::shared_ptr<json_item> from_json(const json& data);
+		QWidget* json_item::to_editor(std::string _cur_name,
+			modify_callback_func_t modify_callback);
+	};
 	class choice_item : public editable_item
 	{
 		friend class editable_item;

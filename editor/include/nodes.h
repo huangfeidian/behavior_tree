@@ -166,10 +166,10 @@ namespace behavior_tree::editor
 	public:
 		action_node(node* _in_parent, std::uint32_t _in_idx,
 			const std::string& _in_action_name,
-			const std::vector<std::pair<action_arg_type, std::string>>& _in_action_args);
+			const std::vector<std::pair<action_arg_type, json>>& _in_action_args);
 		std::string action_name;
 		std::string agent_name;
-		std::vector<std::pair<action_arg_type, std::string>> action_args;
+		std::vector<std::pair<action_arg_type, json>> action_args;
 		virtual std::string check_valid() const;
 		virtual json to_json() const;
 		virtual std::string display_text() const;

@@ -345,7 +345,7 @@ namespace behavior_tree::runtime
 			}
 			else
 			{
-				set_result(false);
+				set_result(true);
 			}
 			break;
 		case 1:
@@ -542,26 +542,19 @@ namespace behavior_tree::runtime
 			{
 				return false;
 			}
-			if (!arg_value_iter->second.is_str())
-			{
-				return false;
-			}
+
 			auto cur_arg_type = std::get<std::string>(arg_type_iter->second);
-			auto cur_arg_value = std::get<std::string>(arg_value_iter->second);
+			
 
 			if (cur_arg_type == "blackboard")
 			{
+				auto cur_arg_value = std::get<std::string>(arg_value_iter->second);
 				action_args.emplace_back(action_arg_type::blackboard, cur_arg_value);
 			}
 			else if (cur_arg_type == "plain")
 			{
-				auto cur_arg_value_json = json::parse(cur_arg_value);
-				if (cur_arg_value_json.is_null())
-				{
-					return false;
-				}
-				any_value_type cur_arg_any_value = any_encode(cur_arg_value_json);
-				action_args.emplace_back(action_arg_type::plain, cur_arg_any_value);
+
+				action_args.emplace_back(action_arg_type::plain, arg_value_iter->second);
 			}
 			else
 			{

@@ -10,6 +10,7 @@
 #include <editable_item.h>
 #include <choice_manager.h>
 #include <btree_config.h>
+#include <serialize/encode.h>
 
 using namespace behavior_tree::editor;
 
@@ -631,7 +632,7 @@ std::string sub_tree_node::display_text() const
 	
 }
 action_node::action_node(node* _in_parent, std::uint32_t _in_idx, const std::string& _in_action_name,
-	const std::vector<std::pair<action_arg_type, std::string>>& _in_action_args)
+	const std::vector<std::pair<action_arg_type, json>>& _in_action_args)
 	: node(node_type::action, _in_parent, _in_idx)
 	, action_name(_in_action_name)
 	, action_args(_in_action_args)
@@ -661,26 +662,7 @@ void action_node::refresh_editable_items()
 	arg_list["name"] = "args";
 	arg_list["type"] = magic_enum::enum_name(editable_item_type::_struct);
 	arg_list["value"] = json::array_t();
-	std::shared_ptr<struct_items> arg_list_widget = std::dynamic_pointer_cast<struct_items>(
-		_show_widget->push(arg_list));
-
-	json arg_base = json::object_t();
-	arg_base["type"] = magic_enum::enum_name(editable_item_type::_struct);
-	arg_base["name"] = "arg";
-	arg_base["value"] = "";
-	json arg_param_type = json::object_t();
-	arg_param_type["name"] = "type";
-	arg_param_type["type"] = magic_enum::enum_name(editable_item_type::_choice);
-	arg_param_type["choice_type"] = "action_arg_type";
-	arg_param_type["value"] = "";
-	json arg_param_value = json::object_t();
-	arg_param_value["name"] = "value";
-	arg_param_value["type"] = magic_enum::enum_name(editable_item_type::single_line_text);
-	arg_param_value["value"] = "";
-	json::array_t temp_array;
-	temp_array.push_back(arg_param_type);
-	temp_array.push_back(arg_param_value);
-	arg_base["value"] = temp_array;
+	
 
 	auto all_actions = btree_config::instance().actions_by_agent[agent_name];
 	auto cur_action_iter = all_actions.find(action_name);
@@ -703,6 +685,27 @@ void action_node::refresh_editable_items()
 			_idx, action_args.size(), cur_arg_names.size()) << std::endl;
 		return;
 	}
+	std::shared_ptr<struct_items> arg_list_widget = std::dynamic_pointer_cast<struct_items>(
+		_show_widget->push(arg_list));
+
+	json arg_base = json::object_t();
+	arg_base["type"] = magic_enum::enum_name(editable_item_type::_struct);
+	arg_base["name"] = "arg";
+	arg_base["value"] = "";
+	json arg_param_type = json::object_t();
+	arg_param_type["name"] = "type";
+	arg_param_type["type"] = magic_enum::enum_name(editable_item_type::_choice);
+	arg_param_type["choice_type"] = "action_arg_type";
+	arg_param_type["value"] = "";
+	json arg_param_value = json::object_t();
+	arg_param_value["name"] = "value";
+	arg_param_value["type"] = magic_enum::enum_name(editable_item_type::_json);
+	arg_param_value["value"] = "";
+	json::array_t temp_array;
+	temp_array.push_back(arg_param_type);
+	temp_array.push_back(arg_param_value);
+	arg_base["value"] = temp_array;
+
 	for (std::size_t i = 0; i < cur_arg_names.size(); i++)
 	{
 		arg_base["name"] = cur_arg_names[i].name;
@@ -776,13 +779,13 @@ bool action_node::check_edit()
 			return false;
 		}
 		auto args_values = temp_args_widget->to_json();
-		std::vector<std::pair<action_arg_type, std::string>> temp_arg_values;
+		std::vector<std::pair<action_arg_type, json>> temp_arg_values;
 		// todo value check
 		for (const auto& one_arg_item : args_values["value"])
 		{
 			auto one_arg_value = one_arg_item["value"];
 			std::string cur_choice = one_arg_value[0]["value"].get<std::string>();
-			std::string cur_value = one_arg_value[1]["value"].get<std::string>();
+			json cur_value = one_arg_value[1]["value"];
 			if (cur_choice == "plain")
 			{
 				temp_arg_values.emplace_back(action_arg_type::plain, cur_value);
@@ -984,7 +987,7 @@ node* node::from_desc(const behavior_tree::common::node_desc& data, std::shared_
 		{
 			return nullptr;
 		}
-		std::vector<std::pair<action_arg_type, std::string>> action_args;
+		std::vector<std::pair<action_arg_type, json>> action_args;
 		auto args_iter = data.extra.find("action_args");
 		if (args_iter == data.extra.end())
 		{
@@ -1022,12 +1025,8 @@ node* node::from_desc(const behavior_tree::common::node_desc& data, std::shared_
 			{
 				return nullptr;
 			}
-			if (!arg_value_iter->second.is_str())
-			{
-				return nullptr;
-			}
-			std::string cur_arg_value = std::get<std::string>(arg_value_iter->second);
-			action_args.emplace_back(arg_type_opt.value(), cur_arg_value);
+			
+			action_args.emplace_back(arg_type_opt.value(), behavior_tree::common::encode(arg_value_iter->second));
 		}
 		auto temp_node = new action_node(nullptr, data.idx, std::get<std::string>(name_iter->second),
 			action_args);

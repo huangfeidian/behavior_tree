@@ -410,6 +410,20 @@ json int_item::str_convert(const QString& input) const
 		return result;
 	}
 }
+QWidget* int_item::to_editor(std::string _cur_name,
+	modify_callback_func_t modify_callback)
+{
+	auto cur_window = new QLineEdit();
+	auto cur_qstr = QString::fromStdString(std::to_string(_value.get<int>()));
+	cur_window->setText(cur_qstr);
+	QObject::connect(cur_window, &QLineEdit::editingFinished, [=, self = shared_from_this()]()
+	{
+		auto new_qstr = cur_window->text();
+		assign(str_convert(new_qstr));
+		modify_callback(_cur_name, self, cur_window);
+	});
+	return cur_window;
+}
 
 float_item::float_item(const std::string& _in_name, double _in_value)
 	:line_text(editable_item_type::_float, false, _in_name)
@@ -470,6 +484,95 @@ json float_item::str_convert(const QString& input) const
 	{
 		return result;
 	}
+}
+QWidget* float_item::to_editor(std::string _cur_name,
+	modify_callback_func_t modify_callback)
+{
+	auto cur_window = new QLineEdit();
+	auto cur_qstr = QString::fromStdString(std::to_string(_value.get<double>()));
+	cur_window->setText(cur_qstr);
+	QObject::connect(cur_window, &QLineEdit::editingFinished, [=, self = shared_from_this()]()
+	{
+		auto new_qstr = cur_window->text();
+		assign(str_convert(new_qstr));
+		modify_callback(_cur_name, self, cur_window);
+	});
+	return cur_window;
+}
+
+json_item::json_item(const std::string& _in_name, const json& _in_value)
+	: line_text(editable_item_type::_json, false, _in_name)
+{
+	_value = _in_value;
+}
+std::string json_item::input_valid() const
+{
+	if (_value.is_null())
+	{
+		return fmt::format("name: {} require non null", _name);
+	}
+	if (_value.is_object())
+	{
+		return fmt::format("name: {} require json but map is not allowed, please convert input to list(key, value)", _name);
+	}
+	return "";
+}
+bool json_item::assign(const json& other)
+{
+	if (other.is_null())
+	{
+		return false;
+	}
+	_value = other;
+	return true;
+}
+std::shared_ptr<json_item> json_item::from_json(const json& data)
+{
+	auto value_iter = data.find("value");
+	if (value_iter == data.end())
+	{
+		return {};
+	}
+	
+	auto name_iter = data.find("name");
+	if (name_iter == data.end())
+	{
+		return {};
+	}
+	if (!name_iter->is_string())
+	{
+		return {};
+	}
+
+	return std::make_shared<json_item>(name_iter->get<std::string>(),
+		*value_iter);
+}
+json json_item::str_convert(const QString& input) const
+{
+	auto cur_str = input.toStdString();
+	if (!json::accept(cur_str))
+	{
+		return nullptr;
+	}
+	else
+	{
+		return json::parse(cur_str);
+	}
+}
+
+QWidget* json_item::to_editor(std::string _cur_name,
+	modify_callback_func_t modify_callback)
+{
+	auto cur_window = new QLineEdit();
+	auto cur_qstr = QString::fromStdString(_value.dump());
+	cur_window->setText(cur_qstr);
+	QObject::connect(cur_window, &QLineEdit::editingFinished, [=, self = shared_from_this()]()
+	{
+		auto new_qstr = cur_window->text();
+		assign(str_convert(new_qstr));
+		modify_callback(_cur_name, self, cur_window);
+	});
+	return cur_window;
 }
 
 choice_item::choice_item(const std::string& _in_name, const std::string& choice_type,
@@ -1027,6 +1130,10 @@ std::shared_ptr<editable_item> editable_item::from_json(const json& data)
 	case editable_item_type::_float:
 	{
 		return float_item::from_json(data);
+	}
+	case editable_item_type::_json:
+	{
+		return json_item::from_json(data);
 	}
 	case editable_item_type::_choice:
 	{

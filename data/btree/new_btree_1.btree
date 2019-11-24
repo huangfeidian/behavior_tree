@@ -59,11 +59,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"counter\""
+                        "arg_value": "counter"
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": "1"
+                        "arg_value": 1
                     }
                 ],
                 "action_name": "set_key_value"
@@ -98,11 +98,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"debug\""
+                        "arg_value": "debug"
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"finish one round\""
+                        "arg_value": "finish one round"
                     }
                 ],
                 "action_name": "log"
@@ -122,11 +122,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"counter\""
+                        "arg_value": "counter"
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": "10"
+                        "arg_value": 10
                     }
                 ],
                 "action_name": "number_less_than"
@@ -163,11 +163,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"debug\""
+                        "arg_value": "debug"
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"value for counter is:\""
+                        "arg_value": "value for counter is:"
                     }
                 ],
                 "action_name": "log"
@@ -187,11 +187,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"debug\""
+                        "arg_value": "debug"
                     },
                     {
                         "arg_type": "blackboard",
-                        "arg_value": "\"counter\""
+                        "arg_value": "counter"
                     }
                 ],
                 "action_name": "log"
@@ -211,11 +211,11 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "\"counter\""
+                        "arg_value": "counter"
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": "1"
+                        "arg_value": 1
                     }
                 ],
                 "action_name": "number_add"
@@ -235,7 +235,7 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "1"
+                        "arg_value": 1
                     }
                 ],
                 "action_name": "wait_for_seconds"
@@ -245,5 +245,5 @@
             "type": "action"
         }
     ],
-    "signature": "24-11-2019 20:01:43"
+    "signature": "24-11-2019 22:42:43"
 }
