@@ -28,12 +28,14 @@ namespace behavior_tree::editor
 	{
 	public:
 		fs::path btree_folder;
-		fs::path export_foler;
+		fs::path export_folder;
+		fs::path action_path;
 		std::string base_agent_name;
 		std::unordered_map<std::string,
 			agent_actions> actions_by_agent;
-
-		bool load_actions(const fs::path& action_file_path, const std::shared_ptr<spdlog::logger>& _logger);
+		void dump_config() const;
+		bool load_actions(const std::shared_ptr<spdlog::logger>& _logger);
+		std::string load_config(fs::path config_path);
 		btree_config(const btree_config& other) = delete;
 		static btree_config& instance();
 	private:

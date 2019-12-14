@@ -91,5 +91,6 @@ public:
 	void add_instance(bt_editor::tree_instance* _cur_instance);
 	void remove_instance(bt_editor::tree_instance* _cur_instance);
 	bool load_config();
+	void create_config();
 };
 #endif // MAINWINDOW_H

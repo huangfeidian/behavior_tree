@@ -7,7 +7,8 @@
 #include <btree_config.h>
 #include <goto_dialog.h>
 #include <ui_mainwindow.h>
-
+#include <filesystem>
+#include <config_dialog.h>
 
 using namespace behavior_tree::editor;
 
@@ -45,20 +46,41 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+void MainWindow::create_config()
+{
+	auto cur_dialog = new config_dialog(this);
+	cur_dialog->run();
+}
 bool MainWindow::load_config()
 {
 	auto& _config = btree_config::instance();
-	_config.btree_folder = "../../data/btree/";
-	_config.export_foler = "../../data/export/";
-	if (!_config.load_actions("../../data/actions.json", _logger))
+	auto config_file_path = std::filesystem::path("./config.json");
+	std::string notify_info;
+	if (!std::filesystem::exists(config_file_path))
 	{
-		auto notify_info = fmt::format("cant load actions.json in ../../data/");
+		create_config();
+	}
+	else
+	{
+		
+		notify_info = _config.load_config(config_file_path);
+		if (!notify_info.empty())
+		{
+			QMessageBox::about(this, QString("Error"),
+				QString::fromStdString(notify_info));
+			exit(1);
+			return false;
+		}
+	}
+	
+	if (!_config.load_actions(_logger))
+	{
+		notify_info = fmt::format("cant load actions.json in {}", _config.action_path.string());
 		QMessageBox::about(this, QString("Error"),
 			QString::fromStdString(notify_info));
 		exit(1);
 		return false;
 	}
-	_config.base_agent_name = "action_agent";
 	std::vector<std::string> node_types;
 	node_types.push_back(std::string(magic_enum::enum_name(node_type::negative)));
 	node_types.push_back(std::string(magic_enum::enum_name(node_type::sequence)));
