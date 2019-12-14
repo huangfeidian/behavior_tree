@@ -20,11 +20,12 @@
         },
         {
             "children": [
-                2
+                2,
+                3
             ],
             "comment": "",
             "editor": {
-                "color": 4294967295,
+                "color": 4292542719,
                 "is_collapsed": false
             },
             "extra": {},
@@ -33,20 +34,28 @@
             "type": "sequence"
         },
         {
-            "children": [
-                3,
-                4,
-                5
-            ],
+            "children": [],
             "comment": "",
             "editor": {
-                "color": 4294967295,
+                "color": 2139062271,
                 "is_collapsed": false
             },
-            "extra": {},
+            "extra": {
+                "action_args": [
+                    {
+                        "arg_type": "plain",
+                        "arg_value": ""
+                    },
+                    {
+                        "arg_type": "plain",
+                        "arg_value": ""
+                    }
+                ],
+                "action_name": "log"
+            },
             "idx": 2,
             "parent": 1,
-            "type": "sequence"
+            "type": "action"
         },
         {
             "children": [],
@@ -59,191 +68,19 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "counter"
+                        "arg_value": ""
                     },
                     {
                         "arg_type": "plain",
-                        "arg_value": 1
+                        "arg_value": ""
                     }
                 ],
-                "action_name": "set_key_value"
+                "action_name": "log"
             },
             "idx": 3,
-            "parent": 2,
-            "type": "action"
-        },
-        {
-            "children": [
-                6,
-                7
-            ],
-            "comment": "",
-            "editor": {
-                "color": 16711935,
-                "is_collapsed": false
-            },
-            "extra": {},
-            "idx": 4,
-            "parent": 2,
-            "type": "while_loop"
-        },
-        {
-            "children": [],
-            "comment": "",
-            "editor": {
-                "color": 2139062271,
-                "is_collapsed": false
-            },
-            "extra": {
-                "action_args": [
-                    {
-                        "arg_type": "plain",
-                        "arg_value": "debug"
-                    },
-                    {
-                        "arg_type": "plain",
-                        "arg_value": "finish one round"
-                    }
-                ],
-                "action_name": "log"
-            },
-            "idx": 5,
-            "parent": 2,
-            "type": "action"
-        },
-        {
-            "children": [],
-            "comment": "",
-            "editor": {
-                "color": 2139062271,
-                "is_collapsed": false
-            },
-            "extra": {
-                "action_args": [
-                    {
-                        "arg_type": "plain",
-                        "arg_value": "counter"
-                    },
-                    {
-                        "arg_type": "plain",
-                        "arg_value": 10
-                    }
-                ],
-                "action_name": "number_less_than"
-            },
-            "idx": 6,
-            "parent": 4,
-            "type": "action"
-        },
-        {
-            "children": [
-                8,
-                9,
-                10,
-                11
-            ],
-            "comment": "",
-            "editor": {
-                "color": 4294967295,
-                "is_collapsed": false
-            },
-            "extra": {},
-            "idx": 7,
-            "parent": 4,
-            "type": "sequence"
-        },
-        {
-            "children": [],
-            "comment": "",
-            "editor": {
-                "color": 2139062271,
-                "is_collapsed": false
-            },
-            "extra": {
-                "action_args": [
-                    {
-                        "arg_type": "plain",
-                        "arg_value": "debug"
-                    },
-                    {
-                        "arg_type": "plain",
-                        "arg_value": "value for counter is:"
-                    }
-                ],
-                "action_name": "log"
-            },
-            "idx": 8,
-            "parent": 7,
-            "type": "action"
-        },
-        {
-            "children": [],
-            "comment": "",
-            "editor": {
-                "color": 2139062271,
-                "is_collapsed": false
-            },
-            "extra": {
-                "action_args": [
-                    {
-                        "arg_type": "plain",
-                        "arg_value": "debug"
-                    },
-                    {
-                        "arg_type": "blackboard",
-                        "arg_value": "counter"
-                    }
-                ],
-                "action_name": "log"
-            },
-            "idx": 9,
-            "parent": 7,
-            "type": "action"
-        },
-        {
-            "children": [],
-            "comment": "",
-            "editor": {
-                "color": 2139062271,
-                "is_collapsed": false
-            },
-            "extra": {
-                "action_args": [
-                    {
-                        "arg_type": "plain",
-                        "arg_value": "counter"
-                    },
-                    {
-                        "arg_type": "plain",
-                        "arg_value": 1
-                    }
-                ],
-                "action_name": "number_add"
-            },
-            "idx": 10,
-            "parent": 7,
-            "type": "action"
-        },
-        {
-            "children": [],
-            "comment": "",
-            "editor": {
-                "color": 2139062271,
-                "is_collapsed": false
-            },
-            "extra": {
-                "action_args": [
-                    {
-                        "arg_type": "plain",
-                        "arg_value": 1
-                    }
-                ],
-                "action_name": "wait_for_seconds"
-            },
-            "idx": 11,
-            "parent": 7,
+            "parent": 1,
             "type": "action"
         }
     ],
-    "signature": "24-11-2019 23:34:49"
+    "signature": "14-12-2019 13:11:53"
 }
