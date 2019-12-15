@@ -7,9 +7,9 @@
 #include <qpainter.h>
 #include <qpainterpath.h>
 #include <qimage.h>
-#include <QGraphicsSvgItem>
-#include <QSvgGenerator>
-#include <QSvgRenderer>
+//#include <QGraphicsSvgItem>
+//#include <QSvgGenerator>
+//#include <QSvgRenderer>
 
 #include <tree_instance.h>
 #include <nodes.h>
@@ -735,20 +735,21 @@ void tree_instance::set_scene_background()
 
 void tree_instance::save_to_svg()
 {
-	QSvgGenerator svgGen;
-	auto svg_path = file_path;
-	svg_path.replace_extension("svg");
-	svgGen.setFileName(QString::fromStdString(svg_path.string()));
-	std::uint32_t width = _scene->width() / 1.25;
-	std::uint32_t height = _scene->height() / 1.25;
-	svgGen.setSize(QSize(width, height));
-	svgGen.setViewBox(QRect(0, 0, width, height));
-	svgGen.setTitle(QObject::tr("SVG Generator Example Drawing"));
-	svgGen.setDescription(QObject::tr("An SVG drawing created by the SVG Generator "
-		"Example provided with Qt."));
+	return;
+	//QSvgGenerator svgGen;
+	//auto svg_path = file_path;
+	//svg_path.replace_extension("svg");
+	//svgGen.setFileName(QString::fromStdString(svg_path.string()));
+	//std::uint32_t width = _scene->width() / 1.25;
+	//std::uint32_t height = _scene->height() / 1.25;
+	//svgGen.setSize(QSize(width, height));
+	//svgGen.setViewBox(QRect(0, 0, width, height));
+	//svgGen.setTitle(QObject::tr("SVG Generator Example Drawing"));
+	//svgGen.setDescription(QObject::tr("An SVG drawing created by the SVG Generator "
+	//	"Example provided with Qt."));
 
-	QPainter painter(&svgGen);
-	_scene->render(&painter);
+	//QPainter painter(&svgGen);
+	//_scene->render(&painter);
 }
 void tree_instance::save_to_png()
 {

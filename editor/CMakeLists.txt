@@ -49,5 +49,5 @@ INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 
 add_executable(behavior_tree_editor ${UI_FILES} ${COMMON_SRC} ${SRC_FILES} ${HEADER_FILES})
 
-target_link_libraries(behavior_tree_editor PRIVATE Qt5::Widgets Qt5::Svg)
+target_link_libraries(behavior_tree_editor PRIVATE Qt5::Widgets)
 target_link_libraries(behavior_tree_editor PUBLIC nlohmann_json::nlohmann_json)
