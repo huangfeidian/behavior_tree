@@ -50,6 +50,12 @@ void MainWindow::create_config()
 {
 	auto cur_dialog = new config_dialog(this);
 	cur_dialog->run();
+	if (!cur_dialog->valid)
+	{
+		QMessageBox::about(this, QString("Error"),
+			QString::fromStdString("invalid btree config"));
+		exit(1);
+	}
 }
 bool MainWindow::load_config()
 {
