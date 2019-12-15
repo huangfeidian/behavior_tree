@@ -88,20 +88,15 @@ bool MainWindow::load_config()
 		return false;
 	}
 	std::vector<std::string> node_types;
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::negative)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::sequence)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::always_seq)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::random_seq)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::select)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::probility)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::if_else)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::while_loop)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::wait_event)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::reset)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::sub_tree)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::parallel)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::action)));
-	node_types.push_back(std::string(magic_enum::enum_name(node_type::always_true)));
+	constexpr auto all_node_types = magic_enum::enum_values<node_type>();
+	for (auto one_node_type : all_node_types)
+	{
+		if (one_node_type == node_type::invalid || one_node_type == node_type::root)
+		{
+			continue;
+		}
+		node_types.push_back(std::string(magic_enum::enum_name(one_node_type)));
+	}
 	choice_manager::instance().add_choice("node_type", node_types, node_types);
 
 	std::vector<std::string> node_arg_type_strs;
