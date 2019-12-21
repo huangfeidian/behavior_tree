@@ -6,6 +6,9 @@
 #include "node_graph.h"
 #include "tree_instance.h"
 #include "nodes.h"
+#include "line_dialog.h"
+#include "editable_dialog.h"
+
 using namespace behavior_tree::editor;
 
 
@@ -170,15 +173,24 @@ void node_graph::set_un_collapsed()
 void node_graph::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 	_manager->parent->_logger->debug("node {} mouseDoubleClickEvent", _model->_idx);
-
-	if (_model->_is_collapsed)
+	if (_model->can_collapse())
 	{
-		set_un_collapsed();
+		if (_model->_is_collapsed)
+		{
+			set_un_collapsed();
+		}
+		else
+		{
+			set_collapsed();
+		}
+		return;
 	}
-	else
+	if (!_model->_show_widget->empty())
 	{
-		set_collapsed();
+		set_editable();
+		return;
 	}
+	
 }
 void node_graph::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
@@ -186,17 +198,28 @@ void node_graph::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 	auto action_color = node_menu->addAction("Color");
 	QObject::connect(action_color, &QAction::triggered, this, &node_graph::set_color);
 	// action_color->triggered.connect(set_color);
-	if (_model->_is_collapsed)
+	if (_model->can_collapse())
 	{
-		auto action_expand = node_menu->addAction("Expand");
-		QObject::connect(action_expand, &QAction::triggered, this, &node_graph::set_un_collapsed);
-		//action_expand->triggered.connect(set_un_collapsed);
+		if (_model->_is_collapsed)
+		{
+			auto action_expand = node_menu->addAction("Expand");
+			QObject::connect(action_expand, &QAction::triggered, this, &node_graph::set_un_collapsed);
+			//action_expand->triggered.connect(set_un_collapsed);
+		}
+		else
+		{
+			auto action_collapsed = node_menu->addAction("Collapse");
+			QObject::connect(action_collapsed, &QAction::triggered, this, &node_graph::set_collapsed);
+			//action_collapsed->triggered.connect(set_collapsed);
+		}
 	}
-	else
+	auto action_comment = node_menu->addAction("Comment");
+	QObject::connect(action_comment, &QAction::triggered, this, &node_graph::set_comment);
+
+	if (!_model->_show_widget->empty())
 	{
-		auto action_collapsed = node_menu->addAction("Collapse");
-		QObject::connect(action_collapsed, &QAction::triggered, this, &node_graph::set_collapsed);
-		//action_collapsed->triggered.connect(set_collapsed);
+		auto action_content = node_menu->addAction("Content");
+		QObject::connect(action_content, &QAction::triggered, this, &node_graph::set_editable);
 	}
 	//node_menu->move(_manager->_view->mapFromScene(center_pos().x() + event->pos().x(), center_pos().y() + event->pos().y()));
 
@@ -221,4 +244,20 @@ void node_graph::set_color()
 		_outline->update();
 		_manager->set_dirty();
 	}
+}
+void node_graph::set_comment()
+{
+	auto comment_dialog = new line_dialog("change comment", _model->comment, _manager->window);
+	auto new_comment = comment_dialog->run();
+	_model->comment = new_comment;
+	_manager->set_dirty();
+	_manager->refresh();
+}
+void node_graph::set_editable()
+{
+	auto edit_dialog = new editable_dialog(_manager->window, _model);
+	edit_dialog->run();
+	_manager->set_dirty();
+	_manager->refresh();
+	return;
 }

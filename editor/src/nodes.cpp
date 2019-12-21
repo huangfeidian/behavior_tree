@@ -92,6 +92,10 @@ std::string node::check_valid() const
 	}
 	return "";
 }
+bool node::check_item_edit_refresh(std::shared_ptr<editable_item> change_item)
+{
+	return false;
+}
 void node::add_child(node* in_child)
 {
 	_children.push_back(in_child);
@@ -111,6 +115,12 @@ void node::add_child(node* in_child)
 	}
 	
 }
+bool node::can_collapse() const
+{
+	const auto& cur_child_limit = node_type_child_limit(_type);
+	return cur_child_limit.second > 0;
+}
+
 std::optional<std::uint32_t> node::index_of_child(const node* in_child) const
 {
 	for (std::size_t i = 0; i < _children.size(); i++)
@@ -189,16 +199,7 @@ node::node(node_type _in_type,  node* _in_parent, std::uint32_t _in_idx):
 
 void node::refresh_editable_items()
 {
-	json comment_item = json::object_t();
-	comment_item["type"] = magic_enum::enum_name(editable_item_type::multi_line_text);
-	comment_item["name"] = "comment";
-	comment_item["value"] = comment;
-	_show_widget->push(comment_item);
-	json _color_item = json::object_t();
-	_color_item["type"] = magic_enum::enum_name(editable_item_type::_color);
-	_color_item["name"] = "color";
-	_color_item["value"] = color;
-	_show_widget->push(_color_item);
+
 }
 
 json node::to_json() const
@@ -229,21 +230,7 @@ std::string node::display_text() const
 {
 	return fmt::format("{}:{}:{}", magic_enum::enum_name(_type), _idx, comment);
 }
-QWidget* node::to_editor(std::function<void()> callback)
-{
-	return _show_widget->to_editor("", [=](const std::string& _id,
-		std::shared_ptr<editable_item> _item, QWidget* _widget)
-		{
-			if (this->check_edit())
-			{
-				callback();
-			}
-			else
-			{
-				std::cout << "node " << _idx << "check edit fail" << std::endl;
-			}
-		});
-}
+
 void node::destroy()
 {
 	for (auto one_child : _children)
@@ -271,16 +258,6 @@ bool node::check_edit()
 	if (!_show_widget)
 	{
 		return false;
-	}
-	auto _comment_item = _show_widget->find("comment");
-	if (_comment_item)
-	{
-		comment = _comment_item->_value.get<std::string>();
-	}
-	auto _color_item = _show_widget->find("color");
-	if (_color_item)
-	{
-		color = _color_item->_value.get<std::uint32_t>();
 	}
 	return true;
 }
@@ -574,6 +551,7 @@ void sub_tree_node::refresh_editable_items()
 	_show_widget->push(temp_item);
 
 }
+
 bool sub_tree_node::check_edit()
 {
 	if (!node::check_edit())
@@ -673,7 +651,7 @@ void action_node::refresh_editable_items()
 		return;
 	}
 	json action_return_info = json::object_t();
-	action_return_info["type"] = magic_enum::enum_name(editable_item_type::multi_line_text);
+	action_return_info["type"] = magic_enum::enum_name(editable_item_type::text_browser);
 	action_return_info["name"] = "return";
 	action_return_info["value"] = cur_action_iter->second.return_info;
 	_show_widget->push(action_return_info);
@@ -853,7 +831,14 @@ std::string action_node::display_text() const
 	}
 }
 
-
+bool action_node::check_item_edit_refresh(std::shared_ptr<editable_item> change_item)
+{
+	if (_show_widget->find("action") == change_item)
+	{
+		return check_edit();
+	}
+	
+}
 
 node* node::from_desc(const behavior_tree::common::node_desc& data, std::shared_ptr<spdlog::logger> _logger)
 {

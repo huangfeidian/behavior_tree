@@ -85,6 +85,8 @@ namespace behavior_tree::editor
 		void set_collapsed();
 		void set_un_collapsed();
 		void set_color();
+		void set_comment();
+		void set_editable();
 	};
 
 	class tree_layouter

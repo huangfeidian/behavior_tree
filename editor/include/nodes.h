@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "mainwindow.h"
 #include <optional>
 #include <behavior/nodes.h>
 #include <behavior/btree.h>
@@ -8,6 +7,7 @@ namespace behavior_tree::editor
 {
 
 	class struct_items;
+	class editable_item;
 	using node_type = behavior_tree::common::node_type;
 	using node_idx_type = behavior_tree::common::node_idx_type;
 	using action_arg_type = behavior_tree::common::action_arg_type;
@@ -28,7 +28,6 @@ namespace behavior_tree::editor
 		void move_child(node* in_child, bool is_up);
 		std::optional<std::uint32_t> index_of_child(const node* in_child) const;
 		node(node_type _in_type, node* _in_parent, std::uint32_t _in_idx);
-		virtual QWidget* to_editor(std::function<void()> callback);
 		virtual std::string check_valid() const;
 		virtual json to_json() const;
 		virtual std::string display_text() const;
@@ -42,6 +41,9 @@ namespace behavior_tree::editor
 		virtual void refresh_editable_items();
 		static node* from_desc(const behavior_tree::common::node_desc& _node_desc, std::shared_ptr<spdlog::logger> _logger);
 		static node* from_btree(const behavior_tree::common::btree_desc& _tree_desc, std::shared_ptr<spdlog::logger> _logger);
+		bool can_collapse() const;
+
+		virtual bool check_item_edit_refresh(std::shared_ptr<editable_item> change_item);
 	};
 
 	class root_node : public node
@@ -177,6 +179,7 @@ namespace behavior_tree::editor
 		virtual bool check_edit();
 		std::string get_agent_name() const;
 		void refresh_editable_items();
+		bool check_item_edit_refresh(std::shared_ptr<editable_item> change_item);
 	};
 
 }

@@ -22,6 +22,7 @@ namespace behavior_tree::editor
 	enum class editable_item_type
 	{
 		invalid = 0,
+		text_browser,
 		line_text,
 		single_line_text,
 		multi_line_text,
@@ -38,7 +39,7 @@ namespace behavior_tree::editor
 
 
 	class editable_item;
-	using modify_callback_func_t = std::function<void(const std::string&, std::shared_ptr<editable_item>, QWidget*)>;
+	using modify_callback_func_t = std::function<void(std::shared_ptr<editable_item>)>;
 	class editable_item : public std::enable_shared_from_this<editable_item>
 	{
 	public:
@@ -47,27 +48,34 @@ namespace behavior_tree::editor
 		virtual json to_json() const;
 		virtual std::string input_valid() const;
 		virtual bool assign(const json& other);
-		virtual QWidget* to_editor(std::string,
-			modify_callback_func_t) = 0;
+		virtual QWidget* to_editor( modify_callback_func_t modify_callback) = 0;
 		std::string _name;
 		std::string _comment;
 		json _value;
 		const editable_item_type _type;
 		const bool _is_container;
+		editable_item* parent;
 		editable_item(editable_item_type _in_type, bool _in_is_container,
 			const std::string& _in_name);
 		static std::shared_ptr<editable_item> from_json(const json& data);
 
 	};
 
+	class text_browser : public editable_item
+	{
+	public:
+		friend class editable_item;
+		text_browser(const std::string& _in_name, const std::string& _in_value);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
+		static std::shared_ptr<text_browser> from_json(const json& data);
+	};
 	class line_text : public editable_item
 	{
 		friend class editable_item;
 	public:
 		using editable_item::editable_item;
 		json to_json() const;
-		QWidget* to_editor(std::string,
-			modify_callback_func_t);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
 
 		std::string input_valid() const;
 		bool assign(const json& other);
@@ -90,8 +98,7 @@ namespace behavior_tree::editor
 		std::string input_valid() const;
 		multi_line(const std::string& _in_name, const std::string& _in_value);
 		json str_convert(const QString& input) const;
-		QWidget* to_editor(std::string,
-			modify_callback_func_t);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
 		static std::shared_ptr<multi_line> from_json(const json& data);
 	};
 	class multi_line_widget : public QPlainTextEdit
@@ -100,23 +107,21 @@ namespace behavior_tree::editor
 
 	public:
 		std::shared_ptr<multi_line> _editor;
-		modify_callback_func_t _modify_func;
 		std::string _editor_id;
 		void focusOutEvent(QFocusEvent* e)
 		{
 			QPlainTextEdit::focusOutEvent(e);
 			_editor->_value = toPlainText().toStdString();
-			_modify_func(_editor_id, _editor, this);
 		}
 
 	};
+	
 	class bool_item : public editable_item
 	{
 		friend class editable_item;
 	public:
 		bool_item(const std::string& _in_name, bool _in_value);
-		QWidget* to_editor(std::string,
-			modify_callback_func_t);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
 
 		std::string input_valid() const;
 		bool assign(const json& other);
@@ -128,8 +133,7 @@ namespace behavior_tree::editor
 	{
 		friend class editable_item;
 	public:
-		QWidget* to_editor(std::string,
-			modify_callback_func_t);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
 		color_item(const std::string& _in_name, std::uint32_t _in_rgba);
 		std::string input_valid() const;
 		bool assign(const json& other);
@@ -144,8 +148,7 @@ namespace behavior_tree::editor
 		bool assign(const json& other);
 		virtual json str_convert(const QString& input) const;
 		static std::shared_ptr<int_item> from_json(const json& data);
-		QWidget* int_item::to_editor(std::string _cur_name,
-			modify_callback_func_t modify_callback);
+		QWidget* int_item::to_editor( modify_callback_func_t modify_callback);
 	};
 
 	class float_item :public line_text
@@ -157,8 +160,7 @@ namespace behavior_tree::editor
 		bool assign(const json& other);
 		virtual json str_convert(const QString& input) const;
 		static std::shared_ptr<float_item> from_json(const json& data);
-		QWidget* float_item::to_editor(std::string _cur_name,
-			modify_callback_func_t modify_callback);
+		QWidget* float_item::to_editor( modify_callback_func_t modify_callback);
 	};
 	class json_item : public line_text
 	{
@@ -169,8 +171,7 @@ namespace behavior_tree::editor
 		bool assign(const json& other);
 		virtual json str_convert(const QString& input) const;
 		static std::shared_ptr<json_item> from_json(const json& data);
-		QWidget* json_item::to_editor(std::string _cur_name,
-			modify_callback_func_t modify_callback);
+		QWidget* json_item::to_editor( modify_callback_func_t modify_callback);
 	};
 	class choice_item : public editable_item
 	{
@@ -184,12 +185,9 @@ namespace behavior_tree::editor
 		std::uint32_t current_index() const;
 		std::string input_valid() const;
 		bool assign(const json& other);
-		QWidget* to_editor(std::string,
-			modify_callback_func_t);
-		QWidget* to_editor_short(std::string,
-			modify_callback_func_t);
-		QWidget* to_editor_long(std::string,
-			modify_callback_func_t);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
+		QWidget* to_editor_short(modify_callback_func_t modify_callback);
+		QWidget* to_editor_long(modify_callback_func_t modify_callback);
 		json to_json() const;
 		static std::shared_ptr<choice_item> from_json(const json& data);
 		const std::vector<std::string> _choices;
@@ -208,8 +206,7 @@ namespace behavior_tree::editor
 		json item_base;
 		std::shared_ptr<editable_item> push();
 		void pop();
-		QWidget* to_editor(std::string,
-			modify_callback_func_t);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
 		static std::shared_ptr<list_items> from_json(const json& data);
 		json to_json() const;
 		std::string input_valid() const;
@@ -223,10 +220,10 @@ namespace behavior_tree::editor
 		std::shared_ptr<editable_item> find(const std::string& _in_name) const;
 		std::shared_ptr<editable_item> push(const json& item_base);
 		std::shared_ptr<editable_item> pop(const std::string& _in_name);
+		bool empty() const;
 		json to_json() const;
 		static std::shared_ptr<struct_items> from_json(const json& data);
-		QWidget* to_editor(std::string,
-			modify_callback_func_t);
+		QWidget* to_editor( modify_callback_func_t modify_callback);
 		std::string input_valid() const;
 	};
 }

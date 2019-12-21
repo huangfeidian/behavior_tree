@@ -41,6 +41,7 @@ editable_item::editable_item(editable_item_type _in_type, bool _in_is_container,
 	: _type(_in_type)
 	, _is_container(_in_is_container)
 	, _name(_in_name)
+
 {
 
 }
@@ -80,6 +81,44 @@ json editable_item::to_json() const
 	return result;
 }
 
+QWidget* text_browser::to_editor(modify_callback_func_t modify_callback)
+{
+	auto cur_window = new QLabel();
+	auto cur_qstr = QString::fromStdString(_value.get<std::string>());
+	cur_window->setText(cur_qstr);
+	cur_window->setWordWrap(true);
+	return cur_window;
+}
+std::shared_ptr<text_browser> text_browser::from_json(const json& data)
+{
+	auto value_iter = data.find("value");
+	if (value_iter == data.end())
+	{
+		return {};
+	}
+	if (!value_iter->is_string())
+	{
+		return {};
+	}
+	auto name_iter = data.find("name");
+	if (name_iter == data.end())
+	{
+		return {};
+	}
+	if (!name_iter->is_string())
+	{
+		return {};
+	}
+
+	return std::make_shared<text_browser>(name_iter->get<std::string>(),
+		value_iter->get<std::string>());
+}
+text_browser::text_browser(const std::string& _in_name, const std::string& _in_value)
+	:editable_item(editable_item_type::single_line_text, false, _in_name)
+{
+	_value = _in_value;
+}
+
 std::string line_text::input_valid() const
 {
 	if (!_value.is_string())
@@ -107,8 +146,7 @@ json line_text::to_json() const
 	return editable_item::to_json();
 }
 
-QWidget* line_text::to_editor(std::string _cur_name,
-	modify_callback_func_t modify_callback)
+QWidget* line_text::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_window = new QLineEdit();
 	auto cur_qstr = QString::fromStdString(_value.get<std::string>());
@@ -117,7 +155,7 @@ QWidget* line_text::to_editor(std::string _cur_name,
 		{
 			auto new_qstr = cur_window->text();
 			assign(str_convert(new_qstr));
-			modify_callback(_cur_name, self, cur_window);
+			modify_callback(shared_from_this());
 		});
 	return cur_window;
 }
@@ -188,15 +226,13 @@ std::shared_ptr<multi_line> multi_line::from_json(const json& data)
 	return std::make_shared<multi_line>(name_iter->get<std::string>(),
 		value_iter->get<std::string>());
 }
-QWidget* multi_line::to_editor(std::string _identifier, modify_callback_func_t modify_callback)
+QWidget* multi_line::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_text = new multi_line_widget();
-	auto cur_size_policy = QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+	auto cur_size_policy = QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	cur_text->setSizePolicy(cur_size_policy);
 	cur_text->setPlainText(QString::fromStdString(_value.get<std::string>()));
-	cur_text->_editor_id = _identifier;
 	cur_text->_editor = std::dynamic_pointer_cast<multi_line>(shared_from_this());
-	cur_text->_modify_func = modify_callback;
 	return cur_text;
 }
 std::string multi_line::input_valid() const
@@ -250,8 +286,7 @@ std::shared_ptr<bool_item> bool_item::from_json(const json& data)
 	return std::make_shared<bool_item>(name_iter->get<std::string>(),
 		value_iter->get<bool>());
 }
-QWidget* bool_item::to_editor(std::string _identifier,
-	modify_callback_func_t modify_callback)
+QWidget* bool_item::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_window = new QCheckBox();
 	cur_window->setChecked(_value.get<bool>());
@@ -259,7 +294,7 @@ QWidget* bool_item::to_editor(std::string _identifier,
 		{
 			auto new_value = cur_window->isChecked();
 			assign(new_value);
-			modify_callback(_identifier, self, cur_window);
+			modify_callback(shared_from_this());
 		});
 	return cur_window;
 }
@@ -312,8 +347,7 @@ std::shared_ptr<color_item> color_item::from_json(const json& data)
 	return std::make_shared<color_item>(name_iter->get<std::string>(),
 		value_iter->get<std::uint32_t>());
 }
-QWidget* color_item::to_editor(std::string _identifier,
-	modify_callback_func_t modify_callback)
+QWidget* color_item::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_dialog = new QDialog();
 	auto cur_button = new QPushButton(u8"选择颜色");
@@ -343,8 +377,8 @@ QWidget* color_item::to_editor(std::string _identifier,
 				//	 r,g,b,a, final_value) << std::endl;
 				
 				_value = final_value;
+				modify_callback(shared_from_this());
 			}
-			modify_callback(_identifier, self, cur_dialog);
 
 		});
 	return cur_dialog;
@@ -410,8 +444,7 @@ json int_item::str_convert(const QString& input) const
 		return result;
 	}
 }
-QWidget* int_item::to_editor(std::string _cur_name,
-	modify_callback_func_t modify_callback)
+QWidget* int_item::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_window = new QLineEdit();
 	auto cur_qstr = QString::fromStdString(std::to_string(_value.get<int>()));
@@ -420,7 +453,7 @@ QWidget* int_item::to_editor(std::string _cur_name,
 	{
 		auto new_qstr = cur_window->text();
 		assign(str_convert(new_qstr));
-		modify_callback(_cur_name, self, cur_window);
+		modify_callback(shared_from_this());
 	});
 	return cur_window;
 }
@@ -485,8 +518,7 @@ json float_item::str_convert(const QString& input) const
 		return result;
 	}
 }
-QWidget* float_item::to_editor(std::string _cur_name,
-	modify_callback_func_t modify_callback)
+QWidget* float_item::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_window = new QLineEdit();
 	auto cur_qstr = QString::fromStdString(std::to_string(_value.get<double>()));
@@ -495,7 +527,7 @@ QWidget* float_item::to_editor(std::string _cur_name,
 	{
 		auto new_qstr = cur_window->text();
 		assign(str_convert(new_qstr));
-		modify_callback(_cur_name, self, cur_window);
+		modify_callback(shared_from_this());
 	});
 	return cur_window;
 }
@@ -560,8 +592,7 @@ json json_item::str_convert(const QString& input) const
 	}
 }
 
-QWidget* json_item::to_editor(std::string _cur_name,
-	modify_callback_func_t modify_callback)
+QWidget* json_item::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_window = new QLineEdit();
 	auto cur_qstr = QString::fromStdString(_value.dump());
@@ -570,7 +601,7 @@ QWidget* json_item::to_editor(std::string _cur_name,
 	{
 		auto new_qstr = cur_window->text();
 		assign(str_convert(new_qstr));
-		modify_callback(_cur_name, self, cur_window);
+		modify_callback(shared_from_this());
 	});
 	return cur_window;
 }
@@ -695,20 +726,18 @@ bool choice_item::assign(const json& data)
 	return true;
 }
 
-QWidget* choice_item::to_editor(std::string _identifier,
-	modify_callback_func_t modify_callback)
+QWidget* choice_item::to_editor(modify_callback_func_t modify_callback)
 {
 	if (_choices.size() > 3)
 	{
-		return to_editor_long(_identifier, modify_callback);
+		return to_editor_long(modify_callback);
 	}
 	else
 	{
-		return to_editor_short(_identifier, modify_callback);
+		return to_editor_short(modify_callback);
 	}
 }
-QWidget* choice_item::to_editor_short(std::string _identifier,
-	modify_callback_func_t modify_callback)
+QWidget* choice_item::to_editor_short(modify_callback_func_t modify_callback)
 {
 	auto cur_combo = new QComboBox();
 	//cur_combo->setStyle(QStyleFactory::create("Fusion"));
@@ -725,28 +754,27 @@ QWidget* choice_item::to_editor_short(std::string _identifier,
 	{
 		//std::cout << "combo set with index " << index << std::endl;
 		assign(_choices[index]);
-		modify_callback(_identifier, self, cur_combo);
+		modify_callback(shared_from_this());
 	});
 	return cur_combo;
 
 }
 
-QWidget* choice_item::to_editor_long(std::string _identifier,
-	modify_callback_func_t modify_callback)
+QWidget* choice_item::to_editor_long(modify_callback_func_t modify_callback)
 {
 	auto cur_dialog = new QDialog();
-	auto cur_button = new QPushButton(u8"搜索");
-	cur_button->setStyleSheet("border:1px groove gray;border-radius:5px;padding:1px 2px;");
+	auto cur_button = new QPushButton(u8"search");
+	
 	auto cur_text = new QPushButton(QString::fromStdString(_value.get<std::string>()));
-	cur_text->setStyleSheet("border:1px groove gray;border-radius:5px;padding:1px 2px;");
 	QPalette pa;
 	pa.setColor(QPalette::WindowText, Qt::red);
 	cur_text->setPalette(pa);
 	auto cur_layout = new QHBoxLayout();
 	cur_layout->addWidget(cur_text);
 	cur_layout->addWidget(cur_button);
-	auto cur_tooltips = new QTextBrowser();
+	auto cur_tooltips = new QLabel();
 	cur_tooltips->setText(QString::fromStdString(_choice_text[current_index()]));
+	cur_tooltips->setWordWrap(true);
 	auto final_layout = new QVBoxLayout();
 	final_layout->addLayout(cur_layout);
 	final_layout->addWidget(cur_tooltips);
@@ -754,7 +782,7 @@ QWidget* choice_item::to_editor_long(std::string _identifier,
 	cur_button->connect(cur_button, &QPushButton::clicked, [=, self = shared_from_this()]()
 		{
 
-			auto cur_search_dialog = new search_select_dialog(_choice_text);
+			auto cur_search_dialog = new search_select_dialog(_choice_text, cur_dialog);
 			auto result = cur_search_dialog->run();
 			if (result.empty())
 			{
@@ -767,7 +795,7 @@ QWidget* choice_item::to_editor_long(std::string _identifier,
 					//std::cout << "search button get index " << i << " for text " << result << std::endl;
 					assign(_choices[i]);
 					cur_text->setText(QString::fromStdString(_choices[i]));
-					modify_callback(_identifier, self, cur_dialog);
+					modify_callback(shared_from_this());
 					return;
 				}
 			}
@@ -782,8 +810,7 @@ QWidget* choice_item::to_editor_long(std::string _identifier,
 	return cur_dialog;
 
 }
-QWidget* list_items::to_editor(std::string _identifier,
-	modify_callback_func_t modify_callback)
+QWidget* list_items::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_box = new QGroupBox();
 	auto size_policy = cur_box->sizePolicy();
@@ -794,8 +821,7 @@ QWidget* list_items::to_editor(std::string _identifier,
 	std::shared_ptr<std::vector<QWidget*>> child_widgets = std::make_shared< std::vector<QWidget*>>();
 	for (std::size_t i = 0; i < _children.size(); i++)
 	{
-		auto cur_child_widget = _children[i]->to_editor(
-			fmt::format("{}[{}]", _identifier, i), modify_callback);
+		auto cur_child_widget = _children[i]->to_editor(modify_callback);
 		child_widgets->push_back(cur_child_widget);
 		cur_layout->addWidget(cur_child_widget);
 	}
@@ -805,11 +831,8 @@ QWidget* list_items::to_editor(std::string _identifier,
 		{
 			auto new_child_item = push();
 			std::size_t idx = _children.size();
-			auto temp_editor = new_child_item->to_editor(fmt::format("{}[{}]", _identifier, idx),
-				modify_callback);
+			auto temp_editor = new_child_item->to_editor(modify_callback);
 			child_widgets->push_back(temp_editor);
-
-			modify_callback(_identifier, self, cur_box);
 
 		});
 	auto button_delete = new QPushButton("-");
@@ -824,7 +847,6 @@ QWidget* list_items::to_editor(std::string _identifier,
 			child_widgets->back()->setParent(nullptr);
 			child_widgets->pop_back();
 
-			modify_callback(_identifier, self, cur_box);
 		});
 	auto hlayout = new QHBoxLayout();
 	hlayout->addWidget(button_add);
@@ -835,7 +857,9 @@ QWidget* list_items::to_editor(std::string _identifier,
 }
 std::shared_ptr<editable_item> list_items::push()
 {
-	return editable_item::from_json(item_base);
+	auto temp_item = editable_item::from_json(item_base);
+	temp_item->parent = this;
+	return temp_item;
 }
 void list_items::pop()
 {
@@ -948,6 +972,7 @@ std::shared_ptr<editable_item> struct_items::push(const json& item_base)
 		std::cout << "fail to construct editable item from " << item_base.dump() << std::endl;
 		return {};
 	}
+	temp_child->parent = this;
 	for (std::size_t i = 0; i < _children.size(); i++)
 	{
 		if (_children[i]->_name == temp_child->_name)
@@ -968,6 +993,7 @@ std::shared_ptr<editable_item> struct_items::pop(const std::string& _in_name)
 		{
 			std::shared_ptr<editable_item> result = _children[i];
 			_children.erase(_children.begin() + i);
+			result->parent = nullptr;
 			return result;
 		}
 	}
@@ -980,7 +1006,7 @@ struct_items::struct_items(const std::string& _in_name)
 	_value = json::array_t();
 }
 
-QWidget* struct_items::to_editor(std::string _identifier, modify_callback_func_t modify_callback)
+QWidget* struct_items::to_editor(modify_callback_func_t modify_callback)
 {
 	auto cur_box = new QGroupBox();
 	auto size_policy = cur_box->sizePolicy();
@@ -997,8 +1023,7 @@ QWidget* struct_items::to_editor(std::string _identifier, modify_callback_func_t
 		//std::cout << fmt::format("struct items {} to editor with child {} data {} is_container {}", 
 		//	_name,  one_child->_name , one_child->to_json().dump(), 
 		//	one_child->_is_container)<< std::endl;
-		auto cur_widget = one_child->to_editor(
-			fmt::format("{}.{}", _identifier, one_child->_name), modify_callback);
+		auto cur_widget = one_child->to_editor(modify_callback);
 		if (one_child->_is_container)
 		{
 			cur_layout->addRow(cur_widget);
@@ -1057,6 +1082,10 @@ std::string struct_items::input_valid() const
 	}
 	return "";
 }
+bool struct_items::empty() const
+{
+	return _children.empty();
+}
 std::shared_ptr<editable_item> editable_item::from_json(const json& data)
 {
 	std::vector<std::string> keys = { "type", "name", "value" };
@@ -1102,6 +1131,8 @@ std::shared_ptr<editable_item> editable_item::from_json(const json& data)
 	{
 	case editable_item_type::invalid:
 		return {};
+	case editable_item_type::text_browser:
+		return text_browser::from_json(data);
 	case editable_item_type::line_text:
 		return {};
 	case editable_item_type::single_line_text:

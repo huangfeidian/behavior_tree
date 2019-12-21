@@ -13,19 +13,20 @@
 namespace behavior_tree::editor
 {
 
-	class goto_dialog : public QDialog
+	class line_dialog : public QDialog
 	{
 
 		Q_OBJECT
 
 	public:
-		goto_dialog(QWidget *parent = 0);
+		line_dialog(std::string title, std::string init_text, QWidget* parent = 0);
 
-		std::optional<std::uint32_t> run();
+		std::string run();
 
 	public slots:
 
-		void search();
+		void confirm();
+		void temp_confirm();
 
 	private:
 		std::string _text;

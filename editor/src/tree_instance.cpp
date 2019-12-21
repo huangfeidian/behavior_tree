@@ -271,15 +271,11 @@ void tree_instance::show_select_effect()
 {
 	parent->_logger->debug("tree_instance {} show_select_effect node {} ",
 		file_name.string(), selected_node->_idx);
-	parent->add_dock_content(selected_node->to_editor([=]() {
-		refresh();
-		}));
 }
 void tree_instance::clean_select_effect()
 {
 	parent->_logger->debug("tree_instance {} clean_select_effect ",
 		file_name.string());
-	parent->clear_dock_contents();
 }
 void tree_instance::insert_handler()
 {
@@ -345,8 +341,23 @@ node* tree_instance::copy_handler()
 		return nullptr;
 	}
 	auto result = selected_node->clone_recursive(nullptr);
+	
+	return result;
+
+}
+void tree_instance::paste_handler(node* cur_node)
+{
+	
+	if (!selected_node)
+	{
+		return;
+	}
+	if (!cur_node)
+	{
+		return;
+	}
 	std::deque<node*> all_nodes;
-	all_nodes.push_back(result);
+	all_nodes.push_back(cur_node);
 	while (!all_nodes.empty())
 	{
 		auto cur_node = all_nodes.front();
@@ -357,21 +368,8 @@ node* tree_instance::copy_handler()
 			all_nodes.push_back(one_child);
 		}
 	}
-	return result;
-
-}
-void tree_instance::paste_handler(node* cur_node)
-{
-	parent->_logger->debug("tree_instance {} paste_handler ",
-		file_name.string());
-	if (!selected_node)
-	{
-		return;
-	}
-	if (!cur_node)
-	{
-		return;
-	}
+	parent->_logger->debug("tree_instance {} paste_handler parent {} child {}",
+		file_name.string(), selected_node->_idx, cur_node->_idx);
 	selected_node->add_child(cur_node);
 	refresh();
 }

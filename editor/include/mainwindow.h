@@ -41,8 +41,6 @@ public:
 public:
 	Ui::MainWindow *ui;
 
-	std::size_t dock_content_count = 0;
-	QWidget* cur_docker = nullptr;
 	QMdiArea* cur_mdi = nullptr;
 	std::size_t seq = 0;
 	std::vector<bt_editor::tree_instance*> _instances;
@@ -54,9 +52,6 @@ private:
 public:
 	std::shared_ptr<spdlog::logger> _logger;
 
-	void add_dock_content(QWidget* cur_widget);
-	std::vector<QWidget*> get_dock_contents();
-	void clear_dock_contents();
 	std::size_t get_seq();
 	std::string new_file_name();
 	std::optional<std::size_t> already_open(const std::string& file_path);

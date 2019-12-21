@@ -5,7 +5,7 @@
 #include <tree_instance.h>
 #include <choice_manager.h>
 #include <btree_config.h>
-#include <goto_dialog.h>
+#include <line_dialog.h>
 #include <ui_mainwindow.h>
 #include <filesystem>
 #include <config_dialog.h>
@@ -36,11 +36,6 @@ void MainWindow::init_widgets()
 	cur_mdi->setTabsClosable(true);
 	cur_mdi->setTabShape(QTabWidget::Rounded);
 	connect(cur_mdi, SIGNAL(subWindowActivated(QMdiSubWindow *)), this, SLOT(sub_window_activated(QMdiSubWindow*)));
-	cur_docker = ui->dockAnchor;
-	auto temp_layout = new QVBoxLayout();
-	cur_docker->setLayout(temp_layout);
-	temp_layout->setAlignment(Qt::AlignTop);
-	dock_content_count = 0;
 }
 MainWindow::~MainWindow()
 {
@@ -162,34 +157,6 @@ void MainWindow::init_actions()
 
 }
 
-void MainWindow::add_dock_content(QWidget * cur_widget)
-{
-	_logger->debug("main_window add_dock_content");
-	clear_dock_contents();
-	ui->dockAnchor->layout()->addWidget(cur_widget);
-}
-
-std::vector<QWidget*> MainWindow::get_dock_contents()
-{
-	_logger->debug("main_window get_dock_contents");
-	auto cur_layout = ui->dockAnchor->layout();
-	std::vector<QWidget*> result;
-	for (int i = 0; i < cur_layout->count(); i++)
-	{
-		result.push_back(cur_layout->itemAt(i)->widget());
-	}
-	return result;
-
-}
-
-void MainWindow::clear_dock_contents()
-{
-	_logger->debug("main_window clear_dock_contents");
-	for (auto one_widget : get_dock_contents())
-	{
-		one_widget->deleteLater();
-	}
-}
 
 std::size_t MainWindow::get_seq()
 {
@@ -487,21 +454,22 @@ void MainWindow::action_goto_handler()
 	{
 		return;
 	}
-	auto cur_goto_dialog = new goto_dialog(this);
-	auto opt_idx = cur_goto_dialog->run();
-	if (!opt_idx)
+	auto cur_goto_dialog = new line_dialog("goto node", "", this);
+	auto goto_text = cur_goto_dialog->run();
+	std::uint32_t result = 0;
+	for (const auto i : goto_text)
 	{
-		auto notify_info = fmt::format("cant get idx from input, shoule be an interger");
-		QMessageBox::about(this, QString("Error"),
-			QString::fromStdString(notify_info));
+		if (i < '0' || i > '9')
+		{
+			auto notify_info = fmt::format("cant get idx from input, shoule be an interger");
+			QMessageBox::about(this, QString("Error"),
+				QString::fromStdString(notify_info));
+			return;
+		}
+		auto cur_digit = i - '0';
+		result = result * 10 + cur_digit;
 	}
-	else
-	{
-		auto cur_idx = opt_idx.value();
-		cur_ins->focus_on(cur_idx);
-	}
-	
-	
+	cur_ins->focus_on(result);
 }
 void MainWindow::add_instance(tree_instance* _cur_instance)
 {
