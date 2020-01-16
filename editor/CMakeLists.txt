@@ -47,7 +47,9 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 
+find_package(any_container CONFIG REQUIRED)
+
 add_executable(behavior_tree_editor ${UI_FILES} ${COMMON_SRC} ${SRC_FILES} ${HEADER_FILES})
 
 target_link_libraries(behavior_tree_editor PRIVATE Qt5::Widgets)
-target_link_libraries(behavior_tree_editor PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(behavior_tree_editor PUBLIC nlohmann_json::nlohmann_json any_container)

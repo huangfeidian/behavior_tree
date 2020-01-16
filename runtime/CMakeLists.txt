@@ -28,6 +28,8 @@ file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/include/*.cpp")
 find_package(spdlog CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${spdlog_include_dirs})
 
+find_package(any_container CONFIG REQUIRED)
+
 # add json support
 find_package(nlohmann_json CONFIG REQUIRED)
 
@@ -37,4 +39,4 @@ INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 
 add_executable(behavior_tree_runtime ${COMMON_SRC} ${SRC_FILES})
 
-target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container)
