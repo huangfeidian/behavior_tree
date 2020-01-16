@@ -12,6 +12,7 @@
 using namespace behavior_tree::editor;
 
 
+
 node_graph::node_graph(node* _in_model, tree_instance* _in_manager,
 	QColor _text_color) :
 	_model(_in_model),
@@ -24,15 +25,21 @@ node_graph::node_graph(node* _in_model, tree_instance* _in_manager,
 	QGraphicsSimpleTextItem* _text = new QGraphicsSimpleTextItem(
 		QString::fromStdString(_model->display_text()));
 	_text->setBrush(_text_color);
-	auto bound = _text->boundingRect();
-	auto radius = QPointF(bound.width() / 2, bound.height() / 2);
-	auto text_center = _text->pos() + radius;
+	auto text_bound = _text->boundingRect();
+
+
+	auto total_width = text_bound.width();
+
+	auto total_radius = QPointF(total_width / 2, text_bound.height() / 2);
+	
+	auto text_center = _text->pos() + total_radius;
 	_text->setPos(-1 * text_center);
 	addToGroup(_text);
 
 	auto empty_space = QPointF(node_unit, node_unit);
-	auto new_r = empty_space + radius;
-	_outline->_rect = QRectF(-new_r, new_r);
+	auto new_r = empty_space + total_radius;
+	cur_bounding = QRectF(-new_r, new_r);
+	_outline->_rect = cur_bounding;
 	addToGroup(_outline);
 	_text->setZValue(1.0);
 	_outline->setZValue(0.0);
@@ -49,6 +56,11 @@ QVariant node_graph::itemChange(GraphicsItemChange change, const QVariant &value
 		return QGraphicsItemGroup::itemChange(change, value);
 	}
 
+}
+
+QRectF node_graph::boundingRect() const
+{
+	return cur_bounding;
 }
 tree_layouter::tree_layouter(node_graph* in_root) :
 	root(in_root)
@@ -106,7 +118,7 @@ void tree_layouter::set_node_pos(node_graph* cur_node)
 	double x = total_widths[cur_node->layout_x] + cur_node->layout_x * 4 * node_unit;
 	double y = node_unit * 5 * (cur_node->layout_y - root->layout_y);
 	//cur_node->_manager->parent->_logger->debug("node {} layout x:{} y:{}, pos x:{} y:{}",
-	//	cur_node->_model->_idx, cur_node->layout_x, cur_node->layout_y, x, y);
+	//cur_node->_model->_idx, cur_node->layout_x, cur_node->layout_y, x, y);
 	auto cur_p = QPointF(x, y);
 	cur_node->set_left_pos(cur_p);
 	for (auto one_node : cur_node->_children)
@@ -150,6 +162,26 @@ void node_graph::draw_cross(QColor color)
 	l2->setZValue(1.0);
 }
 
+void node_graph::draw_collapse_triangle()
+{
+	auto p = QPen(Qt::yellow);
+	auto b = QBrush(Qt::magenta);
+	b.setStyle(Qt::SolidPattern);
+	QPointF begin_pos = right_pos();
+	begin_pos += QPoint(node_unit, 0);
+	QPolygonF polygon;
+	auto height = boundingRect().height() / 2;
+	auto width = node_unit;
+	auto point_1 = QPointF(0, -1 * height);
+	auto point_2 = QPointF(width, 0);
+	auto point_3 = QPointF(0, height);
+	polygon << point_1 << point_2 << point_3<<point_1;
+	polygon.translate(begin_pos);
+	auto cur_p = _manager->_scene->addPolygon(polygon, p, b);
+	cur_p->setZValue(1.0);
+
+}
+
 void node_graph::draw_bound(QColor color)
 {
 	auto p = QPen(color);
@@ -159,6 +191,7 @@ void node_graph::draw_bound(QColor color)
 	auto height = boundingRect().height();
 	auto left_down = pos() + QPointF(width * -0.5, height * -0.5);
 	_manager->_scene->addRect(left_down.x(), left_down.y(), width, height, p, b);
+	_manager->parent->_logger->info("bound is {}, {}, {}, {}", left_down.x(), left_down.y(), width, height);
 }
 void node_graph::set_collapsed()
 {

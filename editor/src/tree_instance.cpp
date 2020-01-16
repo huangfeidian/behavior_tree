@@ -220,7 +220,8 @@ void tree_instance::_display_links_impl(node_graph* cur_node)
 	}
 	if (cur_node->_model->_is_collapsed)
 	{
-		cur_node->draw_cross(Qt::magenta);
+		//cur_node->draw_cross(Qt::magenta);
+		cur_node->draw_collapse_triangle();
 	}
 }
 
@@ -244,7 +245,7 @@ void tree_instance::refresh()
 }
 void tree_instance::cancel_select()
 {
-	parent->_logger->debug("tree_instance {} cancel_select ", file_name.string());
+	//parent->_logger->debug("tree_instance {} cancel_select ", file_name.string());
 	if (!selected_node)
 	{
 		return;
@@ -254,8 +255,8 @@ void tree_instance::cancel_select()
 }
 void tree_instance::select_changed(node_graph* cur_node, int state)
 {
-	parent->_logger->debug("tree_instance {} select_changed cur_node {} state {} ",
-		file_name.string(), cur_node->_model->_idx, state);
+	//parent->_logger->debug("tree_instance {} select_changed cur_node {} state {} ",
+	//	file_name.string(), cur_node->_model->_idx, state);
 	if (state == 0)
 	{
 		selected_node = nullptr;
@@ -404,8 +405,8 @@ void tree_instance::move_handler(bool is_up)
 }
 node_graph* tree_instance::find_graph_by_node(node_graph* cur_graph, node* cur_node) const
 {
-	parent->_logger->debug("tree_instance {} find_graph_by_node cur_graph {} cur_node {} ",
-		file_name.string(), cur_graph->_model->_idx, cur_node->_idx);
+	//parent->_logger->debug("tree_instance {} find_graph_by_node cur_graph {} cur_node {} ",
+	//	file_name.string(), cur_graph->_model->_idx, cur_node->_idx);
 	if (cur_graph->_model == cur_node)
 	{
 		return cur_graph;
@@ -618,7 +619,7 @@ void tree_instance::search_node()
 	{
 		return;
 	}
-	for (int i = 0; i < node_texts.size(); i++)
+	for (std::uint32_t i = 0; i < node_texts.size(); i++)
 	{
 		if (node_texts[i] == cur_choice)
 		{

@@ -8,6 +8,7 @@
 
 namespace behavior_tree::editor
 {
+
 	class tree_instance;
 	class box_outline : public QGraphicsItem
 	{
@@ -64,18 +65,20 @@ namespace behavior_tree::editor
 	public:
 		std::uint32_t layout_x;
 		float layout_y;
+		QRectF cur_bounding;
 	public:
 		node_graph(node* _in_model, tree_instance* _in_manager,
 			QColor _text_color);
 
 		QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
+		QRectF boundingRect() const;
 		double get_width() const;
 		void set_left_pos(const QPointF& pos);
 		QPointF left_pos() const;
 		QPointF center_pos() const;
 		QPointF right_pos() const;
 		void draw_cross(QColor color);
+		void draw_collapse_triangle();
 		void draw_bound(QColor _color);
 		
 		void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

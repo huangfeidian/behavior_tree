@@ -837,7 +837,7 @@ bool action_node::check_item_edit_refresh(std::shared_ptr<editable_item> change_
 	{
 		return check_edit();
 	}
-	
+	return false;
 }
 
 node* node::from_desc(const behavior_tree::common::node_desc& data, std::shared_ptr<spdlog::logger> _logger)
