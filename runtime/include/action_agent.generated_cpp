@@ -1,8 +1,8 @@
 
 
-std::unordered_map<std::string, behavior_tree::runtime::action_agent::action_func_type> behavior_tree::runtime::action_agent::action_funcs_map;
+std::unordered_map<std::string, spiritsaway::behavior_tree::runtime::action_agent::action_func_type> spiritsaway::behavior_tree::runtime::action_agent::action_funcs_map;
 
-void behavior_tree::runtime::action_agent::init_action_funcs_map()
+void spiritsaway::behavior_tree::runtime::action_agent::init_action_funcs_map()
 {
     action_funcs_map["has_key"] = &action_agent::has_key_action_wrapper;
     action_funcs_map["has_key_value"] = &action_agent::has_key_value_action_wrapper;
@@ -18,7 +18,7 @@ void behavior_tree::runtime::action_agent::init_action_funcs_map()
     action_funcs_map["wait_for_seconds"] = &action_agent::wait_for_seconds_action_wrapper;
 }
 
-std::optional<bool> behavior_tree::runtime::action_agent::has_key_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::has_key_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -27,15 +27,15 @@ std::optional<bool> behavior_tree::runtime::action_agent::has_key_action_wrapper
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action has_key when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action has_key when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
     return has_key(tmp_bb_key);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::has_key_value_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::has_key_value_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -44,28 +44,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::has_key_value_action_w
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action has_key_value when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action has_key_value when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action has_key_value when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action has_key_value when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action has_key_value when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action has_key_value when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return has_key_value(tmp_bb_key, tmp_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::log_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::log_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_log_level;
     if(0 >= data.size())
@@ -74,28 +74,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::log_action_wrapper(con
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_log_level))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_log_level))
     {
-        _logger->warn("fail to call action log when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action log when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_log_info;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_log_info;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action log when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action log when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_log_info))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_log_info))
     {
-        _logger->warn("fail to call action log when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action log when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return log(tmp_log_level, tmp_log_info);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::log_bb_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::log_bb_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_log_level;
     if(0 >= data.size())
@@ -104,9 +104,9 @@ std::optional<bool> behavior_tree::runtime::action_agent::log_bb_action_wrapper(
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_log_level))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_log_level))
     {
-        _logger->warn("fail to call action log_bb when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action log_bb when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
@@ -117,15 +117,15 @@ std::optional<bool> behavior_tree::runtime::action_agent::log_bb_action_wrapper(
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_bb_key))
     {
-        _logger->warn("fail to call action log_bb when convert arg 1 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action log_bb when convert arg 1 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return log_bb(tmp_log_level, tmp_bb_key);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::number_add_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_add_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -134,28 +134,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::number_add_action_wrap
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_add when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action number_add when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_add when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action number_add when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_add when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action number_add when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return number_add(tmp_bb_key, tmp_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::number_dec_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_dec_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -164,28 +164,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::number_dec_action_wrap
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_dec when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action number_dec when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_dec when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action number_dec when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_dec when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action number_dec when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return number_dec(tmp_bb_key, tmp_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::number_div_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_div_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -194,28 +194,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::number_div_action_wrap
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_div when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action number_div when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_div when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action number_div when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_div when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action number_div when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return number_div(tmp_bb_key, tmp_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::number_larger_than_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_larger_than_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -224,28 +224,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::number_larger_than_act
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_larger_than when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action number_larger_than when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_other_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_other_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_larger_than when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action number_larger_than when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_other_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_other_value))
     {
-        _logger->warn("fail to call action number_larger_than when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action number_larger_than when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return number_larger_than(tmp_bb_key, tmp_other_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::number_less_than_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_less_than_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -254,28 +254,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::number_less_than_actio
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_less_than when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action number_less_than when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_other_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_other_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_less_than when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action number_less_than when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_other_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_other_value))
     {
-        _logger->warn("fail to call action number_less_than when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action number_less_than when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return number_less_than(tmp_bb_key, tmp_other_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::number_multiply_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_multiply_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -284,28 +284,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::number_multiply_action
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_multiply when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action number_multiply when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_multiply when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action number_multiply when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_multiply when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action number_multiply when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return number_multiply(tmp_bb_key, tmp_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::set_key_value_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::set_key_value_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<const std::string &>> tmp_bb_key;
     if(0 >= data.size())
@@ -314,28 +314,28 @@ std::optional<bool> behavior_tree::runtime::action_agent::set_key_value_action_w
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_bb_key))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action set_key_value when convert arg 0 with value {} to type const std::string & fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action set_key_value when convert arg 0 with value {} to type const std::string & fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const behavior_tree::common::any_value_type &>> tmp_new_value;
+    std::remove_const_t<std::remove_reference_t<const spiritsaway::serialize::any_value_type &>> tmp_new_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action set_key_value when convert 1  to type const behavior_tree::common::any_value_type & fail, vector access fail");
+        _logger->warn("fail to call action set_key_value when convert 1  to type const spiritsaway::serialize::any_value_type & fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[1], tmp_new_value))
+    if(!spiritsaway::serialize::any_decode(data[1], tmp_new_value))
     {
-        _logger->warn("fail to call action set_key_value when convert arg 1 with value {} to type const behavior_tree::common::any_value_type & fail", std::string(behavior_tree::common::encode(data[1])));
+        _logger->warn("fail to call action set_key_value when convert arg 1 with value {} to type const spiritsaway::serialize::any_value_type & fail", std::string(spiritsaway::behavior_tree::common::encode(data[1])));
         notify_stop();
         return std::nullopt;
     }
     return set_key_value(tmp_bb_key, tmp_new_value);
 }
-std::optional<bool> behavior_tree::runtime::action_agent::wait_for_seconds_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::wait_for_seconds_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
     std::remove_const_t<std::remove_reference_t<double>> tmp_duration;
     if(0 >= data.size())
@@ -344,9 +344,9 @@ std::optional<bool> behavior_tree::runtime::action_agent::wait_for_seconds_actio
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[0], tmp_duration))
+    if(!spiritsaway::serialize::any_decode(data[0], tmp_duration))
     {
-        _logger->warn("fail to call action wait_for_seconds when convert arg 0 with value {} to type double fail", std::string(behavior_tree::common::encode(data[0])));
+        _logger->warn("fail to call action wait_for_seconds when convert arg 0 with value {} to type double fail", std::string(spiritsaway::behavior_tree::common::encode(data[0])));
         notify_stop();
         return std::nullopt;
     }
@@ -354,8 +354,8 @@ std::optional<bool> behavior_tree::runtime::action_agent::wait_for_seconds_actio
 }
 
 // this file should be end of generated cpp file
-behavior_tree::runtime::action_agent::static_constructor_for_action_agent behavior_tree::runtime::action_agent::_static_constructor_;
-behavior_tree::runtime::action_agent::static_constructor_for_action_agent::static_constructor_for_action_agent()
+spiritsaway::behavior_tree::runtime::action_agent::static_constructor_for_action_agent spiritsaway::behavior_tree::runtime::action_agent::_static_constructor_;
+spiritsaway::behavior_tree::runtime::action_agent::static_constructor_for_action_agent::static_constructor_for_action_agent()
 {
 	init_action_funcs_map();
 }

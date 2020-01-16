@@ -116,7 +116,7 @@ Meta(behavior_action) bool has_key(const std::string& bb_key);
 1. `bool` 代表这个函数是立即返回的，执行的是一个同步调用
 2. `std::optional<bool>` 代表这个函数可能是异步返回的，会开启一个异步过程
 
-而函数的参数类型目前只支持可以被`behavior_tree::common::any_value_type`容纳的类型，包括自身。
+而函数的参数类型目前只支持可以被`spiritsaway::serialize::any_value_type`容纳的类型，包括自身。
 
 这些信息是通过基于`libclang`的工具抽取出来自动生成的，同样的还有`runtime`文件夹下所有的`generated_h`和`generated_cpp`文件，这些是自动生成的`c++`代码。这些都是依赖于`action_parser`，在`release1.1`里面我提供了最新的`action parser`，使用方式见`readme`，下面是我在`powershell`里面的一个使用样例。
 

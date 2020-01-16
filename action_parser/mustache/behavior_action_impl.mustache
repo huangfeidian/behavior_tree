@@ -11,7 +11,7 @@ void {{class_full_name}}::init_action_funcs_map()
 
 {{#behavior_actions}}
 {{^is_inherited}}
-std::optional<bool> {{class_full_name}}::{{func_name}}_action_wrapper(const behavior_tree::common::any_vector& data)
+std::optional<bool> {{class_full_name}}::{{func_name}}_action_wrapper(const spiritsaway::serialize::any_vector& data)
 {
 	{{#func_args}}
     std::remove_const_t<std::remove_reference_t<{{{arg_type}}}>> tmp_{{arg_name}};
@@ -21,7 +21,7 @@ std::optional<bool> {{class_full_name}}::{{func_name}}_action_wrapper(const beha
         notify_stop();
         return std::nullopt;
     }
-    if(!behavior_tree::common::any_decode(data[{{arg_idx}}], tmp_{{arg_name}}))
+    if(!spiritsaway::serialize::any_decode(data[{{arg_idx}}], tmp_{{arg_name}}))
     {
         _logger->warn("fail to call action {{func_name}} when convert arg {{arg_idx}} with value {} to type {{{arg_type}}} fail", std::string(behavior_tree::common::encode(data[{{arg_idx}}])));
         notify_stop();
