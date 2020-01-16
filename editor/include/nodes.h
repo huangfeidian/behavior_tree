@@ -3,7 +3,7 @@
 #include <behavior/nodes.h>
 #include <behavior/btree.h>
 
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 
 	class struct_items;

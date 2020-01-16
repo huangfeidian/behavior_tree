@@ -10,12 +10,12 @@
 #include <filesystem>
 #include <config_dialog.h>
 
-using namespace behavior_tree::editor;
+using namespace spiritsaway::behavior_tree::editor;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , _logger(behavior_tree::common::logger_mgr::instance().create_logger("btree"))
+    , _logger(spiritsaway::behavior_tree::common::logger_mgr::instance().create_logger("btree"))
 {
     ui->setupUi(this);
 	init_widgets();

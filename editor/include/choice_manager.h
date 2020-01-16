@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 
 	class choice_manager

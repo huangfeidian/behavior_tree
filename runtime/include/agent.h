@@ -14,7 +14,7 @@
 #include <behavior/nodes.h>
 
 
-namespace behavior_tree::runtime
+namespace spiritsaway::behavior_tree::runtime
 {
 	class node;
 	class agent;

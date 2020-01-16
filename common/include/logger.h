@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-namespace behavior_tree::common
+namespace spiritsaway::behavior_tree::common
 {
     class logger_mgr
     {

@@ -47,7 +47,7 @@ bool numeric_cal_##op_name(const any_value_type& other_value)	\
 	return false;												\
 }																\
 
-namespace behavior_tree::common
+namespace spiritsaway::behavior_tree::common
 {
 	using any_int_type = std::int64_t;
     using any_key_type = std::variant<std::string, any_int_type>;

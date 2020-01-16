@@ -8,7 +8,7 @@
 #include "nodes.h"
 
 
-namespace behavior_tree::common
+namespace spiritsaway::behavior_tree::common
 {
 
 	class btree_desc

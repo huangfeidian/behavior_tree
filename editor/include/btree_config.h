@@ -4,7 +4,7 @@
 #include <logger.h>
 using json = nlohmann::json;
 namespace fs = std::filesystem;
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 
 	struct action_arg

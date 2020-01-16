@@ -20,7 +20,7 @@
 
 using json = nlohmann::json;
 
-namespace behavior_tree::common
+namespace spiritsaway::behavior_tree::common
 {
 
 	static bool decode(const json& data, float& dst)

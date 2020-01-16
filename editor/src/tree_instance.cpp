@@ -20,7 +20,7 @@
 #include <editable_item.h>
 
 
-using namespace behavior_tree::editor;
+using namespace spiritsaway::behavior_tree::editor;
 
 tree_view::tree_view(QGraphicsScene* in_scene, tree_instance* in_graph_mgr)
 	: QGraphicsView(in_scene)

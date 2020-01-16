@@ -22,12 +22,12 @@ QT_END_NAMESPACE
 
 using json = nlohmann::json;
 
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 	class tree_instance;
 	class node;
 }
-namespace bt_editor = behavior_tree::editor;
+namespace bt_editor = spiritsaway::behavior_tree::editor;
 
 
 class MainWindow : public QMainWindow

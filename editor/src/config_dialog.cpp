@@ -47,7 +47,7 @@ void config_dialog::confirm_handler()
 			QString::fromStdString(notify_info));
 		return;
 	}
-	auto& cur_btree_config = behavior_tree::editor::btree_config::instance();
+	auto& cur_btree_config = spiritsaway::behavior_tree::editor::btree_config::instance();
 	cur_btree_config.base_agent_name = ui->agent_name_edit->text().toStdString();
 	cur_btree_config.action_path = ui->action_label->text().toStdString();
 	cur_btree_config.btree_folder = ui->btree_label->text().toStdString();

@@ -16,7 +16,7 @@
 
 
 using json = nlohmann::json;
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 
 	enum class editable_item_type

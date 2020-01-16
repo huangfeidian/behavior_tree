@@ -3,7 +3,7 @@
 #include <serialize/any_value.h>
 #include <logger.h>
 
-namespace behavior_tree::common
+namespace spiritsaway::behavior_tree::common
 {
 	enum class node_type
 	{

@@ -2,9 +2,9 @@
 #include <nodes.h>
 #include <logger.h>
 
-namespace behavior_tree::runtime
+namespace spiritsaway::behavior_tree::runtime
 {
-	using namespace behavior_tree::common;
+	using namespace spiritsaway::behavior_tree::common;
 	agent::agent():
 		_logger(std::move(logger_mgr::instance().create_logger("btree")))
 	{

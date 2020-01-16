@@ -6,7 +6,7 @@
 #include <QGraphicsItem>
 #include "nodes.h"
 
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 
 	class tree_instance;

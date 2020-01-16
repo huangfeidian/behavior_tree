@@ -10,7 +10,7 @@
 #include <qboxlayout.h>
 #include <optional>
 
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 
 	class line_dialog : public QDialog

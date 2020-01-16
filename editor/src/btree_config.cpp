@@ -7,7 +7,7 @@
 #include <btree_config.h>
 #include <choice_manager.h>
 
-using namespace behavior_tree::editor;
+using namespace spiritsaway::behavior_tree::editor;
 
 bool btree_config::load_actions( const std::shared_ptr<spdlog::logger>& _logger)
 {

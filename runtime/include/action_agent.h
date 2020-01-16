@@ -2,7 +2,7 @@
 #include "agent.h"
 #include "nodes.h"
 #include <meta.h>
-namespace behavior_tree::runtime
+namespace spiritsaway::behavior_tree::runtime
 {
 	class action_agent : public agent
 	{

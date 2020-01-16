@@ -2,7 +2,7 @@
 #include <qmessagebox.h>
 #include "editable_dialog.h"
 
-using namespace behavior_tree::editor;
+using namespace spiritsaway::behavior_tree::editor;
 
 editable_dialog::editable_dialog(QWidget* _in_parent, node* _in_edit_node)
 	:QDialog(_in_parent)

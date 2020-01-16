@@ -7,9 +7,9 @@
 #include <logger.h>
 
 #include "agent.h"
-namespace behavior_tree::runtime
+namespace spiritsaway::behavior_tree::runtime
 {
-	using namespace behavior_tree::common;
+	using namespace spiritsaway::behavior_tree::common;
 	class node;
 
 	class node_closure

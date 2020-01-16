@@ -4,7 +4,7 @@
 #include "node_graph.h"
 
 
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 	const static int node_unit = 10;
 	class node;

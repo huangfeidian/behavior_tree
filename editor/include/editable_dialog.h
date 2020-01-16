@@ -12,7 +12,7 @@
 
 #include "editable_item.h"
 
-namespace behavior_tree::editor
+namespace spiritsaway::behavior_tree::editor
 {
 
 	class editable_dialog :public QDialog

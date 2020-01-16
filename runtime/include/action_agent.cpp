@@ -1,7 +1,7 @@
 ﻿#include <action_agent.h>
-namespace behavior_tree::runtime
+namespace spiritsaway::behavior_tree::runtime
 {
-	using namespace behavior_tree::common;
+	using namespace spiritsaway::behavior_tree::common;
 	bool action_agent::has_key(const std::string& bb_key)
 	{
 		auto cur_iter = _blackboard.find(bb_key);

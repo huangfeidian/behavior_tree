@@ -19,7 +19,7 @@
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-namespace behavior_tree::common
+namespace spiritsaway::behavior_tree::common
 {
 	template <typename T1, typename T2 = void>
 	struct encodable : std::false_type

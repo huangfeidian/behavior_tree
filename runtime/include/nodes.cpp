@@ -1,7 +1,7 @@
 ﻿#include <nodes.h>
-namespace behavior_tree::runtime
+namespace spiritsaway::behavior_tree::runtime
 {
-	using namespace behavior_tree::common;
+	using namespace spiritsaway::behavior_tree::common;
 	std::mt19937 node::_generator;
 	std::uniform_int_distribution<std::uint32_t> node::_distribution;
 	void node::set_result(bool new_result)

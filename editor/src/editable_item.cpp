@@ -19,11 +19,11 @@
 #include <editable_item.h>
 #include <search_select_dialog.h>
 #include <magic_enum.hpp>
-using namespace behavior_tree::editor;
+using namespace spiritsaway::behavior_tree::editor;
 
 
 
-QColor behavior_tree::editor::color_from_uint(std::uint32_t rgba)
+QColor spiritsaway::behavior_tree::editor::color_from_uint(std::uint32_t rgba)
 {
 	std::uint8_t a = rgba & 0xff;
 	rgba >>= 8;
