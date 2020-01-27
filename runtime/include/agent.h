@@ -25,6 +25,9 @@ namespace spiritsaway::behavior_tree::runtime
 		plain_value = 0,
 		blackboard_value,
 	};
+
+	using spiritsaway::behavior_tree::common::agent_cmd;
+	using spiritsaway::behavior_tree::common::agent_cmd_detail;
 	class agent
 	{
 	public:
@@ -39,19 +42,32 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		void notify_stop();
 		bool load_btree(const std::string& btree_name);
+		spiritsaway::serialize::any_value_type blackboard_get(const std::string& key) const;
+		void blackboard_set(const std::string& key, const spiritsaway::serialize::any_value_type& value);
+		bool blackboard_has(const std::string& key) const;
 	public:
 		bool during_poll = false;
 		std::vector<node*> _fronts; // node ready to run
 		std::vector<node*> pre_fronts;
 		std::vector<event_type> _events; // events to be handled;
-		spiritsaway::serialize::any_str_map _blackboard;
 		//std::unordered_map<const node*, timer_handler> _timers;
 		virtual std::optional<bool> agent_action(const std::string& action_name, 
 			const spiritsaway::serialize::any_vector& action_args);
 		void reset();
 		bool set_debug(bool debug_flag);
 		bool enable(bool enable_flag);
+		void dump_cmd_queue(std::deque<agent_cmd_detail>& dest);
+		void push_cmd_queue(agent_cmd _cmd, const spiritsaway::serialize::any_vector& _param);
+		bool during_debug() const;
+		std::uint32_t get_tree_idx(const std::string& tree_name);
 	protected:
+		
+
+	protected:
+		
+		spiritsaway::serialize::any_str_map _blackboard;
+		std::vector<std::string> _tree_indexes;
+		std::deque<agent_cmd_detail> _cmd_queue;
 		node* current_poll_node = nullptr;
 		bool reset_flag = false;
 		node* cur_root_node = nullptr;

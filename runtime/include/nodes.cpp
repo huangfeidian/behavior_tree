@@ -13,6 +13,10 @@ namespace spiritsaway::behavior_tree::runtime
 			return;
 		}
 		result = new_result;
+		if (_agent->_debug_on)
+		{
+			_agent->push_cmd_queue(agent_cmd::node_enter, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx, new_result});
+		}
 		_state = node_state::dead;
 		backtrace();
 	}
@@ -73,11 +77,19 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			one_child->_state = node_state::init;
 		}
+		if (_agent->_debug_on)
+		{
+			_agent->push_cmd_queue(agent_cmd::node_enter, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx });
+		}
 	}
 	void node::leave()
 	{
 		_closure.reset();
 		_state = node_state::leaving;
+		if (_agent->_debug_on)
+		{
+			_agent->push_cmd_queue(agent_cmd::node_leave, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx });
+		}
 	}
 	void node::on_revisit()
 	{
@@ -462,19 +474,24 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			if (one_arg.first == action_arg_type::blackboard)
 			{
-				auto cur_bb_iter = _agent->_blackboard.find(std::get<std::string>(one_arg.second));
-				if (cur_bb_iter == _agent->_blackboard.end())
+				
+				if (!_agent->blackboard_has(std::get<std::string>(one_arg.second)))
 				{
 					_logger->warn("{} invalid blackboard arg name {}", debug_info(), std::get<std::string>(one_arg.second));
 					_agent->notify_stop();
 					return;
 				}
-				real_action_args.push_back(cur_bb_iter->second);
+				auto cur_bb_value = _agent->blackboard_get(std::get<std::string>(one_arg.second));
+				real_action_args.push_back(cur_bb_value);
 			}
 			else
 			{
 				real_action_args.push_back(one_arg.second);
 			}
+		}
+		if (_agent->during_debug())
+		{
+			_agent->push_cmd_queue(agent_cmd::node_action, { _agent->get_tree_idx(tree_name()), node_config.idx, action_name, real_action_args });
 		}
 		std::optional<bool> action_result = _agent->agent_action(action_name, real_action_args);
 		if (_agent->during_poll)

@@ -148,4 +148,15 @@ namespace spiritsaway::behavior_tree::common
 			btree_respository = cur_directory;
 		}
 	};
+	enum class agent_cmd
+	{
+		snapshot = 0,//tree_indexes node_idxes blackboard
+		push_tree,// new tree name, tree_idx
+		node_enter,//tree_idx, node_idx
+		node_leave,//tree_idx, node_idx
+		node_action,//tree_idx, node_idx, action_name, action_args
+		bb_set,//key, value
+		bb_clear,
+	};
+	using agent_cmd_detail = std::tuple<std::uint64_t, agent_cmd, spiritsaway::serialize::any_vector>;
 }
