@@ -833,7 +833,7 @@ QWidget* list_items::to_editor(modify_callback_func_t modify_callback)
 			std::size_t idx = _children.size();
 			auto temp_editor = new_child_item->to_editor(modify_callback);
 			child_widgets->push_back(temp_editor);
-
+			modify_callback(shared_from_this());
 		});
 	auto button_delete = new QPushButton("-");
 	button_delete->setStyleSheet("border:1px groove gray;border-radius:5px;padding:1px 2px;");
@@ -846,7 +846,7 @@ QWidget* list_items::to_editor(modify_callback_func_t modify_callback)
 			pop();
 			child_widgets->back()->setParent(nullptr);
 			child_widgets->pop_back();
-
+			modify_callback(shared_from_this());
 		});
 	auto hlayout = new QHBoxLayout();
 	hlayout->addWidget(button_add);
@@ -859,6 +859,7 @@ std::shared_ptr<editable_item> list_items::push()
 {
 	auto temp_item = editable_item::from_json(item_base);
 	temp_item->parent = this;
+	_children.push_back(temp_item);
 	return temp_item;
 }
 void list_items::pop()
@@ -928,12 +929,12 @@ std::shared_ptr<list_items> list_items::from_json(const json& data)
 	{
 		return {};
 	}
-	auto child_item = editable_item::from_json(base_iter->object());
+	auto child_item = editable_item::from_json(*base_iter);
 	if (!child_item)
 	{
 		return {};
 	}
-	auto temp = std::make_shared<list_items>(name_iter->get<std::string>(), base_iter->object());
+	auto temp = std::make_shared<list_items>(name_iter->get<std::string>(), *base_iter);
 	for (const auto& one_item : value_iter->get<json::array_t>())
 	{
 		auto cur_child = temp->push();

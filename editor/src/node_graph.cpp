@@ -206,6 +206,11 @@ void node_graph::set_un_collapsed()
 void node_graph::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 	_manager->parent->_logger->debug("node {} mouseDoubleClickEvent", _model->_idx);
+	if (!_model->_show_widget->empty())
+	{
+		set_editable();
+		return;
+	}
 	if (_model->can_collapse())
 	{
 		if (_model->_is_collapsed)
@@ -218,11 +223,7 @@ void node_graph::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 		}
 		return;
 	}
-	if (!_model->_show_widget->empty())
-	{
-		set_editable();
-		return;
-	}
+	
 	
 }
 void node_graph::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

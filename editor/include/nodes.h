@@ -112,6 +112,7 @@ namespace spiritsaway::behavior_tree::editor
 		node* clone_self(node* _in_parent) const;
 		virtual bool check_edit();
 		void refresh_editable_items();
+		bool check_item_edit_refresh(std::shared_ptr<editable_item> change_item);
 	};
 	class if_else_node : public node
 	{

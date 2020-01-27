@@ -62,6 +62,8 @@ static std::pair<std::uint32_t, std::uint32_t> node_type_child_limit(node_type i
 	case node_type::always_true:
 		return { 1,1 };
 		break;
+	case node_type::probility:
+		return { 1, 20 };
 	default:
 		return { 0, 0 };
 		break;
@@ -416,6 +418,11 @@ bool probility_node::check_edit()
 	weights = temp_weights;
 	return true;
 
+}
+bool probility_node::check_item_edit_refresh(std::shared_ptr<editable_item> change_item)
+{
+	check_edit();
+	return true;
 }
 std::string probility_node::check_valid() const
 {
