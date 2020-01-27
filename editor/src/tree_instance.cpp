@@ -358,6 +358,7 @@ void tree_instance::paste_handler(node* cur_node)
 		return;
 	}
 	std::deque<node*> all_nodes;
+	cur_node = cur_node->clone_recursive(nullptr);
 	all_nodes.push_back(cur_node);
 	while (!all_nodes.empty())
 	{

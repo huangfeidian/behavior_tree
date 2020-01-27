@@ -94,6 +94,7 @@ std::string node::check_valid() const
 }
 bool node::check_item_edit_refresh(std::shared_ptr<editable_item> change_item)
 {
+	check_edit();
 	return false;
 }
 void node::add_child(node* in_child)
@@ -833,11 +834,8 @@ std::string action_node::display_text() const
 
 bool action_node::check_item_edit_refresh(std::shared_ptr<editable_item> change_item)
 {
-	if (_show_widget->find("action") == change_item)
-	{
-		return check_edit();
-	}
-	return false;
+	auto result = _show_widget->find("action") == change_item;
+	return check_edit() && result;
 }
 
 node* node::from_desc(const spiritsaway::behavior_tree::common::node_desc& data, std::shared_ptr<spdlog::logger> _logger)
