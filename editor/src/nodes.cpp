@@ -406,13 +406,18 @@ bool probility_node::check_edit()
 	std::vector<std::uint32_t> temp_weights;
 	for (const auto & one_value : cur_value)
 	{
-		if (!one_value.is_number_unsigned())
+		if (!one_value.is_number_integer())
 		{
 			return false;
 		}
 		else
 		{
-			temp_weights.push_back(one_value.get<std::uint32_t>());
+			auto temp_weight = one_value.get<std::int32_t>();
+			if (temp_weight < 0)
+			{
+				return false;
+			}
+			temp_weights.push_back(temp_weight);
 		}
 	}
 	weights = temp_weights;
@@ -426,7 +431,7 @@ bool probility_node::check_item_edit_refresh(std::shared_ptr<editable_item> chan
 }
 std::string probility_node::check_valid() const
 {
-	if (weights.size() != _children.size() || weights.size() == 0)
+	if (weights.size() != _children.size())
 	{
 		return fmt::format("probility node {} has {} children while weight size {}", _idx, _children.size(),
 			weights.size());

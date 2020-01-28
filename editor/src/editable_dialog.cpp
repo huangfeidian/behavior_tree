@@ -17,20 +17,44 @@ void editable_dialog::run()
 	exec();
 
 }
-void editable_dialog::refresh()
-{
-	auto pre_layout = layout();
-	if (pre_layout)
+void editable_dialog::remove_pre_layout(QLayout* pre_layout)
+{	
+	//std::cout << "editable_dialog begin remove_pre_layout" << pre_layout << std::endl;
+	if (!pre_layout)
 	{
-		QLayoutItem* item;
-		while ((item = pre_layout->takeAt(0)) != 0)
+		return;
+	}
+	QLayoutItem* item;
+	while (auto item = pre_layout->takeAt(0)) 
+	{
+		auto temp_widget = item->widget();
+		if (temp_widget)
 		{
+			temp_widget->hide();
 			pre_layout->removeItem(item);
+			//delete temp_widget;
+		}
+		auto temp_layout = item->layout();
+		remove_pre_layout(temp_layout);
+		if (temp_layout)
+		{
+			delete temp_layout;
+		}
+		if (!temp_widget && !temp_layout)
+		{
 			delete item;
 		}
+	}
+	//std::cout << "editable_dialog end remove_pre_layout" << pre_layout<< std::endl;
+}
+void editable_dialog::refresh()
+{
+	//std::cout << "editable_dialog begin refresh" << std::endl;
+	auto pre_layout = layout();
+	remove_pre_layout(pre_layout);
+	if (pre_layout)
+	{
 		delete pre_layout;
-		std::cout << "refresh to dump pre layout" << std::endl;
-		
 	}
 	QHBoxLayout *cur_layout = new QHBoxLayout;
 	cur_layout->addWidget(edit_node->_show_widget->to_editor([&](std::shared_ptr<editable_item> change_item)
@@ -39,6 +63,8 @@ void editable_dialog::refresh()
 		return;
 	}));
 	setLayout(cur_layout);
+	//std::cout << "editable_dialog end refresh" << std::endl;
+
 }
 void editable_dialog::check_edit(std::shared_ptr<editable_item> change_item)
 {

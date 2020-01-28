@@ -26,6 +26,7 @@ namespace spiritsaway::behavior_tree::editor
 		void refresh();
 		void check_edit(std::shared_ptr<editable_item> change_item);
 	private:
+		void remove_pre_layout(QLayout* pre_layout);
 		node* edit_node;
 	};
 }

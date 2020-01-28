@@ -21,7 +21,8 @@
         {
             "children": [
                 2,
-                3
+                3,
+                4
             ],
             "comment": "",
             "editor": {
@@ -35,9 +36,9 @@
         },
         {
             "children": [
-                4,
                 5,
-                6
+                6,
+                7
             ],
             "comment": "",
             "editor": {
@@ -70,6 +71,24 @@
             "type": "action"
         },
         {
+            "children": [
+                8
+            ],
+            "comment": "",
+            "editor": {
+                "color": 4294967295,
+                "is_collapsed": false
+            },
+            "extra": {
+                "prob": [
+                    1
+                ]
+            },
+            "idx": 4,
+            "parent": 1,
+            "type": "probility"
+        },
+        {
             "children": [],
             "comment": "",
             "editor": {
@@ -85,15 +104,15 @@
                 ],
                 "action_name": "has_key"
             },
-            "idx": 4,
+            "idx": 5,
             "parent": 2,
             "type": "action"
         },
         {
             "children": [
-                7,
-                8,
-                9
+                9,
+                10,
+                11
             ],
             "comment": "",
             "editor": {
@@ -101,7 +120,7 @@
                 "is_collapsed": false
             },
             "extra": {},
-            "idx": 5,
+            "idx": 6,
             "parent": 2,
             "type": "sequence"
         },
@@ -125,8 +144,28 @@
                 ],
                 "action_name": "set_key_value"
             },
-            "idx": 6,
+            "idx": 7,
             "parent": 2,
+            "type": "action"
+        },
+        {
+            "children": [],
+            "comment": "",
+            "editor": {
+                "color": 2139062271,
+                "is_collapsed": false
+            },
+            "extra": {
+                "action_args": [
+                    {
+                        "arg_type": "plain",
+                        "arg_value": "counter"
+                    }
+                ],
+                "action_name": "has_key"
+            },
+            "idx": 8,
+            "parent": 4,
             "type": "action"
         },
         {
@@ -149,8 +188,8 @@
                 ],
                 "action_name": "number_add"
             },
-            "idx": 7,
-            "parent": 5,
+            "idx": 9,
+            "parent": 6,
             "type": "action"
         },
         {
@@ -173,8 +212,8 @@
                 ],
                 "action_name": "number_add"
             },
-            "idx": 8,
-            "parent": 5,
+            "idx": 10,
+            "parent": 6,
             "type": "action"
         },
         {
@@ -197,10 +236,10 @@
                 ],
                 "action_name": "number_add"
             },
-            "idx": 9,
-            "parent": 5,
+            "idx": 11,
+            "parent": 6,
             "type": "action"
         }
     ],
-    "signature": "27-01-2020 21:12:21"
+    "signature": "28-01-2020 14:41:14"
 }
