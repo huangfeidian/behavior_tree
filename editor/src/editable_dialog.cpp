@@ -32,6 +32,7 @@ void editable_dialog::remove_pre_layout(QLayout* pre_layout)
 		{
 			temp_widget->hide();
 			pre_layout->removeItem(item);
+			widgets_to_delete.push_back(temp_widget);
 			//delete temp_widget;
 		}
 		auto temp_layout = item->layout();
@@ -51,6 +52,14 @@ void editable_dialog::refresh()
 {
 	//std::cout << "editable_dialog begin refresh" << std::endl;
 	auto pre_layout = layout();
+	if (!widgets_to_delete.empty())
+	{
+		for (auto one_widget : widgets_to_delete)
+		{
+			delete one_widget;
+		}
+		widgets_to_delete.clear();
+	}
 	remove_pre_layout(pre_layout);
 	if (pre_layout)
 	{

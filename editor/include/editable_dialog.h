@@ -28,5 +28,6 @@ namespace spiritsaway::behavior_tree::editor
 	private:
 		void remove_pre_layout(QLayout* pre_layout);
 		node* edit_node;
+		std::vector<QWidget*> widgets_to_delete;
 	};
 }
