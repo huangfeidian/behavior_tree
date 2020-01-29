@@ -24,12 +24,14 @@ void editable_dialog::remove_pre_layout(QLayout* pre_layout)
 	{
 		return;
 	}
-	QLayoutItem* item;
 	while (auto item = pre_layout->takeAt(0)) 
 	{
 		auto temp_widget = item->widget();
 		if (temp_widget)
 		{
+			// 这里不能直接删除这个widget 因为这个函数是在widget的slot里调用的
+			// 调用期间不能删除发出signal的widget 否则会导致crash
+			// 所以先暂时放在widgets_to_delete里 延迟销毁
 			temp_widget->hide();
 			pre_layout->removeItem(item);
 			widgets_to_delete.push_back(temp_widget);
