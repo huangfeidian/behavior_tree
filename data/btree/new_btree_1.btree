@@ -159,10 +159,14 @@
                 "action_args": [
                     {
                         "arg_type": "plain",
-                        "arg_value": "counter"
+                        "arg_value": "hehe"
+                    },
+                    {
+                        "arg_type": "plain",
+                        "arg_value": 1
                     }
                 ],
-                "action_name": "has_key"
+                "action_name": "has_key_value"
             },
             "idx": 8,
             "parent": 4,
@@ -241,5 +245,5 @@
             "type": "action"
         }
     ],
-    "signature": "28-01-2020 15:01:07"
+    "signature": "29-01-2020 12:52:47"
 }

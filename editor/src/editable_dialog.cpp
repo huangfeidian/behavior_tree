@@ -94,6 +94,14 @@ void editable_dialog::closeEvent(QCloseEvent* event)
 	}
 	else
 	{
+		if (!widgets_to_delete.empty())
+		{
+			for (auto one_widget : widgets_to_delete)
+			{
+				delete one_widget;
+			}
+			widgets_to_delete.clear();
+		}
 		event->accept();
 	}
 
