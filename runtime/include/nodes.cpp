@@ -15,7 +15,7 @@ namespace spiritsaway::behavior_tree::runtime
 		result = new_result;
 		if (_agent->_debug_on)
 		{
-			_agent->push_cmd_queue(agent_cmd::node_enter, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx, new_result});
+			_agent->push_cmd_queue(agent_cmd::node_leave, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx, new_result});
 		}
 		_state = node_state::dead;
 		backtrace();
@@ -262,7 +262,7 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	bool probility::init_prob_parameters()
 	{
-		auto prob_iter = node_config.extra.find("weight");
+		auto prob_iter = node_config.extra.find("prob");
 		if (prob_iter == node_config.extra.end())
 		{
 			return false;

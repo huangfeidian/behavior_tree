@@ -56,7 +56,7 @@ namespace spiritsaway::behavior_tree::runtime
 		void reset();
 		bool set_debug(bool debug_flag);
 		bool enable(bool enable_flag);
-		void dump_cmd_queue(std::deque<agent_cmd_detail>& dest);
+		std::vector<agent_cmd_detail> dump_cmd_queue();
 		void push_cmd_queue(agent_cmd _cmd, const spiritsaway::serialize::any_vector& _param);
 		bool during_debug() const;
 		std::uint32_t get_tree_idx(const std::string& tree_name);
@@ -65,9 +65,7 @@ namespace spiritsaway::behavior_tree::runtime
 
 	protected:
 		
-		spiritsaway::serialize::any_str_map _blackboard;
-		std::vector<std::string> _tree_indexes;
-		std::deque<agent_cmd_detail> _cmd_queue;
+
 		node* current_poll_node = nullptr;
 		bool reset_flag = false;
 		node* cur_root_node = nullptr;
@@ -76,6 +74,9 @@ namespace spiritsaway::behavior_tree::runtime
 		bool _debug_on = false;
 		std::unordered_set<timer_handler, timer_handler_hash> _timers;
 	private:
+		spiritsaway::serialize::any_str_map _blackboard;
+		std::vector<std::string> _tree_indexes;
+		std::deque<agent_cmd_detail> _cmd_queue;
 		bool poll_fronts(); // run the nodes
 		bool poll_events(); // handle the events;
 		void poll_node(node* cur_node);// run one node

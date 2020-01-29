@@ -4,75 +4,80 @@ namespace spiritsaway::behavior_tree::runtime
 	using namespace spiritsaway::behavior_tree::common;
 	bool action_agent::has_key(const std::string& bb_key)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		return cur_iter != _blackboard.end();
+		return blackboard_has(bb_key);
 	}
 	bool action_agent::set_key_value(const std::string& bb_key, 
 		const any_value_type& new_value)
 	{
-		_blackboard[bb_key] = new_value;
+		blackboard_set(bb_key, new_value);
 		return true;
 	}
 	bool action_agent::has_key_value(const std::string& bb_key, 
 		const any_value_type& value)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		if (cur_iter == _blackboard.end())
-		{
-			return false;
-		}
-
-		const auto& cur_value = cur_iter->second;
-		return cur_value == value;
+		
+		return blackboard_get(bb_key) == value;
 
 	}
 	bool action_agent::number_add(const std::string& bb_key, 
 		const any_value_type& value)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		if (cur_iter == _blackboard.end())
+		auto pre_value = blackboard_get(bb_key);
+		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto& cur_value = cur_iter->second;
-		auto result = cur_value.numeric_cal_add(value);
-		return !!result;
+		auto result = pre_value.numeric_cal_add(value);
+		if (result)
+		{
+			blackboard_set(bb_key, pre_value);
+		}
+		return result;
 	}
 	bool action_agent::number_dec(const std::string& bb_key, 
 		const any_value_type& value)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		if (cur_iter == _blackboard.end())
+		auto pre_value = blackboard_get(bb_key);
+		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto& cur_value = cur_iter->second;
-		auto result = cur_value.numeric_cal_dec(value);
-		return !!result;
+		auto result = pre_value.numeric_cal_dec(value);
+		if (result)
+		{
+			blackboard_set(bb_key, pre_value);
+		}
+		return result;
 	}
 	bool action_agent::number_multiply(const std::string& bb_key, 
 		const any_value_type& value)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		if (cur_iter == _blackboard.end())
+		auto pre_value = blackboard_get(bb_key);
+		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto& cur_value = cur_iter->second;
-		auto result = cur_value.numeric_cal_multiply(value);
-		return !!result;
+		auto result = pre_value.numeric_cal_multiply(value);
+		if (result)
+		{
+			blackboard_set(bb_key, pre_value);
+		}
+		return result;
 	}
 	bool action_agent::number_div(const std::string& bb_key, 
 		const any_value_type& value)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		if (cur_iter == _blackboard.end())
+		auto pre_value = blackboard_get(bb_key);
+		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto& cur_value = cur_iter->second;
-		auto result = cur_value.numeric_cal_div(value);
-		return !!result;
+		auto result = pre_value.numeric_cal_div(value);
+		if (result)
+		{
+			blackboard_set(bb_key, pre_value);
+		}
+		return result;
 	}
 
 
@@ -80,24 +85,15 @@ namespace spiritsaway::behavior_tree::runtime
 	bool action_agent::number_larger_than(const std::string& bb_key, 
 		const any_value_type& other_value)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		if (cur_iter == _blackboard.end())
-		{
-			return false;
-		}
-		auto& cur_value = cur_iter->second;
+
+		auto cur_value = blackboard_get(bb_key);
 		auto result = cur_value.numeric_larger_than(other_value);
 		return result.value_or(false);
 	}
 	bool action_agent::number_less_than(const std::string& bb_key, 
 		const any_value_type& other_value)
 	{
-		auto cur_iter = _blackboard.find(bb_key);
-		if (cur_iter == _blackboard.end())
-		{
-			return false;
-		}
-		auto& cur_value = cur_iter->second;
+		auto cur_value = blackboard_get(bb_key);
 		auto result = cur_value.numeric_less_than(other_value);
 		return result.value_or(false);
 	}
@@ -142,45 +138,22 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	bool action_agent::log_bb(const std::string& log_level, const std::string& bb_key)
 	{
-		auto bb_iter = _blackboard.find(bb_key);
-		if(bb_iter == _blackboard.end())
+		auto log_info = blackboard_get(bb_key);
+		if (log_level == "debug")
 		{
-			if (log_level == "debug")
-			{
-				_logger->debug("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
-			}
-			else if (log_level == "info")
-			{
-				_logger->info("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
-			}
-			else if (log_level == "warn")
-			{
-				_logger->warn("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
-			}
-			else if (log_level == "error")
-			{
-				_logger->error("agent {} log_bb with no exist key {}", reinterpret_cast<std::size_t>(this), bb_key);
-			}
+			_logger->debug("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
 		}
-		else
+		else if (log_level == "info")
 		{
-			auto log_info = bb_iter->second;
-			if (log_level == "debug")
-			{
-				_logger->debug("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
-			}
-			else if (log_level == "info")
-			{
-				_logger->info("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
-			}
-			else if (log_level == "warn")
-			{
-				_logger->warn("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
-			}
-			else if (log_level == "error")
-			{
-				_logger->error("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
-			}
+			_logger->info("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+		}
+		else if (log_level == "warn")
+		{
+			_logger->warn("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+		}
+		else if (log_level == "error")
+		{
+			_logger->error("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
 		}
 		
 		return true;

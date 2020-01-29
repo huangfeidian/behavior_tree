@@ -22,14 +22,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		during_poll = true;
 		std::size_t poll_count = 0;
-		if (_debug_on)
-		{
-			_logger->info("agent {}: poll begins with fronts:", reinterpret_cast<intptr_t>(this));
-			for (const auto one_node : _fronts)
-			{
-				_logger->info("{}", one_node->debug_info());
-			}
-		}
+		
 		while (true)
 		{
 			if (!_enabled)
@@ -55,10 +48,7 @@ namespace spiritsaway::behavior_tree::runtime
 			poll_count += 1;
 		}
 		during_poll = false;
-		if (_debug_on)
-		{
-			_logger->info("agent {}: poll end", reinterpret_cast<intptr_t>(this));
-		}
+		
 		if (poll_count)
 		{
 			return true;
@@ -119,10 +109,6 @@ namespace spiritsaway::behavior_tree::runtime
 	void agent::poll_node(node* cur_node)
 	{
 		current_poll_node = cur_node;
-		if (_debug_on)
-		{
-			_logger->info("poll node {}", cur_node->debug_info());
-		}
 		cur_node->visit();
 		current_poll_node = nullptr;
 	}
@@ -145,13 +131,11 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			one_timer.cancel();
 		}
-		_logger->warn("fronts begin ");
 		for (const auto i : pre_fronts)
 		{
 			_logger->warn(i->debug_info());
 			i->interrupt();
 		}
-		_logger->warn("fronts ends ");
 		_fronts.clear();
 		_events.clear();
 		current_poll_node = nullptr;
@@ -192,13 +176,16 @@ namespace spiritsaway::behavior_tree::runtime
 		_cmd_queue.emplace_back(microsecondsUTC, _cmd, _param);
 
 	}
-	void agent::dump_cmd_queue(std::deque<agent_cmd_detail>& dest)
+	std::vector<agent_cmd_detail> agent::dump_cmd_queue()
 	{
+		auto cur_queue_size = _cmd_queue.size();
+		std::vector<agent_cmd_detail> result;
 		while (!_cmd_queue.empty())
 		{
-			dest.push_back(_cmd_queue.front());
+			result.push_back(_cmd_queue.front());
 			_cmd_queue.pop_front();
 		}
+		return result;
 	}
 	std::uint32_t agent::get_tree_idx(const std::string& tree_name)
 	{
@@ -225,7 +212,9 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return false;
 		}
-		if (_debug_on)
+
+		_debug_on = debug_flag;
+		if (!debug_flag)
 		{
 			_cmd_queue.clear();
 		}
