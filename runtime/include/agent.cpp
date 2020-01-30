@@ -172,7 +172,7 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	void agent::push_cmd_queue(agent_cmd _cmd, const any_vector& _param)
 	{
-		auto microsecondsUTC = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		auto microsecondsUTC = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		_cmd_queue.emplace_back(microsecondsUTC, _cmd, _param);
 
 	}
