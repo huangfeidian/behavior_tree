@@ -37,6 +37,10 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 
-add_executable(behavior_tree_runtime ${COMMON_SRC} ${SRC_FILES})
+add_library(behavior_tree_runtime ${COMMON_SRC} ${SRC_FILES})
 
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container)
+
+add_executable(debug_test ${PROJECT_SOURCE_DIR}/test/debug_test.cpp)
+target_link_libraries(debug_test behavior_tree_runtime)
+
