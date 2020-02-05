@@ -840,7 +840,29 @@ std::string action_node::display_text() const
 	}
 	else
 	{
-		return fmt::format("{}:{}:{}", magic_enum::enum_name(_type), _idx, action_name);
+		std::string show_text = action_name + "(";
+		for (const auto& one_arg : action_args)
+		{
+
+			if (one_arg.first == action_arg_type::blackboard)
+			{
+				show_text += "B(" + one_arg.second.dump() + "),";
+			}
+			else
+			{
+				show_text += one_arg.second.dump() + ",";
+			}
+		}
+		if (show_text.back() == ',')
+		{
+			show_text.back() = ')';
+		}
+		else
+		{
+			show_text += ")";
+		}
+		
+		return fmt::format("{}:{}:{}", magic_enum::enum_name(_type), _idx, show_text);
 	}
 }
 

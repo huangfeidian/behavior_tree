@@ -24,3 +24,4 @@
 */build64/
 */.vs/
 */.vscode/
+.vscode/settings.json
