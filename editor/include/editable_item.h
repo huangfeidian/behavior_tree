@@ -48,7 +48,10 @@ namespace spiritsaway::behavior_tree::editor
 		virtual json to_json() const;
 		virtual std::string input_valid() const;
 		virtual bool assign(const json& other);
+		// to a writable widget
 		virtual QWidget* to_editor( modify_callback_func_t modify_callback) = 0;
+		// to a readonly widget
+		virtual QWidget* to_dialog() = 0;
 		std::string _name;
 		std::string _comment;
 		json _value;
@@ -67,6 +70,7 @@ namespace spiritsaway::behavior_tree::editor
 		friend class editable_item;
 		text_browser(const std::string& _in_name, const std::string& _in_value);
 		QWidget* to_editor( modify_callback_func_t modify_callback);
+		QWidget* to_dialog();
 		static std::shared_ptr<text_browser> from_json(const json& data);
 	};
 	class line_text : public editable_item
@@ -76,7 +80,7 @@ namespace spiritsaway::behavior_tree::editor
 		using editable_item::editable_item;
 		json to_json() const;
 		QWidget* to_editor( modify_callback_func_t modify_callback);
-
+		QWidget* to_dialog();
 		std::string input_valid() const;
 		bool assign(const json& other);
 		virtual json str_convert(const QString& input) const = 0;
@@ -122,7 +126,7 @@ namespace spiritsaway::behavior_tree::editor
 	public:
 		bool_item(const std::string& _in_name, bool _in_value);
 		QWidget* to_editor( modify_callback_func_t modify_callback);
-
+		QWidget* to_dialog();
 		std::string input_valid() const;
 		bool assign(const json& other);
 		static std::shared_ptr<bool_item> from_json(const json& data);
@@ -134,6 +138,7 @@ namespace spiritsaway::behavior_tree::editor
 		friend class editable_item;
 	public:
 		QWidget* to_editor( modify_callback_func_t modify_callback);
+		QWidget* to_dialog();
 		color_item(const std::string& _in_name, std::uint32_t _in_rgba);
 		std::string input_valid() const;
 		bool assign(const json& other);
@@ -188,6 +193,7 @@ namespace spiritsaway::behavior_tree::editor
 		QWidget* to_editor( modify_callback_func_t modify_callback);
 		QWidget* to_editor_short(modify_callback_func_t modify_callback);
 		QWidget* to_editor_long(modify_callback_func_t modify_callback);
+		QWidget* to_dialog();
 		json to_json() const;
 		static std::shared_ptr<choice_item> from_json(const json& data);
 		const std::vector<std::string> _choices;
@@ -207,6 +213,7 @@ namespace spiritsaway::behavior_tree::editor
 		std::shared_ptr<editable_item> push();
 		void pop();
 		QWidget* to_editor( modify_callback_func_t modify_callback);
+		QWidget* to_dialog();
 		static std::shared_ptr<list_items> from_json(const json& data);
 		json to_json() const;
 		std::string input_valid() const;
@@ -224,6 +231,7 @@ namespace spiritsaway::behavior_tree::editor
 		json to_json() const;
 		static std::shared_ptr<struct_items> from_json(const json& data);
 		QWidget* to_editor( modify_callback_func_t modify_callback);
+		QWidget* to_dialog();
 		std::string input_valid() const;
 	};
 }

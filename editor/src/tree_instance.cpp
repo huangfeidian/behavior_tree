@@ -64,6 +64,10 @@ void tree_instance::set_dirty()
 }
 void tree_instance::set_modfied(bool flag)
 {
+	if (parent->is_read_only)
+	{
+		return;
+	}
 	modified = flag;
 	window->setWindowModified(flag);
 }
@@ -464,6 +468,10 @@ node* tree_instance::find_node_by_idx(std::uint32_t idx)
 }
 std::string tree_instance::save_handler()
 {
+	if (parent->is_read_only)
+	{
+		return "";
+	}
 	parent->_logger->debug("tree_instance {} save_handler",
 		file_name.string());
 	if (!modified)

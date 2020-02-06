@@ -83,6 +83,10 @@ json editable_item::to_json() const
 
 QWidget* text_browser::to_editor(modify_callback_func_t modify_callback)
 {
+	return to_dialog();
+}
+QWidget* text_browser::to_dialog()
+{
 	auto cur_window = new QLabel();
 	auto cur_qstr = QString::fromStdString(_value.get<std::string>());
 	cur_window->setText(cur_qstr);
@@ -157,6 +161,13 @@ QWidget* line_text::to_editor(modify_callback_func_t modify_callback)
 			assign(str_convert(new_qstr));
 			modify_callback(shared_from_this());
 		});
+	return cur_window;
+}
+QWidget* line_text::to_dialog()
+{
+	auto cur_window = new QLabel();
+	auto cur_qstr = QString::fromStdString(_value.dump());
+	cur_window->setText(cur_qstr);
 	return cur_window;
 }
 
@@ -298,6 +309,13 @@ QWidget* bool_item::to_editor(modify_callback_func_t modify_callback)
 		});
 	return cur_window;
 }
+QWidget* bool_item::to_dialog()
+{
+	auto cur_window = new QCheckBox();
+	cur_window->setChecked(_value.get<bool>());
+	return cur_window;
+
+}
 
 
 color_item::color_item(const std::string& _in_name, std::uint32_t _in_value)
@@ -384,6 +402,18 @@ QWidget* color_item::to_editor(modify_callback_func_t modify_callback)
 	return cur_dialog;
 }
 
+QWidget* color_item::to_dialog()
+{
+	auto cur_dialog = new QDialog();
+	auto cur_frame = new QFrame();
+	cur_frame->setFrameShape(QFrame::Box);
+	cur_frame->setAutoFillBackground(true);
+	cur_frame->setPalette(QPalette(color_from_uint(_value.get<std::uint32_t>())));
+	auto cur_layout = new QHBoxLayout();
+	cur_layout->addWidget(cur_frame);
+	cur_dialog->setLayout(cur_layout);
+	return cur_dialog;
+}
 int_item::int_item(const std::string& _in_name, std::int32_t _in_value)
 	:line_text(editable_item_type::_int, false, _in_name)
 {
@@ -737,6 +767,18 @@ QWidget* choice_item::to_editor(modify_callback_func_t modify_callback)
 		return to_editor_short(modify_callback);
 	}
 }
+QWidget* choice_item::to_dialog()
+{
+	auto cur_dialog = new QDialog();
+	auto cur_text = new QPushButton(QString::fromStdString(_value.get<std::string>()));
+	QPalette pa;
+	pa.setColor(QPalette::WindowText, Qt::red);
+	cur_text->setPalette(pa);
+	auto cur_layout = new QHBoxLayout();
+	cur_layout->addWidget(cur_text);
+	cur_dialog->setLayout(cur_layout);
+	return cur_dialog;
+}
 QWidget* choice_item::to_editor_short(modify_callback_func_t modify_callback)
 {
 	auto cur_combo = new QComboBox();
@@ -852,6 +894,24 @@ QWidget* list_items::to_editor(modify_callback_func_t modify_callback)
 	hlayout->addWidget(button_add);
 	hlayout->addWidget(button_delete);
 	cur_layout->addLayout(hlayout);
+	cur_box->setTitle(QString::fromStdString(display_name()));
+	return cur_box;
+}
+QWidget* list_items::to_dialog()
+{
+	auto cur_box = new QGroupBox();
+	auto size_policy = cur_box->sizePolicy();
+	size_policy.setVerticalPolicy(QSizePolicy::Maximum);
+	cur_box->setSizePolicy(size_policy);
+	auto cur_layout = new QVBoxLayout();
+	cur_box->setLayout(cur_layout);
+	std::shared_ptr<std::vector<QWidget*>> child_widgets = std::make_shared< std::vector<QWidget*>>();
+	for (std::size_t i = 0; i < _children.size(); i++)
+	{
+		auto cur_child_widget = _children[i]->to_dialog();
+		child_widgets->push_back(cur_child_widget);
+		cur_layout->addWidget(cur_child_widget);
+	}
 	cur_box->setTitle(QString::fromStdString(display_name()));
 	return cur_box;
 }
@@ -1025,6 +1085,32 @@ QWidget* struct_items::to_editor(modify_callback_func_t modify_callback)
 		//	_name,  one_child->_name , one_child->to_json().dump(), 
 		//	one_child->_is_container)<< std::endl;
 		auto cur_widget = one_child->to_editor(modify_callback);
+		if (one_child->_is_container)
+		{
+			cur_layout->addRow(cur_widget);
+		}
+		else
+		{
+			cur_layout->addRow(QString::fromStdString(one_child->_name), cur_widget);
+		}
+	}
+	cur_box->setTitle(QString::fromStdString(display_name()));
+	return cur_box;
+}
+QWidget* struct_items::to_dialog()
+{
+	auto cur_box = new QGroupBox();
+	auto size_policy = cur_box->sizePolicy();
+	size_policy.setVerticalPolicy(QSizePolicy::Maximum);
+
+	cur_box->setSizePolicy(size_policy);
+	auto cur_layout = new QFormLayout();
+	cur_box->setLayout(cur_layout);
+	cur_layout->setLabelAlignment(Qt::AlignRight);
+	cur_layout->setSpacing(10);
+	for (auto& one_child : _children)
+	{
+		auto cur_widget = one_child->to_dialog();
 		if (one_child->_is_container)
 		{
 			cur_layout->addRow(cur_widget);

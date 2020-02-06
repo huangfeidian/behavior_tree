@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	std::string icon_path = "./resources/window_icon.png";
 	auto the_icon = QIcon(QString::fromStdString(icon_path));
 	a.setWindowIcon(the_icon);
-    MainWindow w;
+    MainWindow w(true);
     w.show();
     return a.exec();
 }

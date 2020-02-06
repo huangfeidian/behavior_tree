@@ -8,6 +8,7 @@
 #include "nodes.h"
 #include "line_dialog.h"
 #include "editable_dialog.h"
+#include "info_dialog.h"
 
 using namespace spiritsaway::behavior_tree::editor;
 
@@ -289,6 +290,12 @@ void node_graph::set_comment()
 }
 void node_graph::set_editable()
 {
+	if (_manager->parent->is_read_only)
+	{
+		auto cur_info_dialog = new info_dialog(_manager->window, _model);
+		cur_info_dialog->run();
+		return;
+	}
 	auto edit_dialog = new editable_dialog(_manager->window, _model);
 	edit_dialog->run();
 	_manager->set_dirty();

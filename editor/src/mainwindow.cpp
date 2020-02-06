@@ -12,10 +12,11 @@
 
 using namespace spiritsaway::behavior_tree::editor;
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(bool in_is_read_only, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , _logger(spiritsaway::behavior_tree::common::logger_mgr::instance().create_logger("btree"))
+	,is_read_only(in_is_read_only)
 {
     ui->setupUi(this);
 	init_widgets();
@@ -132,17 +133,24 @@ void MainWindow::sub_window_activated(QMdiSubWindow* cur_win)
 void MainWindow::init_actions()
 {
 	// file menu
-	connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(action_new_handler()));
+	
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(action_open_handler()));
+	
+	connect(ui->actionClose, SIGNAL(triggered()), this, SLOT(action_close_handler()));
+	connect(ui->actionCloseAll, SIGNAL(triggered()), this, SLOT(action_close_all_handler()));
+
+	// node menu
+	if (is_read_only)
+	{
+		return;
+	}
+	connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(action_new_handler()));
 	connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(action_save_handler()));
 	connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(action_save_as_handler()));
 	connect(ui->actionSaveAll, SIGNAL(triggered()), this, SLOT(action_save_all_handler()));
 	connect(ui->actionExport, SIGNAL(triggered()), this, SLOT(action_export_handler()));
 	connect(ui->actionExportAll, SIGNAL(triggered()), this, SLOT(action_export_all_handler()));
-	connect(ui->actionClose, SIGNAL(triggered()), this, SLOT(action_close_handler()));
-	connect(ui->actionCloseAll, SIGNAL(triggered()), this, SLOT(action_close_all_handler()));
 
-	// node menu
 	connect(ui->actionInsert, SIGNAL(triggered()), this, SLOT(action_insert_handler()));
 	connect(ui->actionDelete, SIGNAL(triggered()), this, SLOT(action_del_handler()));
 	connect(ui->actionMoveUp, SIGNAL(triggered()), this, SLOT(action_move_up_handler()));

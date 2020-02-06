@@ -35,12 +35,12 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = nullptr);
+	MainWindow(bool is_read_only, QWidget *parent = nullptr);
 	~MainWindow();
 
 public:
 	Ui::MainWindow *ui;
-
+	const bool is_read_only;
 	QMdiArea* cur_mdi = nullptr;
 	std::size_t seq = 0;
 	std::vector<bt_editor::tree_instance*> _instances;
