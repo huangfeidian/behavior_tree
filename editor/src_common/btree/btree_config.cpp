@@ -4,7 +4,7 @@
 
 #include <spdlog/fmt/fmt.h>
 
-#include <btree_config.h>
+#include <btree/btree_config.h>
 #include <choice_manager.h>
 
 using namespace spiritsaway::behavior_tree::editor;

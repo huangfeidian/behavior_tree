@@ -1,7 +1,7 @@
 ﻿
 #include <qlistview.h>
 
-#include <search_select_dialog.h>
+#include <dialogs/search_select_dialog.h>
 #include <ui_search_select_dialog.h>
 
 

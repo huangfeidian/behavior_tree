@@ -7,7 +7,7 @@
 #include <optional>
 
 #include <QStringListModel>
-#include <btree_config.h>
+#include <btree/btree_config.h>
 
 namespace Ui
 {

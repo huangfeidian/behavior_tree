@@ -6,10 +6,10 @@
 
 #include <behavior/nodes.h>
 
-#include <nodes.h>
-#include <editable_item.h>
+#include <btree/nodes.h>
+#include <dialogs/editable_item.h>
 #include <choice_manager.h>
-#include <btree_config.h>
+#include <btree/btree_config.h>
 #include <any_container/decode.h>
 
 using namespace spiritsaway::behavior_tree::editor;

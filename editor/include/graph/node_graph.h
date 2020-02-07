@@ -4,7 +4,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include "nodes.h"
+#include <btree/nodes.h>
 
 namespace spiritsaway::behavior_tree::editor
 {

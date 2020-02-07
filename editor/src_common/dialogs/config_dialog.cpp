@@ -1,4 +1,4 @@
-﻿#include <config_dialog.h>
+﻿#include <dialogs/config_dialog.h>
 #include <ui_config_dialog.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>

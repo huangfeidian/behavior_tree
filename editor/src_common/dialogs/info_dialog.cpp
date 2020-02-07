@@ -1,6 +1,7 @@
 ﻿#include <qboxlayout.h>
 #include <qmessagebox.h>
-#include "info_dialog.h"
+#include <dialogs/info_dialog.h>
+#include <dialogs/editable_item.h>
 
 using namespace spiritsaway::behavior_tree::editor;
 

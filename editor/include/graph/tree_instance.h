@@ -1,7 +1,8 @@
 ﻿#pragma once
-#include "mainwindow.h"
 #include <filesystem>
+
 #include "node_graph.h"
+#include "multi_instance_window.h"
 
 
 namespace spiritsaway::behavior_tree::editor
@@ -25,13 +26,14 @@ namespace spiritsaway::behavior_tree::editor
 	public:
 		static const std::uint32_t area_width = 1080;
 		static const std::uint32_t area_height = 1920;
-		tree_instance(const std::string& in_file_path, node* in_root, MainWindow* _in_main);
+		tree_instance(const std::string& in_file_path, node* in_root, multi_instance_window* _in_main);
 		QGraphicsScene* _scene;
 		tree_view* _view;
 		node* _root;
 		node_graph* _graph_root = nullptr;
 		node* selected_node = nullptr;
-		MainWindow* parent;
+		std::shared_ptr<spdlog::logger> _logger;
+		multi_instance_window* parent;
 		QMdiSubWindow* window;
 		std::filesystem::path file_path;
 		std::filesystem::path file_name;

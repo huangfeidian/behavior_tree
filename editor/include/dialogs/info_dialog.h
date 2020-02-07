@@ -8,9 +8,8 @@
 
 #include <QStringListModel>
 
-#include "nodes.h"
+#include <btree/nodes.h>
 
-#include "editable_item.h"
 
 namespace spiritsaway::behavior_tree::editor
 {

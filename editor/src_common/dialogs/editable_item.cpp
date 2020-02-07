@@ -16,8 +16,8 @@
 #include <iostream>
 
 #include <choice_manager.h>
-#include <editable_item.h>
-#include <search_select_dialog.h>
+#include <dialogs/editable_item.h>
+#include <dialogs/search_select_dialog.h>
 #include <magic_enum.hpp>
 using namespace spiritsaway::behavior_tree::editor;
 

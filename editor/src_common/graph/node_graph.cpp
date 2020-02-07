@@ -2,13 +2,14 @@
 
 #include <qcolordialog.h>
 #include <qgraphicssceneevent.h>
-#include "editable_item.h"
-#include "node_graph.h"
-#include "tree_instance.h"
-#include "nodes.h"
-#include "line_dialog.h"
-#include "editable_dialog.h"
-#include "info_dialog.h"
+#include <graph/node_graph.h>
+#include <graph/tree_instance.h>
+#include <btree/nodes.h>
+#include <dialogs/info_dialog.h>
+#include <dialogs/editable_dialog.h>
+#include <dialogs/line_dialog.h>
+
+
 
 using namespace spiritsaway::behavior_tree::editor;
 
@@ -192,7 +193,7 @@ void node_graph::draw_bound(QColor color)
 	auto height = boundingRect().height();
 	auto left_down = pos() + QPointF(width * -0.5, height * -0.5);
 	_manager->_scene->addRect(left_down.x(), left_down.y(), width, height, p, b);
-	_manager->parent->_logger->info("bound is {}, {}, {}, {}", left_down.x(), left_down.y(), width, height);
+	_manager->_logger->info("bound is {}, {}, {}, {}", left_down.x(), left_down.y(), width, height);
 }
 void node_graph::set_collapsed()
 {
@@ -206,7 +207,7 @@ void node_graph::set_un_collapsed()
 }
 void node_graph::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-	_manager->parent->_logger->debug("node {} mouseDoubleClickEvent", _model->_idx);
+	_manager->_logger->debug("node {} mouseDoubleClickEvent", _model->_idx);
 	if (!_model->_show_widget->empty())
 	{
 		set_editable();
@@ -290,7 +291,7 @@ void node_graph::set_comment()
 }
 void node_graph::set_editable()
 {
-	if (_manager->parent->is_read_only)
+	if (_manager->parent->is_read_only())
 	{
 		auto cur_info_dialog = new info_dialog(_manager->window, _model);
 		cur_info_dialog->run();

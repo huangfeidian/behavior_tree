@@ -13,11 +13,11 @@
 //#include <QSvgGenerator>
 //#include <QSvgRenderer>
 
-#include <tree_instance.h>
-#include <nodes.h>
-#include <search_select_dialog.h>
+#include <graph/tree_instance.h>
+#include <btree/nodes.h>
+#include <dialogs/search_select_dialog.h>
 #include <choice_manager.h>
-#include <editable_item.h>
+#include <dialogs/editable_item.h>
 
 
 using namespace spiritsaway::behavior_tree::editor;
@@ -64,7 +64,7 @@ void tree_instance::set_dirty()
 }
 void tree_instance::set_modfied(bool flag)
 {
-	if (parent->is_read_only)
+	if (parent->is_read_only())
 	{
 		return;
 	}
@@ -135,17 +135,18 @@ void tree_instance::focus_on(const node_graph* cur_node)
 
 
 tree_instance::tree_instance(const std::string& in_file_path, 
-	node* in_root, MainWindow* _in_main)
+	node* in_root, multi_instance_window* _in_main)
 	: _root(in_root)
 	, parent(_in_main)
 	, _scene(new QGraphicsScene())
 	, _view(new tree_view(_scene, this))
 	, file_path(in_file_path)
 	, file_name(file_path.filename())
+	, _logger(_in_main->logger())
 {
 	_view->setAttribute(Qt::WA_DeleteOnClose);
 	set_scene_background();
-	window = parent->cur_mdi->addSubWindow(_view);
+	window = parent->add_sub_window(_view);
 	window->setWindowTitle(QString::fromStdString(file_name.string()));
 	std::deque<const node*>	all_nodes;
 	all_nodes.push_back(in_root);
@@ -169,7 +170,7 @@ std::uint32_t tree_instance::next_node_seq()
 
 void tree_instance::display_tree()
 {
-	parent->_logger->debug("tree_instance display tree {}", file_name.string());
+	_logger->debug("tree_instance display tree {}", file_name.string());
 	update_title();
 	_graph_root = _build_tree_impl(_root);
 	auto layouter = tree_layouter(_graph_root);
@@ -180,7 +181,7 @@ void tree_instance::display_tree()
 
 node_graph* tree_instance::_build_tree_impl(node* cur_node)
 {
-	//parent->_logger->debug("tree_instance _build_tree_impl  {} for node {}", 
+	//_logger->debug("tree_instance _build_tree_impl  {} for node {}", 
 	//	file_name.string(), cur_node->_idx);
 	auto new_node =  new node_graph(cur_node, this, QColor(Qt::black));
 	if (!cur_node->_is_collapsed)
@@ -199,7 +200,7 @@ void tree_instance::_display_links_impl(node_graph* cur_node)
 {
 	
 	auto s_pos = cur_node->right_pos();
-	//parent->_logger->debug("tree_instance _display_links_impl  {} for node {} at x:{} y:{}",
+	//_logger->debug("tree_instance _display_links_impl  {} for node {} at x:{} y:{}",
 	//	file_name.string(), cur_node->_model->_idx, s_pos.x(), s_pos.y());
 	QPen pen;
 	pen.setColor(Qt::black);
@@ -232,7 +233,7 @@ void tree_instance::_display_links_impl(node_graph* cur_node)
 
 void tree_instance::refresh()
 {
-	parent->_logger->debug("tree_instance {} refresh ", file_name.string());
+	_logger->debug("tree_instance {} refresh ", file_name.string());
 	set_dirty();
 	clean_select_effect();
 	_scene->clear();
@@ -249,7 +250,7 @@ void tree_instance::refresh()
 }
 void tree_instance::cancel_select()
 {
-	//parent->_logger->debug("tree_instance {} cancel_select ", file_name.string());
+	//_logger->debug("tree_instance {} cancel_select ", file_name.string());
 	if (!selected_node)
 	{
 		return;
@@ -259,7 +260,7 @@ void tree_instance::cancel_select()
 }
 void tree_instance::select_changed(node_graph* cur_node, int state)
 {
-	//parent->_logger->debug("tree_instance {} select_changed cur_node {} state {} ",
+	//_logger->debug("tree_instance {} select_changed cur_node {} state {} ",
 	//	file_name.string(), cur_node->_model->_idx, state);
 	if (state == 0)
 	{
@@ -274,17 +275,17 @@ void tree_instance::select_changed(node_graph* cur_node, int state)
 }
 void tree_instance::show_select_effect()
 {
-	parent->_logger->debug("tree_instance {} show_select_effect node {} ",
+	_logger->debug("tree_instance {} show_select_effect node {} ",
 		file_name.string(), selected_node->_idx);
 }
 void tree_instance::clean_select_effect()
 {
-	parent->_logger->debug("tree_instance {} clean_select_effect ",
+	_logger->debug("tree_instance {} clean_select_effect ",
 		file_name.string());
 }
 void tree_instance::insert_handler()
 {
-	parent->_logger->debug("tree_instance {} insert_handler begin",
+	_logger->debug("tree_instance {} insert_handler begin",
 		file_name.string());
 	if (!selected_node)
 	{
@@ -308,21 +309,21 @@ void tree_instance::insert_handler()
 		return;
 	}
 	auto new_idx = next_node_seq();
-	parent->_logger->debug("tree_instance {} get  new node idx {}",
+	_logger->debug("tree_instance {} get  new node idx {}",
 		file_name.string(), new_idx);
 	auto cur_new_node = node::default_node_by_type(cur_type, new_idx, selected_node);
 	cur_new_node->refresh_editable_items();
-	parent->_logger->debug("tree_instance {} create new node",
+	_logger->debug("tree_instance {} create new node",
 		file_name.string());
 	selected_node->add_child(cur_new_node);
 	refresh();
-	parent->_logger->debug("tree_instance {} insert_handler finish",
+	_logger->debug("tree_instance {} insert_handler finish",
 		file_name.string());
 
 }
 void tree_instance::delete_handler()
 {
-	parent->_logger->debug("tree_instance {} delete_handler ",
+	_logger->debug("tree_instance {} delete_handler ",
 		file_name.string());
 	if (!selected_node)
 	{
@@ -339,7 +340,7 @@ void tree_instance::delete_handler()
 }
 node* tree_instance::copy_handler()
 {
-	parent->_logger->debug("tree_instance {} copy_handler ",
+	_logger->debug("tree_instance {} copy_handler ",
 		file_name.string());
 	if (!selected_node)
 	{
@@ -374,14 +375,14 @@ void tree_instance::paste_handler(node* cur_node)
 			all_nodes.push_back(one_child);
 		}
 	}
-	parent->_logger->debug("tree_instance {} paste_handler parent {} child {}",
+	_logger->debug("tree_instance {} paste_handler parent {} child {}",
 		file_name.string(), selected_node->_idx, cur_node->_idx);
 	selected_node->add_child(cur_node);
 	refresh();
 }
 node* tree_instance::cut_handler()
 {
-	parent->_logger->debug("tree_instance {} cut_handler ",
+	_logger->debug("tree_instance {} cut_handler ",
 		file_name.string());
 	if (!selected_node)
 	{
@@ -399,7 +400,7 @@ node* tree_instance::cut_handler()
 }
 void tree_instance::move_handler(bool is_up)
 {
-	parent->_logger->debug("tree_instance {} move_handler is_up {} ",
+	_logger->debug("tree_instance {} move_handler is_up {} ",
 		file_name.string(), is_up);
 	if (!selected_node)
 	{
@@ -410,7 +411,7 @@ void tree_instance::move_handler(bool is_up)
 }
 node_graph* tree_instance::find_graph_by_node(node_graph* cur_graph, node* cur_node) const
 {
-	//parent->_logger->debug("tree_instance {} find_graph_by_node cur_graph {} cur_node {} ",
+	//_logger->debug("tree_instance {} find_graph_by_node cur_graph {} cur_node {} ",
 	//	file_name.string(), cur_graph->_model->_idx, cur_node->_idx);
 	if (cur_graph->_model == cur_node)
 	{
@@ -428,7 +429,7 @@ node_graph* tree_instance::find_graph_by_node(node_graph* cur_graph, node* cur_n
 }
 node_graph* tree_instance::find_graph_by_idx(node_graph* cur_graph, std::uint32_t cur_idx) const
 {
-	parent->_logger->debug("tree_instance {} find_graph_by_idx cur_graph {} cur_node {} ",
+	_logger->debug("tree_instance {} find_graph_by_idx cur_graph {} cur_node {} ",
 		file_name.string(), cur_graph->_model->_idx, cur_idx);
 	if (cur_graph->_model->_idx == cur_idx)
 	{
@@ -468,11 +469,11 @@ node* tree_instance::find_node_by_idx(std::uint32_t idx)
 }
 std::string tree_instance::save_handler()
 {
-	if (parent->is_read_only)
+	if (parent->is_read_only())
 	{
 		return "";
 	}
-	parent->_logger->debug("tree_instance {} save_handler",
+	_logger->debug("tree_instance {} save_handler",
 		file_name.string());
 	if (!modified)
 	{
@@ -538,13 +539,13 @@ std::string tree_instance::save_handler()
 
 void tree_instance::deactivate_handler()
 {
-	parent->_logger->debug("tree_instance {} deactivate_handler ",
+	_logger->debug("tree_instance {} deactivate_handler ",
 		file_name.string());
 	return;
 }
 void tree_instance::activate_handler()
 {
-	parent->_logger->debug("tree_instance {} activate_handler ",
+	_logger->debug("tree_instance {} activate_handler ",
 		file_name.string());
 	return;
 }

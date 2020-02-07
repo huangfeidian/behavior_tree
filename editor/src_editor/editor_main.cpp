@@ -1,7 +1,8 @@
-﻿#include <mainwindow.h>
-
+﻿
 #include <QApplication>
 #include <qstylefactory.h>
+
+#include "editor_main_window.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,7 +11,8 @@ int main(int argc, char *argv[])
 	std::string icon_path = "./resources/window_icon.png";
 	auto the_icon = QIcon(QString::fromStdString(icon_path));
 	a.setWindowIcon(the_icon);
-    MainWindow w(true);
+	editor_main_window w = editor_main_window();
+	w.showMaximized();
     w.show();
     return a.exec();
 }
