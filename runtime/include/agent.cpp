@@ -21,6 +21,7 @@ namespace spiritsaway::behavior_tree::runtime
 			return false;
 		}
 		during_poll = true;
+		push_cmd_queue(agent_cmd::poll_begin, {});
 		std::size_t poll_count = 0;
 		
 		while (true)

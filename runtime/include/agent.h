@@ -13,7 +13,6 @@
 
 #include <behavior/nodes.h>
 
-
 namespace spiritsaway::behavior_tree::runtime
 {
 	class node;
