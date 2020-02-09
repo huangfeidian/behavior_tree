@@ -190,7 +190,8 @@ bool log_tree_model::appendRow(const std::vector<QVariant>& row_data, const QMod
 	{
 		return false;
 	}
-	parentItem->insertChildren(parentItem->childCount(), 1, rootItem->columnCount());
+	insertRows(parentItem->childCount(), 1, parent);
+
 	auto cur_row = parentItem->child(parentItem->childCount() - 1);
 	for (std::size_t column = 0; column < row_data.size() && column < rootItem->columnCount(); column++)
 	{

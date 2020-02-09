@@ -28,8 +28,9 @@ namespace
 		return std::string(buffer) + std::to_string(milliseconds_since_epoch % 1000) + "ms";
 	}
 }
-log_dialog::log_dialog(QWidget* parent)
+log_dialog::log_dialog(std::deque<behavior_tree::common::agent_cmd_detail > & in_cmd_queue, QWidget* parent)
 	:QDialog(parent)
+	, cmd_queue(in_cmd_queue)
 {
 	_view = new QTreeView(this);
 	auto vboxLayout = new QVBoxLayout(this);
@@ -52,6 +53,9 @@ log_dialog::log_dialog(QWidget* parent)
 	_view->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(_view, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(on_view_context_menu(const QPoint &)));
 	vboxLayout->setSizeConstraint(QLayout::SetMaximumSize);
+	_poll_timer = new QTimer(this);
+	_poll_timer->start(1000);
+	connect(_poll_timer, &QTimer::timeout, this, &log_dialog::timer_poll);
 
 }
 bool log_dialog::push_cmd(behavior_tree::common::agent_cmd_detail one_cmd)
@@ -240,4 +244,17 @@ void log_dialog::show_blackboard(std::uint32_t top_row, std::uint32_t secondary_
 	}
 	auto cur_search_dialog = new search_select_dialog(cur_blackboard_str, this);
 	auto result = cur_search_dialog->run();
+}
+void log_dialog::timer_poll()
+{
+	std::size_t max_per_round = 5;
+	while (max_per_round && !cmd_queue.empty())
+	{
+		auto cur_cmd = cmd_queue.front();
+		cmd_queue.pop_front();
+		push_cmd(cur_cmd);
+		max_per_round--;
+	}
+	std::cout << "timer poll with max_per_round " << 5 - max_per_round<< std::endl;
+
 }
