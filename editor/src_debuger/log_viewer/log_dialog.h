@@ -15,7 +15,7 @@
 namespace spiritsaway::behavior_tree::editor
 {
 	using namespace spiritsaway;
-	class log_dialog: public QDialog
+	class log_dialog: public QWidget
 	{
 		Q_OBJECT
 	public:

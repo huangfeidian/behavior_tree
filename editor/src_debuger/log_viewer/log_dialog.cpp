@@ -29,7 +29,7 @@ namespace
 	}
 }
 log_dialog::log_dialog(std::deque<behavior_tree::common::agent_cmd_detail > & in_cmd_queue, QWidget* parent)
-	:QDialog(parent)
+	:QWidget(parent)
 	, cmd_queue(in_cmd_queue)
 {
 	_view = new QTreeView(this);
