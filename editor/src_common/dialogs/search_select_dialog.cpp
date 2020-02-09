@@ -17,7 +17,7 @@ search_select_dialog::search_select_dialog(const std::vector<choice_type>& _in_c
 	{
 		q_choices.push_back(QString::fromStdString(one_choice));
 	}
-	q_choices.sort(Qt::CaseInsensitive);
+	//q_choices.sort(Qt::CaseInsensitive);
 	list_model = new QStringListModel();
 	list_model->setStringList(q_choices);
 	ui->listView->setModel(list_model);
