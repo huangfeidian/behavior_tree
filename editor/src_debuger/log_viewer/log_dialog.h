@@ -18,12 +18,15 @@ namespace spiritsaway::behavior_tree::editor
 	public:
 		log_dialog(QWidget* parent = nullptr);
 		bool push_cmd(behavior_tree::common::agent_cmd_detail one_cmd);
-		void contextMenuEvent(QContextMenuEvent *); //ÓÒ¼ü²Ëµ¥Ïî±à¼­
 
 	public slots:
 		void search_content();
 		void goto_graph();
 		void show_trees();
+		void on_view_double_clicked(QModelIndex cur_idx);
+		void on_view_context_menu(const QPoint& pos);
+		void show_fronts(std::uint32_t top_row, std::uint32_t secondary_row);
+		void show_blackboard(std::uint32_t top_row, std::uint32_t secondary_row);
 	private:
 		log_tree_model* _model;
 		QTreeView* _view;

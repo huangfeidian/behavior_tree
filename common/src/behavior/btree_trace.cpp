@@ -101,7 +101,7 @@ void btree_state::run_one_cmd(agent_cmd_detail one_cmd)
 }
 void btree_state::run_cmd_to(std::size_t cmd_idx)
 {
-	for (std::size_t i = 0; i < cmd_idx && i < _cmds.size(); i++)
+	for (std::size_t i = 0; i <= cmd_idx && i < _cmds.size(); i++)
 	{
 		run_one_cmd(_cmds[i]);
 	}

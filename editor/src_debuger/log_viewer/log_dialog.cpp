@@ -31,7 +31,7 @@ namespace
 log_dialog::log_dialog(QWidget* parent)
 	:QDialog(parent)
 {
-	auto _view = new QTreeView(this);
+	_view = new QTreeView(this);
 	auto vboxLayout = new QVBoxLayout(this);
 	vboxLayout->setSpacing(0);
 	vboxLayout->setContentsMargins(0, 0, 0, 0);
@@ -49,6 +49,8 @@ log_dialog::log_dialog(QWidget* parent)
 
 	_view->setModel(_model);
 	_view->setColumnWidth(0, 150);
+	_view->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(_view, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(on_view_context_menu(const QPoint &)));
 	vboxLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
 }
@@ -74,17 +76,7 @@ bool log_dialog::push_cmd(behavior_tree::common::agent_cmd_detail one_cmd)
 	}
 	return true;
 }
-void log_dialog::contextMenuEvent(QContextMenuEvent *) //右键菜单项编辑
 
-{
-	QCursor cur = this->cursor();
-	QMenu *menu = new QMenu(this);
-	auto search_action = menu->addAction("search");
-	QObject::connect(search_action, &QAction::triggered, this, &log_dialog::search_content);
-	auto trees_action = menu->addAction("trees");
-	QObject::connect(trees_action, &QAction::triggered, this, &log_dialog::show_trees);
-	menu->exec(cur.pos()); //关联到光标
-}
 void log_dialog::search_content()
 {
 	std::vector<std::string> select_strings;
@@ -164,4 +156,88 @@ void log_dialog::show_trees()
 void log_dialog::goto_graph()
 {
 	return;
+}
+void log_dialog::on_view_double_clicked(QModelIndex cur_idx)
+{
+	std::cout << "double clicked row " << cur_idx.row() << " column " << cur_idx.column() << std::endl;
+}
+void log_dialog::on_view_context_menu(const QPoint& pos)
+{
+	QModelIndex index = _view->indexAt(pos);
+	QMenu *menu = new QMenu(this);
+	auto search_action = menu->addAction("search");
+	QObject::connect(search_action, &QAction::triggered, this, &log_dialog::search_content);
+	auto trees_action = menu->addAction("trees");
+	QObject::connect(trees_action, &QAction::triggered, this, &log_dialog::show_trees);
+
+	if (index.isValid())
+	{
+		//std::cout << "on_view_context_menu " << index.row() << " column " << index.column() << std::endl;
+		auto parent = index.parent();
+		//std::cout << "parent row is " << parent.row() << std::endl;
+		std::uint32_t top_row, secondary_row;
+		if (parent.isValid())
+		{
+			top_row = parent.row();
+			secondary_row = index.row() + 1;
+		}
+		else
+		{
+			top_row = index.row();
+			secondary_row = 0;
+		}
+		//std::cout << "top_row is " << top_row << " secondary_row is " << secondary_row << std::endl;
+		auto bb_action = menu->addAction("blackboard");
+		QObject::connect(bb_action, &QAction::triggered, this, [top_row, secondary_row, this]()
+		{
+			return show_blackboard(top_row, secondary_row);
+		});
+		auto front_action = menu->addAction("fronts");
+		QObject::connect(front_action, &QAction::triggered, this, [top_row, secondary_row, this]()
+		{
+			return show_fronts(top_row, secondary_row);
+		});
+	}
+	menu->exec(_view->viewport()->mapToGlobal(pos));
+	
+}
+void log_dialog::show_fronts(std::uint32_t top_row, std::uint32_t secondary_row)
+{
+	if (top_row >= _btree_history._poll_states.size())
+	{
+		return;
+	}
+	auto cur_state = _btree_history._poll_states[top_row];
+	if (secondary_row >= cur_state._cmds.size())
+	{
+		return;
+	}
+	cur_state.run_cmd_to(secondary_row);
+	std::vector<std::string> cur_fronts_str;
+	for (auto [tree_idx, node_idx] : cur_state.cur_fronts)
+	{
+		cur_fronts_str.push_back(cur_state.cur_tree_indexes[tree_idx] + " " + std::to_string(node_idx));
+	}
+	auto cur_search_dialog = new search_select_dialog(cur_fronts_str, this);
+	auto result = cur_search_dialog->run();
+}
+void log_dialog::show_blackboard(std::uint32_t top_row, std::uint32_t secondary_row)
+{
+	if (top_row >= _btree_history._poll_states.size())
+	{
+		return;
+	}
+	auto cur_state = _btree_history._poll_states[top_row];
+	if (secondary_row >= cur_state._cmds.size())
+	{
+		return;
+	}
+	cur_state.run_cmd_to(secondary_row);
+	std::vector<std::string> cur_blackboard_str;
+	for (const auto & [bb_key, bb_value] : cur_state.cur_blackboard)
+	{
+		cur_blackboard_str.push_back(bb_key + ": " + encode(bb_value).dump());
+	}
+	auto cur_search_dialog = new search_select_dialog(cur_blackboard_str, this);
+	auto result = cur_search_dialog->run();
 }
