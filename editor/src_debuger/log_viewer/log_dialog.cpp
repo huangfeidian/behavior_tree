@@ -126,21 +126,29 @@ void log_dialog::search_content()
 			cur_row_idx -= _btree_history._poll_states[top_row]._cmds.size();
 		}
 	}
+	auto cur_model_idx = get_model_idx(top_row, cur_row_idx, 0);
+	_view->setCurrentIndex(cur_model_idx);
 
 }
-std::string log_dialog::get_comment(std::size_t top_row, std::size_t secondary_row) const
+QModelIndex log_dialog::get_model_idx(std::size_t top_row, std::size_t secondary_row, std::size_t column) const
 {
-	QModelIndex cur_row_comment_idx;
+	QModelIndex cur_row_column_idx;
 	if (secondary_row != 0)
 	{
 		auto cur_row_idx = _model->index(top_row, 0);
-		cur_row_comment_idx = _model->index(secondary_row - 1, 3, cur_row_idx);
-		
+		cur_row_column_idx = _model->index(secondary_row - 1, column, cur_row_idx);
+
 	}
 	else
 	{
-		cur_row_comment_idx = _model->index(top_row, 3);
+		cur_row_column_idx = _model->index(top_row, column);
 	}
+	return cur_row_column_idx;
+}
+std::string log_dialog::get_comment(std::size_t top_row, std::size_t secondary_row) const
+{
+	QModelIndex cur_row_comment_idx = get_model_idx(top_row, secondary_row, 3);
+	
 	auto cur_comment_data = _model->data(cur_row_comment_idx, Qt::DisplayRole);
 	QString comment_str = cur_comment_data.toString();
 	return comment_str.toStdString();

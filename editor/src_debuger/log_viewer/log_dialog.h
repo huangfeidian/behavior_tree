@@ -38,6 +38,7 @@ namespace spiritsaway::behavior_tree::editor
 		QTreeView* _view;
 		behavior_tree::common::btree_trace _btree_history;
 		std::string get_comment(std::size_t top_row, std::size_t secondary_row) const;
+		QModelIndex get_model_idx(std::size_t top_row, std::size_t secondary_row, std::size_t column) const;
 
 
 	};
