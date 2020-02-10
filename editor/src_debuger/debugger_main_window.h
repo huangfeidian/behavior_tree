@@ -31,6 +31,7 @@ namespace spiritsaway::behavior_tree::editor
 		log_dialog* _log_viewer;
 	public:
 		std::deque<behavior_tree::common::agent_cmd_detail> _btree_cmds;
+		bool focus_on(const std::string& tree_name, std::uint32_t node_idx);
 	public:
 		bool is_read_only() const;
 

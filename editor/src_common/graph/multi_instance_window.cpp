@@ -151,7 +151,7 @@ std::optional<std::size_t> multi_instance_window::already_open(const std::string
 	for (std::size_t i = 0; i < _instances.size(); i++)
 	{
 		_logger->info("cur instance path {} input_path {}", _instances[i]->file_name.string(), file_path);
-		if (_instances[i]->file_name == file_path)
+		if (_instances[i]->file_path == file_path)
 		{
 			return i;
 		}

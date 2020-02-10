@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "log_dialog.h"
+#include "../debugger_main_window.h"
 
 using namespace spiritsaway::behavior_tree::editor;
 namespace
@@ -28,9 +29,10 @@ namespace
 		return std::string(buffer) + std::to_string(milliseconds_since_epoch % 1000) + "ms";
 	}
 }
-log_dialog::log_dialog(std::deque<behavior_tree::common::agent_cmd_detail > & in_cmd_queue, QWidget* parent)
+log_dialog::log_dialog(std::deque<behavior_tree::common::agent_cmd_detail > & in_cmd_queue, debugger_main_window* parent)
 	:QWidget(parent)
 	, cmd_queue(in_cmd_queue)
+	, _main_window(parent)
 {
 	_view = new QTreeView(this);
 	auto vboxLayout = new QVBoxLayout(this);
@@ -52,6 +54,7 @@ log_dialog::log_dialog(std::deque<behavior_tree::common::agent_cmd_detail > & in
 	_view->setColumnWidth(0, 150);
 	_view->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(_view, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(on_view_context_menu(const QPoint &)));
+	connect(_view, &QTreeView::doubleClicked, this, &log_dialog::on_view_double_clicked);
 	vboxLayout->setSizeConstraint(QLayout::SetMaximumSize);
 	_poll_timer = new QTimer(this);
 	_poll_timer->start(1000);
@@ -165,13 +168,50 @@ void log_dialog::show_trees()
 	auto cur_search_dialog = new search_select_dialog(trees, this);
 	auto result = cur_search_dialog->run();
 }
-void log_dialog::goto_graph()
+void log_dialog::goto_graph(std::uint32_t top_row, std::uint32_t secondary_row)
 {
-	return;
+	std::cout << "goto graph top row " << top_row << " second row " << secondary_row;
+	const auto& cur_state = _btree_history._poll_states[top_row];
+	const auto& cur_cmd = cur_state._cmds[secondary_row];
+	auto[ts, cmd_type, params] = cur_cmd;
+	switch (cmd_type)
+	{
+	case common::agent_cmd::node_enter:
+	case common::agent_cmd::node_leave:
+	case common::agent_cmd::node_action:
+	{
+		auto cur_tree_idx = std::get<serialize::any_int_type>(params[0]);
+		auto cur_node_idx = std::get<serialize::any_int_type>(params[1]);
+		auto tree_name = _btree_history._latest_state.cur_tree_indexes[cur_tree_idx];
+		_main_window->focus_on(tree_name, cur_node_idx);
+		return;
+	}
+	default:
+		break;
+	}
 }
 void log_dialog::on_view_double_clicked(QModelIndex cur_idx)
 {
 	std::cout << "double clicked row " << cur_idx.row() << " column " << cur_idx.column() << std::endl;
+	if (cur_idx.column() > 0)
+	{
+		return;
+	}
+	auto parent = cur_idx.parent();
+	//std::cout << "parent row is " << parent.row() << std::endl;
+	std::uint32_t top_row, secondary_row;
+	if (parent.isValid())
+	{
+		top_row = parent.row();
+		secondary_row = cur_idx.row() + 1;
+	}
+	else
+	{
+		top_row = cur_idx.row();
+		secondary_row = 0;
+	}
+	goto_graph(top_row, secondary_row);
+
 }
 void log_dialog::on_view_context_menu(const QPoint& pos)
 {

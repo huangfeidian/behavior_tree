@@ -7,7 +7,9 @@
 #include <dialogs/line_dialog.h>
 #include <ui_debugger_main_window.h>
 #include <filesystem>
+
 #include <dialogs/config_dialog.h>
+
 
 #include "debugger_main_window.h"
 #include "log_viewer/log_dialog.h"
@@ -64,4 +66,28 @@ void debugger_main_window::init_actions()
 	connect(ui->actionCloseAll, SIGNAL(triggered()), this, SLOT(action_close_all_handler()));
 	connect(ui->actionGoto, SIGNAL(triggered()), this, SLOT(action_goto_handler()));
 	connect(ui->actionFind, SIGNAL(triggered()), this, SLOT(action_find_handler()));
+}
+bool debugger_main_window::focus_on(const std::string& tree_name, std::uint32_t node_idx)
+{
+	const auto& cur_btree_config = spiritsaway::behavior_tree::editor::btree_config::instance();
+	std::filesystem::path cur_file_path = cur_btree_config.btree_folder / tree_name;
+	std::string cur_file_path_str = cur_file_path.string();
+	auto opt_ins_idx = already_open(cur_file_path_str);
+	tree_instance* cur_ins;
+	if (opt_ins_idx)
+	{
+		cur_ins = _instances[opt_ins_idx.value()];
+		cur_mdi->setActiveSubWindow(cur_ins->window);
+	}
+	else
+	{
+		node* cur_root = node::load(cur_file_path_str, _logger);
+		if (!cur_root)
+		{
+			return false;
+		}
+		cur_ins = new tree_instance(cur_file_path_str, cur_root, this);
+	}
+	cur_ins->focus_on(node_idx);
+	return true;
 }
