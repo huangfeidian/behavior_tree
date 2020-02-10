@@ -60,6 +60,7 @@ namespace spiritsaway::behavior_tree::editor
 	public:
 		node* _model;
 		tree_instance* _manager;
+		QGraphicsItem* selected_effect;
 		std::vector<node_graph*> _children;
 		box_outline* _outline;
 	public:
@@ -79,8 +80,9 @@ namespace spiritsaway::behavior_tree::editor
 		QPointF right_pos() const;
 		void draw_cross(QColor color);
 		void draw_collapse_triangle();
+
 		void draw_bound(QColor _color);
-		
+		void set_outline_color(QColor _color);
 		void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 		void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

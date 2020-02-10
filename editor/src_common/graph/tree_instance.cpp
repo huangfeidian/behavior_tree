@@ -119,6 +119,7 @@ void tree_instance::focus_on(node* cur_node)
 	focus_on(cur_graph_node);
 	cancel_select();
 	selected_node = cur_node;
+	cur_graph_node->set_outline_color(Qt::red);
 	show_select_effect();
 }
 void tree_instance::focus_on(const node_graph* cur_node)
@@ -256,7 +257,9 @@ void tree_instance::cancel_select()
 		return;
 	}
 	auto cur_node = find_graph_by_node(_graph_root, selected_node);
+	auto pre_color = color_from_uint(selected_node->color);
 	cur_node->setSelected(false);
+	cur_node->set_outline_color(pre_color);
 }
 void tree_instance::select_changed(node_graph* cur_node, int state)
 {
@@ -264,12 +267,19 @@ void tree_instance::select_changed(node_graph* cur_node, int state)
 	//	file_name.string(), cur_node->_model->_idx, state);
 	if (state == 0)
 	{
-		selected_node = nullptr;
+		if (selected_node)
+		{
+			auto cur_node = find_graph_by_node(_graph_root, selected_node);
+			cur_node->set_outline_color(color_from_uint(selected_node->color));
+			selected_node = nullptr;
+		}
+		
 		clean_select_effect();
 	}
 	else
 	{
 		selected_node = cur_node->_model;
+		cur_node->set_outline_color(Qt::red);
 		show_select_effect();
 	}
 }

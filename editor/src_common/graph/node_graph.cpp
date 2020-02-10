@@ -192,7 +192,7 @@ void node_graph::draw_bound(QColor color)
 	auto width = get_width();
 	auto height = boundingRect().height();
 	auto left_down = pos() + QPointF(width * -0.5, height * -0.5);
-	_manager->_scene->addRect(left_down.x(), left_down.y(), width, height, p, b);
+	selected_effect = _manager->_scene->addRect(left_down.x(), left_down.y(), width, height, p, b);
 	_manager->_logger->info("bound is {}, {}, {}, {}", left_down.x(), left_down.y(), width, height);
 }
 void node_graph::set_collapsed()
@@ -280,6 +280,12 @@ void node_graph::set_color()
 		_outline->update();
 		_manager->set_dirty();
 	}
+}
+
+void node_graph::set_outline_color(QColor _color)
+{
+	_outline->_color = _color;
+	_outline->update();
 }
 void node_graph::set_comment()
 {
