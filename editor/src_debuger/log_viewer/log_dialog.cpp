@@ -157,6 +157,15 @@ std::string log_dialog::get_comment(std::size_t top_row, std::size_t secondary_r
 	return comment_str.toStdString();
 	
 }
+void log_dialog::highlight_fronts(const behavior_tree::common::btree_state& cur_state)
+{
+	for (auto[tree_idx, node_idx] : cur_state.cur_fronts)
+	{
+		_main_window->focus_on(cur_state.cur_tree_indexes[tree_idx],node_idx);
+	}
+}
+
+
 void log_dialog::show_trees()
 {
 	std::vector<std::string> trees;
@@ -239,52 +248,56 @@ void log_dialog::on_view_context_menu(const QPoint& pos)
 			secondary_row = 0;
 		}
 		//std::cout << "top_row is " << top_row << " secondary_row is " << secondary_row << std::endl;
+		auto cur_state = _btree_history._poll_states[top_row];
+		cur_state.run_cmd_to(secondary_row);
 		auto bb_action = menu->addAction("blackboard");
-		QObject::connect(bb_action, &QAction::triggered, this, [top_row, secondary_row, this]()
+		QObject::connect(bb_action, &QAction::triggered, this, [cur_state, this]()
 		{
-			return show_blackboard(top_row, secondary_row);
+			return show_blackboard(cur_state);
 		});
 		auto front_action = menu->addAction("fronts");
-		QObject::connect(front_action, &QAction::triggered, this, [top_row, secondary_row, this]()
+		QObject::connect(front_action, &QAction::triggered, this, [cur_state, this]()
 		{
-			return show_fronts(top_row, secondary_row);
+			return show_fronts(cur_state);
 		});
+		//auto highlight_action = menu->addAction("highlight_fronts");
+		//QObject::connect(highlight_action, &QAction::triggered, this, [cur_state, this]()
+		//{
+		//	return highlight_fronts(cur_state);
+		//});
 	}
 	menu->exec(_view->viewport()->mapToGlobal(pos));
 	
 }
-void log_dialog::show_fronts(std::uint32_t top_row, std::uint32_t secondary_row)
+void log_dialog::show_fronts(const behavior_tree::common::btree_state& cur_state)
 {
-	if (top_row >= _btree_history._poll_states.size())
-	{
-		return;
-	}
-	auto cur_state = _btree_history._poll_states[top_row];
-	if (secondary_row >= cur_state._cmds.size())
-	{
-		return;
-	}
-	cur_state.run_cmd_to(secondary_row);
 	std::vector<std::string> cur_fronts_str;
+	std::vector<std::pair<std::uint32_t, std::uint32_t>> temp_fronts;
 	for (auto [tree_idx, node_idx] : cur_state.cur_fronts)
 	{
+		temp_fronts.emplace_back(tree_idx, node_idx);
 		cur_fronts_str.push_back(cur_state.cur_tree_indexes[tree_idx] + " " + std::to_string(node_idx));
 	}
 	auto cur_search_dialog = new search_select_dialog(cur_fronts_str, this);
 	auto result = cur_search_dialog->run();
+	if (result.empty())
+	{
+		return;
+	}
+	for (std::size_t i = 0; i < cur_fronts_str.size(); i++)
+	{
+		if (result == cur_fronts_str[i])
+		{
+			auto[tree_idx, node_idx] = temp_fronts[i];
+			_main_window->focus_on(cur_state.cur_tree_indexes[tree_idx], node_idx);
+			return;
+		}
+	}
+
 }
-void log_dialog::show_blackboard(std::uint32_t top_row, std::uint32_t secondary_row)
+void log_dialog::show_blackboard(const behavior_tree::common::btree_state& cur_state)
 {
-	if (top_row >= _btree_history._poll_states.size())
-	{
-		return;
-	}
-	auto cur_state = _btree_history._poll_states[top_row];
-	if (secondary_row >= cur_state._cmds.size())
-	{
-		return;
-	}
-	cur_state.run_cmd_to(secondary_row);
+
 	std::vector<std::string> cur_blackboard_str;
 	for (const auto & [bb_key, bb_value] : cur_state.cur_blackboard)
 	{

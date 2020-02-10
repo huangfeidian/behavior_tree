@@ -119,8 +119,7 @@ void tree_instance::focus_on(node* cur_node)
 	focus_on(cur_graph_node);
 	cancel_select();
 	selected_node = cur_node;
-	cur_graph_node->set_outline_color(Qt::red);
-	show_select_effect();
+	show_select_effect(selected_node);
 }
 void tree_instance::focus_on(const node_graph* cur_node)
 {
@@ -236,7 +235,7 @@ void tree_instance::refresh()
 {
 	_logger->debug("tree_instance {} refresh ", file_name.string());
 	set_dirty();
-	clean_select_effect();
+	clean_select_effect(selected_node);
 	_scene->clear();
 	display_tree();
 	if (selected_node)
@@ -257,9 +256,8 @@ void tree_instance::cancel_select()
 		return;
 	}
 	auto cur_node = find_graph_by_node(_graph_root, selected_node);
-	auto pre_color = color_from_uint(selected_node->color);
 	cur_node->setSelected(false);
-	cur_node->set_outline_color(pre_color);
+	clean_select_effect(selected_node);
 }
 void tree_instance::select_changed(node_graph* cur_node, int state)
 {
@@ -269,29 +267,34 @@ void tree_instance::select_changed(node_graph* cur_node, int state)
 	{
 		if (selected_node)
 		{
-			auto cur_node = find_graph_by_node(_graph_root, selected_node);
-			cur_node->set_outline_color(color_from_uint(selected_node->color));
+			clean_select_effect(selected_node);
 			selected_node = nullptr;
 		}
 		
-		clean_select_effect();
 	}
 	else
 	{
 		selected_node = cur_node->_model;
-		cur_node->set_outline_color(Qt::red);
-		show_select_effect();
+		show_select_effect(selected_node);
 	}
 }
-void tree_instance::show_select_effect()
+void tree_instance::show_select_effect(node* cur_node)
 {
-	_logger->debug("tree_instance {} show_select_effect node {} ",
-		file_name.string(), selected_node->_idx);
+	if (!cur_node)
+	{
+		return;
+	}
+	auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
+	cur_graph_node->set_outline_color(Qt::magenta);
 }
-void tree_instance::clean_select_effect()
+void tree_instance::clean_select_effect(node* cur_node)
 {
-	_logger->debug("tree_instance {} clean_select_effect ",
-		file_name.string());
+	if (!cur_node)
+	{
+		return;
+	}
+	auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
+	cur_graph_node->set_outline_color(color_from_uint(selected_node->color));
 }
 void tree_instance::insert_handler()
 {

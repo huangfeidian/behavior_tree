@@ -29,9 +29,10 @@ namespace spiritsaway::behavior_tree::editor
 		void show_trees();
 		void on_view_double_clicked(QModelIndex cur_idx);
 		void on_view_context_menu(const QPoint& pos);
-		void show_fronts(std::uint32_t top_row, std::uint32_t secondary_row);
-		void show_blackboard(std::uint32_t top_row, std::uint32_t secondary_row);
+		void show_fronts(const behavior_tree::common::btree_state& cur_state);
+		void show_blackboard(const behavior_tree::common::btree_state& cur_state);
 		void timer_poll();
+		void highlight_fronts(const behavior_tree::common::btree_state& cur_state);
 	private:
 		std::deque<behavior_tree::common::agent_cmd_detail>& cmd_queue;
 		QTimer* _poll_timer;

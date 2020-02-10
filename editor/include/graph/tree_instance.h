@@ -57,8 +57,8 @@ namespace spiritsaway::behavior_tree::editor
 		void refresh();
 		void cancel_select();
 		void select_changed(node_graph* cur_node, int state);
-		void show_select_effect();
-		void clean_select_effect();
+		void show_select_effect(node* cur_node);
+		void clean_select_effect(node* cur_node);
 		void insert_handler();
 		void delete_handler();
 		node* copy_handler();
