@@ -57,8 +57,17 @@
     <addaction name="actionGoto"/>
     <addaction name="actionFind"/>
    </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+    <addaction name="actionRunThrough"/>
+    <addaction name="actionRunNext"/>
+    <addaction name="actionStop"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuNavigate"/>
+   <addaction name="menuDebug"/>
    <addaction name="menuConfig"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -73,99 +82,12 @@
     <bool>false</bool>
    </attribute>
   </widget>
-  <action name="actionNew">
-   <property name="text">
-    <string>New</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-  </action>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="text">
-    <string>Save</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
-  </action>
-  <action name="actionExport">
-   <property name="text">
-    <string>Export</string>
-   </property>
-  </action>
-  <action name="actionSaveAll">
-   <property name="text">
-    <string>SaveAll</string>
-   </property>
-  </action>
-  <action name="actionExportAll">
-   <property name="text">
-    <string>ExportAll</string>
-   </property>
-  </action>
-  <action name="actionInsert">
-   <property name="text">
-    <string>Insert</string>
-   </property>
-   <property name="shortcut">
-    <string>Ins</string>
-   </property>
-  </action>
-  <action name="actionDelete">
-   <property name="text">
-    <string>Delete</string>
-   </property>
-   <property name="shortcut">
-    <string>Del</string>
-   </property>
-  </action>
-  <action name="actionMoveUp">
-   <property name="text">
-    <string>MoveUp</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Up</string>
-   </property>
-  </action>
-  <action name="actionMoveDown">
-   <property name="text">
-    <string>MoveDown</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Down</string>
-   </property>
-  </action>
-  <action name="actionCopy">
-   <property name="text">
-    <string>Copy</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
-   </property>
-  </action>
-  <action name="actionPaste">
-   <property name="text">
-    <string>Paste</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+V</string>
-   </property>
-  </action>
-  <action name="actionCut">
-   <property name="text">
-    <string>Cut</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+X</string>
    </property>
   </action>
   <action name="actionAgent">
@@ -181,11 +103,6 @@
   <action name="actionCloseAll">
    <property name="text">
     <string>CloseAll</string>
-   </property>
-  </action>
-  <action name="actionSaveAs">
-   <property name="text">
-    <string>SaveAs</string>
    </property>
   </action>
   <action name="actionGoto">
@@ -214,6 +131,30 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionRunThrough">
+   <property name="text">
+    <string>RunThrough</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionRunNext">
+   <property name="text">
+    <string>RunNext</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F5</string>
    </property>
   </action>
  </widget>

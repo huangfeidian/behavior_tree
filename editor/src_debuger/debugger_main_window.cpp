@@ -91,3 +91,41 @@ bool debugger_main_window::focus_on(const std::string& tree_name, std::uint32_t 
 	cur_ins->focus_on(node_idx);
 	return true;
 }
+bool debugger_main_window::node_has_breakpoint(const std::string& tree_name, std::uint32_t node_idx) const
+{
+	const auto& cur_btree_config = spiritsaway::behavior_tree::editor::btree_config::instance();
+	std::filesystem::path cur_file_path = cur_btree_config.btree_folder / tree_name;
+	std::string cur_file_path_str = cur_file_path.string();
+	auto opt_ins_idx = already_open(cur_file_path_str);
+	tree_instance* cur_ins;
+	if (opt_ins_idx)
+	{
+		cur_ins = _instances[opt_ins_idx.value()];
+		auto cur_node = cur_ins->find_node_by_idx(node_idx);
+		if (!cur_node)
+		{
+			return false;
+		}
+		else
+		{
+			return cur_node->_has_break_point;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+void debugger_main_window::highlight_node(const std::string& tree_name, std::uint32_t node_idx, QColor color)
+{
+	const auto& cur_btree_config = spiritsaway::behavior_tree::editor::btree_config::instance();
+	std::filesystem::path cur_file_path = cur_btree_config.btree_folder / tree_name;
+	std::string cur_file_path_str = cur_file_path.string();
+	auto opt_ins_idx = already_open(cur_file_path_str);
+	tree_instance* cur_ins;
+	if (opt_ins_idx)
+	{
+		cur_ins = _instances[opt_ins_idx.value()];
+		cur_ins->set_temp_color(node_idx, color);
+	}
+}

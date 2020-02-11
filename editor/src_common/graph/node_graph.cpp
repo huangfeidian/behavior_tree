@@ -20,7 +20,7 @@ node_graph::node_graph(node* _in_model, tree_instance* _in_manager,
 	_model(_in_model),
 	_manager(_in_manager)
 {
-	_outline = new box_outline(color_from_uint(_in_model->color));
+	_outline = new box_outline(color_from_uint(_in_model->temp_color ? _in_model->temp_color:_in_model->color ));
 	//std::cout << "node graph fill with color " << _in_model->color << std::endl;
 	setFlag(QGraphicsItem::ItemIsSelectable, true);
 	setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -206,7 +206,7 @@ void node_graph::draw_bound(QColor color)
 	auto width = get_width();
 	auto height = boundingRect().height();
 	auto left_down = pos() + QPointF(width * -0.5, height * -0.5);
-	selected_effect = _manager->_scene->addRect(left_down.x(), left_down.y(), width, height, p, b);
+	_manager->_scene->addRect(left_down.x(), left_down.y(), width, height, p, b);
 	_manager->_logger->info("bound is {}, {}, {}, {}", left_down.x(), left_down.y(), width, height);
 }
 void node_graph::set_collapsed()
@@ -296,11 +296,8 @@ void node_graph::set_color()
 	QColor cur_color = QColorDialog::getColor(Qt::white, _manager->window);
 	if (cur_color.isValid())
 	{
-		std::uint8_t r = cur_color.red();
-		std::uint8_t g = cur_color.green();
-		std::uint8_t b = cur_color.black();
-		std::uint8_t a = cur_color.alpha();
-		std::uint32_t final_value = (r << 24) + (g << 16) + (b << 8) + a;
+		
+		std::uint32_t final_value = color_to_uint(cur_color);
 		//std::cout << fmt::format("color_item set with color ({}, {}, {}, {} final {})",
 		//	 r,g,b,a, final_value) << std::endl;
 

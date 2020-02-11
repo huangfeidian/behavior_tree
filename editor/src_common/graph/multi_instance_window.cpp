@@ -146,7 +146,7 @@ std::shared_ptr<spdlog::logger> multi_instance_window::logger()
 {
 	return _logger;
 }
-std::optional<std::size_t> multi_instance_window::already_open(const std::string& file_path)
+std::optional<std::size_t> multi_instance_window::already_open(const std::string& file_path) const
 {
 	for (std::size_t i = 0; i < _instances.size(); i++)
 	{

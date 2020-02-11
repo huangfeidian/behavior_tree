@@ -36,7 +36,7 @@ namespace spiritsaway::behavior_tree::editor
 		_struct,
 	};
 	QColor color_from_uint(std::uint32_t rgba);
-
+	std::uint32_t color_to_uint(QColor color);
 
 	class editable_item;
 	using modify_callback_func_t = std::function<void(std::shared_ptr<editable_item>)>;

@@ -32,6 +32,8 @@ namespace spiritsaway::behavior_tree::editor
 	public:
 		std::deque<behavior_tree::common::agent_cmd_detail> _btree_cmds;
 		bool focus_on(const std::string& tree_name, std::uint32_t node_idx);
+		bool node_has_breakpoint(const std::string& tree_name, std::uint32_t node_idx) const;
+		void highlight_node(const std::string& tree_name, std::uint32_t node_idx, QColor color);
 	public:
 		bool is_read_only() const;
 

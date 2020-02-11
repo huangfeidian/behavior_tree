@@ -7,6 +7,7 @@
 
 #include <dialogs/search_select_dialog.h>
 #include <sstream>
+#include <dialogs/editable_item.h>
 
 #include "log_dialog.h"
 #include "../debugger_main_window.h"
@@ -156,13 +157,6 @@ std::string log_dialog::get_comment(std::size_t top_row, std::size_t secondary_r
 	QString comment_str = cur_comment_data.toString();
 	return comment_str.toStdString();
 	
-}
-void log_dialog::highlight_fronts(const behavior_tree::common::btree_state& cur_state)
-{
-	for (auto[tree_idx, node_idx] : cur_state.cur_fronts)
-	{
-		_main_window->focus_on(cur_state.cur_tree_indexes[tree_idx],node_idx);
-	}
 }
 
 
@@ -318,4 +312,117 @@ void log_dialog::timer_poll()
 	}
 	std::cout << "timer poll with max_per_round " << 5 - max_per_round<< std::endl;
 
+}
+std::optional<behavior_tree::common::agent_cmd_detail> log_dialog::run_once_impl()
+{
+	if (_cur_top_row >= _btree_history._poll_states.size())
+	{
+		return {};
+	}
+	behavior_tree::common::agent_cmd_detail cur_cmd;
+	if (_cur_secondary_row < _btree_history._poll_states[_cur_top_row]._cmds.size())
+	{
+		cur_cmd = _btree_history._poll_states[_cur_top_row]._cmds[_cur_secondary_row];
+
+	}
+	else
+	{
+		_cur_top_row++;
+		_cur_secondary_row = 0;
+		if (_cur_top_row >= _btree_history._poll_states.size())
+		{
+			return {};
+		}
+		if (_cur_secondary_row >= _btree_history._poll_states[_cur_top_row]._cmds.size())
+		{
+			return {};
+		}
+		cur_cmd = _btree_history._poll_states[_cur_top_row]._cmds[_cur_secondary_row];
+	}
+	_cur_running_state.run_one_cmd(cur_cmd);
+	return cur_cmd;
+}
+void log_dialog::debug_run_once()
+{
+	auto cur_cmd_opt = run_once_impl();
+	if (!cur_cmd_opt)
+	{
+		return;
+	}
+	auto cur_cmd = cur_cmd_opt.value();
+	auto[ts, cmd_type, params] = cur_cmd;
+	switch (cmd_type)
+	{
+	case behavior_tree::common::agent_cmd::node_enter:
+	{
+		auto cur_tree_idx = std::get<serialize::any_int_type>(params[0]);
+		auto cur_node_idx = std::get<serialize::any_int_type>(params[1]);
+		auto tree_name = _btree_history._latest_state.cur_tree_indexes[cur_tree_idx];
+		highlight_fronts(_cur_running_state);
+		_main_window->focus_on(tree_name, cur_node_idx);
+		return;
+	}
+	case behavior_tree::common::agent_cmd::node_leave:
+	{
+		highlight_fronts(_cur_running_state);
+		return;
+	}
+	default:
+		break;
+	}
+}
+void log_dialog::debug_run_through()
+{
+	std::uint32_t cur_tree_idx = 0;
+	std::uint32_t cur_node_idx = 0;
+	while (true)
+	{
+		auto cur_cmd_opt = run_once_impl();
+		if (!cur_cmd_opt)
+		{
+			break;
+		}
+		auto cur_cmd = cur_cmd_opt.value();
+		auto[ts, cmd_type, params] = cur_cmd;
+		if (cmd_type == behavior_tree::common::agent_cmd::node_enter)
+		{
+			cur_tree_idx = std::get<serialize::any_int_type>(params[0]);
+			cur_node_idx = std::get<serialize::any_int_type>(params[1]);
+			// breakpoint
+			if (_main_window->node_has_breakpoint(_cur_running_state.cur_tree_indexes[cur_tree_idx], cur_node_idx))
+			{
+				break;
+			}
+		}
+		else if (cmd_type == behavior_tree::common::agent_cmd::node_leave)
+		{
+			cur_tree_idx = std::get<serialize::any_int_type>(params[0]);
+			cur_node_idx = std::get<serialize::any_int_type>(params[1]);
+		}
+	}
+	auto tree_name = _cur_running_state.cur_tree_indexes[cur_tree_idx];
+	highlight_fronts(_cur_running_state);
+	_main_window->focus_on(tree_name, cur_node_idx);
+}
+void log_dialog::highlight_fronts(const behavior_tree::common::btree_state& cur_state)
+{
+	for (auto one_pre_front : _pre_fronts)
+	{
+		if (std::find(cur_state.cur_fronts.begin(), cur_state.cur_fronts.end(), one_pre_front) == cur_state.cur_fronts.end())
+		{
+			_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_pre_front.first], one_pre_front.second, color_from_uint(0));
+		}
+	}
+	for (auto one_now_front : cur_state.cur_fronts)
+	{
+		if (std::find(_pre_fronts.begin(), _pre_fronts.end(), one_now_front) == _pre_fronts.end())
+		{
+			_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_now_front.first], one_now_front.second, Qt::magenta);
+		}
+	}
+	_pre_fronts = cur_state.cur_fronts;
+}
+void log_dialog::debug_stop()
+{
+	_cur_debug_mode = debug_mode::stop;
 }

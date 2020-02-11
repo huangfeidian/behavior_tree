@@ -14,6 +14,12 @@
 
 namespace spiritsaway::behavior_tree::editor
 {
+	enum class debug_mode
+	{
+		stop,
+		run_through,
+		run_once,
+	};
 	using namespace spiritsaway;
 	class debugger_main_window;
 	class log_dialog: public QWidget
@@ -33,16 +39,27 @@ namespace spiritsaway::behavior_tree::editor
 		void show_blackboard(const behavior_tree::common::btree_state& cur_state);
 		void timer_poll();
 		void highlight_fronts(const behavior_tree::common::btree_state& cur_state);
+		void debug_stop();
+		void debug_run_through();
+		void debug_run_once();
 	private:
 		std::deque<behavior_tree::common::agent_cmd_detail>& cmd_queue;
 		QTimer* _poll_timer;
 		log_tree_model* _model;
 		QTreeView* _view;
+		debug_mode _cur_debug_mode;
 		debugger_main_window* _main_window;
+		behavior_tree::common::btree_state _cur_running_state;
+		std::size_t _cur_top_row = 0;
+		std::size_t _cur_secondary_row = 0;
 		behavior_tree::common::btree_trace _btree_history;
+		decltype(_cur_running_state.cur_fronts) _pre_fronts;
 		std::string get_comment(std::size_t top_row, std::size_t secondary_row) const;
 		QModelIndex get_model_idx(std::size_t top_row, std::size_t secondary_row, std::size_t column) const;
 
+
+
+		std::optional<behavior_tree::common::agent_cmd_detail> run_once_impl();
 
 	};
 }

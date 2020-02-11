@@ -35,6 +35,15 @@ QColor spiritsaway::behavior_tree::editor::color_from_uint(std::uint32_t rgba)
 	rgba >>= 8;
 	return QColor(r, g, b, a);
 }
+std::uint32_t spiritsaway::behavior_tree::editor::color_to_uint(QColor cur_color)
+{
+	std::uint8_t r = cur_color.red();
+	std::uint8_t g = cur_color.green();
+	std::uint8_t b = cur_color.black();
+	std::uint8_t a = cur_color.alpha();
+	std::uint32_t final_value = (r << 24) + (g << 16) + (b << 8) + a;
+	return final_value;
+}
 
 editable_item::editable_item(editable_item_type _in_type, bool _in_is_container,
 	const std::string& _in_name)

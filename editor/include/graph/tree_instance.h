@@ -46,6 +46,8 @@ namespace spiritsaway::behavior_tree::editor
 		void focus_on(std::size_t node_idx);
 		void focus_on(const node_graph* cur_node);
 		void focus_on(node* cur_node);
+		void clear_temp_color(std::uint32_t node_idx);
+		void set_temp_color(std::uint32_t node_idx, QColor color);
 		void update_title();
 	public:
 		void display_tree();

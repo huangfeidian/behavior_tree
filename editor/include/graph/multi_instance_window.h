@@ -37,7 +37,7 @@ namespace spiritsaway::behavior_tree::editor
 		void add_instance(bt_editor::tree_instance* _cur_instance);
 		void remove_instance(bt_editor::tree_instance* _cur_instance);
 		std::shared_ptr<spdlog::logger> logger();
-		std::optional<std::size_t> already_open(const std::string& file_path);
+		std::optional<std::size_t> already_open(const std::string& file_path) const;
 		QMdiSubWindow* add_sub_window(QGraphicsView* _view);
 	protected:
 		std::shared_ptr<spdlog::logger> _logger;

@@ -23,6 +23,7 @@ namespace spiritsaway::behavior_tree::editor
 		bool _is_collapsed = false;
 		bool _has_break_point = false;
 		std::uint32_t color;//rgba
+		std::uint32_t temp_color; // rgba
 		std::shared_ptr<struct_items> _show_widget;
 		void add_child(node* in_child);
 		void remove_child(node* in_child);
