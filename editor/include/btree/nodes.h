@@ -21,6 +21,7 @@ namespace spiritsaway::behavior_tree::editor
 		node* _parent;
 		std::vector<node*> _children;
 		bool _is_collapsed = false;
+		bool _has_break_point = false;
 		std::uint32_t color;//rgba
 		std::shared_ptr<struct_items> _show_widget;
 		void add_child(node* in_child);

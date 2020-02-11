@@ -164,10 +164,10 @@ void node_graph::draw_cross(QColor color)
 	l2->setZValue(1.0);
 }
 
-void node_graph::draw_collapse_triangle()
+void node_graph::draw_right_triangle(QColor color)
 {
 	auto p = QPen(Qt::yellow);
-	auto b = QBrush(Qt::magenta);
+	auto b = QBrush(color);
 	b.setStyle(Qt::SolidPattern);
 	QPointF begin_pos = right_pos();
 	begin_pos += QPoint(node_unit, 0);
@@ -184,6 +184,20 @@ void node_graph::draw_collapse_triangle()
 
 }
 
+void node_graph::draw_left_circle(QColor color)
+{
+	auto p = QPen(Qt::yellow);
+	auto b = QBrush(color);
+	b.setStyle(Qt::SolidPattern);
+	auto height = boundingRect().height() / 2;
+	QPointF begin_pos = left_pos() - QPointF(node_unit, 0) - QPointF(height, 0);
+
+	QPointF new_r(height, height);
+	auto cur_rect = QRectF(-new_r, new_r);
+	cur_rect.translate(begin_pos);
+	auto cur_p = _manager->_scene->addEllipse(cur_rect, p, b);
+	cur_p->setZValue(1.0);
+}
 void node_graph::draw_bound(QColor color)
 {
 	auto p = QPen(color);
@@ -257,6 +271,21 @@ void node_graph::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 		auto action_content = node_menu->addAction("Content");
 		QObject::connect(action_content, &QAction::triggered, this, &node_graph::set_editable);
 	}
+	if (_manager->parent->is_read_only())
+	{
+		if (!(_model->_has_break_point))
+		{
+			auto action_add_breakpoint = node_menu->addAction("add_breakpoint");
+			QObject::connect(action_add_breakpoint, &QAction::triggered, this, &node_graph::add_breakpoint);
+		}
+		else
+		{
+			auto action_remove_breakpoint = node_menu->addAction("remove_breakpoint");
+			QObject::connect(action_remove_breakpoint, &QAction::triggered, this, &node_graph::remove_breakpoint);
+
+		}
+		
+	}
 	//node_menu->move(_manager->_view->mapFromScene(center_pos().x() + event->pos().x(), center_pos().y() + event->pos().y()));
 
 	node_menu->move(_manager->_view->mapFromScene(center_pos().x() - event->pos().x(), center_pos().y() - event->pos().y()));
@@ -308,4 +337,15 @@ void node_graph::set_editable()
 	_manager->set_dirty();
 	_manager->refresh();
 	return;
+}
+void node_graph::add_breakpoint()
+{
+	_model->_has_break_point = true;
+	_manager->refresh();
+}
+
+void node_graph::remove_breakpoint()
+{
+	_model->_has_break_point = false;
+	_manager->refresh();
 }

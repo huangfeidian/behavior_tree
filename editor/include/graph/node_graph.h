@@ -79,7 +79,8 @@ namespace spiritsaway::behavior_tree::editor
 		QPointF center_pos() const;
 		QPointF right_pos() const;
 		void draw_cross(QColor color);
-		void draw_collapse_triangle();
+		void draw_right_triangle(QColor color);
+		void draw_left_circle(QColor color);
 
 		void draw_bound(QColor _color);
 		void set_outline_color(QColor _color);
@@ -92,6 +93,8 @@ namespace spiritsaway::behavior_tree::editor
 		void set_color();
 		void set_comment();
 		void set_editable();
+		void add_breakpoint();
+		void remove_breakpoint();
 	};
 
 	class tree_layouter

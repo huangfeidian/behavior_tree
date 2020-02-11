@@ -226,7 +226,11 @@ void tree_instance::_display_links_impl(node_graph* cur_node)
 	if (cur_node->_model->_is_collapsed)
 	{
 		//cur_node->draw_cross(Qt::magenta);
-		cur_node->draw_collapse_triangle();
+		cur_node->draw_right_triangle(Qt::magenta);
+	}
+	if (cur_node->_model->_has_break_point)
+	{
+		cur_node->draw_left_circle(Qt::red);
 	}
 }
 
