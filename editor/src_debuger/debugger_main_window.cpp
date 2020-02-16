@@ -15,6 +15,7 @@
 #include "log_viewer/log_dialog.h"
 
 using namespace spiritsaway::behavior_tree::editor;
+using namespace spiritsaway::behavior_tree::common;
 
 debugger_main_window::debugger_main_window(QWidget* parent)
 	: multi_instance_window(parent)
@@ -66,6 +67,19 @@ void debugger_main_window::init_actions()
 	connect(ui->actionCloseAll, SIGNAL(triggered()), this, SLOT(action_close_all_handler()));
 	connect(ui->actionGoto, SIGNAL(triggered()), this, SLOT(action_goto_handler()));
 	connect(ui->actionFind, SIGNAL(triggered()), this, SLOT(action_find_handler()));
+	connect(ui->actionStop, &QAction::triggered, this, [this]()
+	{
+		set_debug_mode(debug_mode::stop);
+	});
+	connect(ui->actionRunNext, &QAction::triggered, this, [this]()
+	{
+		set_debug_mode(debug_mode::run_once);
+	});
+	connect(ui->actionRunThrough, &QAction::triggered, this, [this]()
+	{
+		set_debug_mode(debug_mode::run_through);
+	});
+
 }
 bool debugger_main_window::focus_on(const std::string& tree_name, std::uint32_t node_idx)
 {
@@ -127,5 +141,23 @@ void debugger_main_window::highlight_node(const std::string& tree_name, std::uin
 	{
 		cur_ins = _instances[opt_ins_idx.value()];
 		cur_ins->set_temp_color(node_idx, color);
+	}
+}
+
+void debugger_main_window::set_debug_mode(debug_mode _new_mode)
+{
+	switch (_new_mode)
+	{
+	case debug_mode::stop:
+		_log_viewer->debug_stop();
+		break;
+	case debug_mode::run_through:
+		_log_viewer->debug_run_through();
+		break;
+	case debug_mode::run_once:
+		_log_viewer->debug_run_once();
+		break;
+	default:
+		break;
 	}
 }

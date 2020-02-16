@@ -12,6 +12,12 @@ namespace spiritsaway::behavior_tree::common
 			return data.first ^ data.second;
 		}
 	};
+	enum class debug_mode
+	{
+		stop,
+		run_through,
+		run_once,
+	};
 	class btree_state
 	{
 	public:

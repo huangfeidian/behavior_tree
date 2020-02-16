@@ -4,6 +4,8 @@
 
 #include <graph/multi_instance_window.h>
 
+#include <behavior/btree_trace.h>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class debugger_main_window; }
 QT_END_NAMESPACE
@@ -34,6 +36,8 @@ namespace spiritsaway::behavior_tree::editor
 		bool focus_on(const std::string& tree_name, std::uint32_t node_idx);
 		bool node_has_breakpoint(const std::string& tree_name, std::uint32_t node_idx) const;
 		void highlight_node(const std::string& tree_name, std::uint32_t node_idx, QColor color);
+	private:
+		void set_debug_mode(behavior_tree::common::debug_mode _new_mode);
 	public:
 		bool is_read_only() const;
 

@@ -310,6 +310,7 @@ void node_graph::set_color()
 
 void node_graph::set_outline_color(QColor _color)
 {
+	_manager->_logger->info("node {} highlight color {}", _model->_idx, color_to_uint(_color));
 	_outline->_color = _color;
 	_outline->update();
 }

@@ -114,12 +114,18 @@ void tree_instance::focus_on(node* cur_node)
 		temp_node->_is_collapsed = false;
 		temp_node = temp_node->_parent;
 	}
+	if (selected_node && selected_node != cur_node)
+	{
+		selected_node->temp_color = 0;
+		cancel_select();
+
+	}
+	selected_node = cur_node;
+	cur_node->temp_color = color_to_uint(Qt::magenta);
+
 	refresh();
 	auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
 	focus_on(cur_graph_node);
-	cancel_select();
-	selected_node = cur_node;
-	show_select_effect(selected_node);
 }
 void tree_instance::focus_on(const node_graph* cur_node)
 {
@@ -239,7 +245,7 @@ void tree_instance::refresh()
 {
 	_logger->debug("tree_instance {} refresh ", file_name.string());
 	set_dirty();
-	clean_select_effect(selected_node);
+	//clean_select_effect(selected_node);
 	_scene->clear();
 	display_tree();
 	if (selected_node)
@@ -288,12 +294,15 @@ void tree_instance::show_select_effect(node* cur_node)
 	{
 		return;
 	}
-	auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
-	if (!cur_graph_node)
-	{
-		return;
-	}
-	cur_graph_node->set_outline_color(Qt::magenta);
+	cur_node->color = color_to_uint(Qt::magenta);
+
+	//auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
+	//if (!cur_graph_node)
+	//{
+	//	return;
+	//}
+	//_logger->info("show_select_effect node {} color {}", cur_node->_idx, color_to_uint(Qt::magenta));
+	//cur_graph_node->set_outline_color(Qt::magenta);
 }
 void tree_instance::clean_select_effect(node* cur_node)
 {
@@ -301,12 +310,14 @@ void tree_instance::clean_select_effect(node* cur_node)
 	{
 		return;
 	}
-	auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
-	if (!cur_graph_node)
-	{
-		return;
-	}
-	cur_graph_node->set_outline_color(color_from_uint(selected_node->color));
+	cur_node->color = 0;
+	//auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
+	//if (!cur_graph_node)
+	//{
+	//	return;
+	//}
+	//_logger->info("clean_select_effect node {} color {}", cur_node->_idx, cur_node->color);
+	//cur_graph_node->set_outline_color(color_from_uint(0));
 }
 void tree_instance::insert_handler()
 {
@@ -672,12 +683,13 @@ void tree_instance::clear_temp_color(std::uint32_t node_idx)
 		return;
 	}
 	cur_node->temp_color = 0;
-	auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
-	if (!cur_graph_node)
-	{
-		return;
-	}
-	cur_graph_node->set_outline_color(color_from_uint(cur_node->color));
+	//auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
+	//if (!cur_graph_node)
+	//{
+	//	return;
+	//}
+	//_logger->info("clear temp color node {} color {}", node_idx, cur_node->color);
+	//cur_graph_node->set_outline_color(color_from_uint(cur_node->color));
 
 }
 void tree_instance::set_temp_color(std::uint32_t node_idx, QColor color)
@@ -688,10 +700,11 @@ void tree_instance::set_temp_color(std::uint32_t node_idx, QColor color)
 		return;
 	}
 	cur_node->temp_color = color_to_uint(color);
-	auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
-	if (!cur_graph_node)
-	{
-		return;
-	}
-	cur_graph_node->set_outline_color(color);
+	//auto cur_graph_node = find_graph_by_node(_graph_root, cur_node);
+	//if (!cur_graph_node)
+	//{
+	//	return;
+	//}
+	//_logger->info("set_temp_color node {} color {}", node_idx, color_to_uint(color));
+	//cur_graph_node->set_outline_color(color);
 }

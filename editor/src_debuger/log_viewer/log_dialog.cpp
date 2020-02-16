@@ -34,6 +34,7 @@ log_dialog::log_dialog(std::deque<behavior_tree::common::agent_cmd_detail > & in
 	:QWidget(parent)
 	, cmd_queue(in_cmd_queue)
 	, _main_window(parent)
+	, _logger(parent->logger())
 {
 	_view = new QTreeView(this);
 	auto vboxLayout = new QVBoxLayout(this);
@@ -213,7 +214,11 @@ void log_dialog::on_view_double_clicked(QModelIndex cur_idx)
 		top_row = cur_idx.row();
 		secondary_row = 0;
 	}
-	goto_graph(top_row, secondary_row);
+	_cur_top_row = top_row;
+	_cur_secondary_row = 0;
+	_cur_running_state = _btree_history._poll_states[top_row];
+	debug_run_through(secondary_row + 1);
+	debug_stop();
 
 }
 void log_dialog::on_view_context_menu(const QPoint& pos)
@@ -313,6 +318,19 @@ void log_dialog::timer_poll()
 	std::cout << "timer poll with max_per_round " << 5 - max_per_round<< std::endl;
 
 }
+void log_dialog::increate_row_idx()
+{
+	if (_cur_secondary_row < _btree_history._poll_states[_cur_top_row]._cmds.size())
+	{
+		_cur_secondary_row++;
+
+	}
+	else
+	{
+		_cur_top_row++;
+		_cur_secondary_row = 0;
+	}
+}
 std::optional<behavior_tree::common::agent_cmd_detail> log_dialog::run_once_impl()
 {
 	if (_cur_top_row >= _btree_history._poll_states.size())
@@ -344,6 +362,7 @@ std::optional<behavior_tree::common::agent_cmd_detail> log_dialog::run_once_impl
 }
 void log_dialog::debug_run_once()
 {
+	_cur_debug_mode = debug_mode::run_once;
 	auto cur_cmd_opt = run_once_impl();
 	if (!cur_cmd_opt)
 	{
@@ -354,37 +373,46 @@ void log_dialog::debug_run_once()
 	switch (cmd_type)
 	{
 	case behavior_tree::common::agent_cmd::node_enter:
+	case behavior_tree::common::agent_cmd::node_action:
 	{
 		auto cur_tree_idx = std::get<serialize::any_int_type>(params[0]);
 		auto cur_node_idx = std::get<serialize::any_int_type>(params[1]);
 		auto tree_name = _btree_history._latest_state.cur_tree_indexes[cur_tree_idx];
-		highlight_fronts(_cur_running_state);
 		_main_window->focus_on(tree_name, cur_node_idx);
-		return;
+		highlight_fronts(_cur_running_state);
+		break;
 	}
 	case behavior_tree::common::agent_cmd::node_leave:
 	{
 		highlight_fronts(_cur_running_state);
-		return;
+		break;
 	}
 	default:
 		break;
 	}
+	increate_row_idx();
+	auto cur_model_idx = get_model_idx(_cur_top_row, _cur_secondary_row, 0);
+	_view->setCurrentIndex(cur_model_idx);
 }
-void log_dialog::debug_run_through()
+void log_dialog::debug_run_through(std::size_t max_step)
 {
+	_logger->info("debug_run_through {}", max_step);
+	_cur_debug_mode = debug_mode::run_through;
+	std::size_t cur_step = 0;
 	std::uint32_t cur_tree_idx = 0;
 	std::uint32_t cur_node_idx = 0;
-	while (true)
+	while (cur_step < max_step)
 	{
+		cur_step++;
 		auto cur_cmd_opt = run_once_impl();
 		if (!cur_cmd_opt)
 		{
 			break;
 		}
+		increate_row_idx();
 		auto cur_cmd = cur_cmd_opt.value();
 		auto[ts, cmd_type, params] = cur_cmd;
-		if (cmd_type == behavior_tree::common::agent_cmd::node_enter)
+		if (cmd_type == behavior_tree::common::agent_cmd::node_enter || cmd_type == behavior_tree::common::agent_cmd::node_action)
 		{
 			cur_tree_idx = std::get<serialize::any_int_type>(params[0]);
 			cur_node_idx = std::get<serialize::any_int_type>(params[1]);
@@ -401,26 +429,43 @@ void log_dialog::debug_run_through()
 		}
 	}
 	auto tree_name = _cur_running_state.cur_tree_indexes[cur_tree_idx];
+	
+	_logger->info("debug_run_through focus on {}", cur_node_idx);
 	highlight_fronts(_cur_running_state);
 	_main_window->focus_on(tree_name, cur_node_idx);
+
+	auto cur_model_idx = get_model_idx(_cur_top_row, _cur_secondary_row, 0);
+	_view->setCurrentIndex(cur_model_idx);
 }
 void log_dialog::highlight_fronts(const behavior_tree::common::btree_state& cur_state)
 {
+	//for (auto one_pre_front : _pre_fronts)
+	//{
+	//	if (std::find(cur_state.cur_fronts.begin(), cur_state.cur_fronts.end(), one_pre_front) == cur_state.cur_fronts.end())
+	//	{
+	//		_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_pre_front.first], one_pre_front.second, color_from_uint(0));
+	//	}
+	//}
+	//for (auto one_now_front : cur_state.cur_fronts)
+	//{
+	//	if (std::find(_pre_fronts.begin(), _pre_fronts.end(), one_now_front) == _pre_fronts.end())
+	//	{
+	//		_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_now_front.first], one_now_front.second, Qt::magenta);
+	//	}
+	//}
 	for (auto one_pre_front : _pre_fronts)
 	{
-		if (std::find(cur_state.cur_fronts.begin(), cur_state.cur_fronts.end(), one_pre_front) == cur_state.cur_fronts.end())
-		{
-			_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_pre_front.first], one_pre_front.second, color_from_uint(0));
-		}
+		_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_pre_front.first], one_pre_front.second, color_from_uint(0));
 	}
 	for (auto one_now_front : cur_state.cur_fronts)
 	{
-		if (std::find(_pre_fronts.begin(), _pre_fronts.end(), one_now_front) == _pre_fronts.end())
-		{
-			_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_now_front.first], one_now_front.second, Qt::magenta);
-		}
+		_main_window->highlight_node(_btree_history._latest_state.cur_tree_indexes[one_now_front.first], one_now_front.second, Qt::magenta);
+
 	}
+	_logger->info("pre_fronts is {} new fronts is {}", serialize::encode(_pre_fronts).dump(), serialize::encode(cur_state.cur_fronts).dump());
 	_pre_fronts = cur_state.cur_fronts;
+	_main_window->refresh();
+	
 }
 void log_dialog::debug_stop()
 {

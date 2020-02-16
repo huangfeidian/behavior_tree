@@ -150,7 +150,7 @@ std::optional<std::size_t> multi_instance_window::already_open(const std::string
 {
 	for (std::size_t i = 0; i < _instances.size(); i++)
 	{
-		_logger->info("cur instance path {} input_path {}", _instances[i]->file_name.string(), file_path);
+		//_logger->info("cur instance path {} input_path {}", _instances[i]->file_name.string(), file_path);
 		if (_instances[i]->file_path == file_path)
 		{
 			return i;
@@ -158,6 +158,13 @@ std::optional<std::size_t> multi_instance_window::already_open(const std::string
 	}
 	return {};
 
+}
+void multi_instance_window::refresh()
+{
+	if (active_instance)
+	{
+		active_instance->refresh();
+	}
 }
 QMdiSubWindow* multi_instance_window::add_sub_window(QGraphicsView* _view)
 {
