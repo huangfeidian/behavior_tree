@@ -62,7 +62,7 @@ bool debugger_main_window::is_read_only() const
 void debugger_main_window::init_actions()
 {
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(action_open_handler()));
-
+	connect(ui->actionHttp, SIGNAL(triggered()), this, SLOT(action_http_handler()));
 	connect(ui->actionClose, SIGNAL(triggered()), this, SLOT(action_close_handler()));
 	connect(ui->actionCloseAll, SIGNAL(triggered()), this, SLOT(action_close_all_handler()));
 	connect(ui->actionGoto, SIGNAL(triggered()), this, SLOT(action_goto_handler()));
@@ -160,4 +160,50 @@ void debugger_main_window::set_debug_mode(debug_mode _new_mode)
 	default:
 		break;
 	}
+}
+void debugger_main_window::action_open_handler()
+{
+	if (_debug_source != debug_source::no_debug)
+	{
+		auto notify_info = fmt::format("already during debug, please close all previous ");
+		QMessageBox::about(this, QString("Error"),
+			QString::fromStdString(notify_info));
+		return;
+	}
+	multi_instance_window::action_open_handler();
+	_debug_source = debug_source::file_debug;
+}
+
+void debugger_main_window::action_http_handler()
+{
+	if (_debug_source != debug_source::no_debug)
+	{
+		auto notify_info = fmt::format("already during debug, please close all previous ");
+		QMessageBox::about(this, QString("Error"),
+			QString::fromStdString(notify_info));
+		return;
+	}
+	auto cur_port_dialog = new line_dialog("http server port", "8090", this);
+	auto port_text = cur_port_dialog->run();
+	std::uint32_t result = 0;
+	for (const auto i : port_text)
+	{
+		if (i < '0' || i > '9')
+		{
+			auto notify_info = fmt::format("cant get idx from input, shoule be an interger");
+			QMessageBox::about(this, QString("Error"),
+				QString::fromStdString(notify_info));
+			return;
+		}
+		auto cur_digit = i - '0';
+		result = result * 10 + cur_digit;
+	}
+	if (result <= 1024 or result >= 20000)
+	{
+		auto notify_info = "port number shoude between 1024 and 20000";
+		QMessageBox::about(this, QString("Error"),
+			QString::fromStdString(notify_info));
+		return;
+	}
+	_debug_source = debug_source::http_debug;
 }

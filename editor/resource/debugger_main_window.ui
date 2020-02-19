@@ -41,6 +41,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionHttp"/>
     <addaction name="actionClose"/>
     <addaction name="actionCloseAll"/>
    </widget>
@@ -155,6 +156,14 @@
    </property>
    <property name="shortcut">
     <string>Shift+F5</string>
+   </property>
+  </action>
+  <action name="actionHttp">
+   <property name="text">
+    <string>Http</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
    </property>
   </action>
  </widget>

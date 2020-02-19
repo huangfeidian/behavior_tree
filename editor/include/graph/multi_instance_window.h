@@ -14,6 +14,8 @@
 #include <filesystem>
 #include <QCloseEvent>
 #include <logger.h>
+#include <http_server/http_server.h>
+
 using json = nlohmann::json;
 
 namespace spiritsaway::behavior_tree::editor
@@ -26,6 +28,7 @@ namespace bt_editor = spiritsaway::behavior_tree::editor;
 
 namespace spiritsaway::behavior_tree::editor
 {
+
 	class multi_instance_window: public QMainWindow
 	{
 		Q_OBJECT

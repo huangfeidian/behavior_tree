@@ -62,5 +62,8 @@ target_link_libraries(behavior_tree_editor PRIVATE Qt5::Widgets)
 target_link_libraries(behavior_tree_editor PUBLIC nlohmann_json::nlohmann_json any_container)
 
 add_executable(behavior_tree_debuger ${UI_FILES} ${COMMON_SRC} ${SHARE_SRC_FILES} ${SHARE_HEADER_FILES} ${DEBUGER_SRC_FILES} ${DEBUGER_SRC_FILES})
+find_package(http_server CONFIG REQUIRED)
+INCLUDE_DIRECTORIES(${http_server_include_dirs})
 target_link_libraries(behavior_tree_debuger PRIVATE Qt5::Widgets)
 target_link_libraries(behavior_tree_debuger PUBLIC nlohmann_json::nlohmann_json any_container)
+target_link_libraries(behavior_tree_debuger PUBLIC http_server)
