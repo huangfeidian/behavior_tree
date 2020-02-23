@@ -1,10 +1,11 @@
 ﻿#include <qboxlayout.h>
 #include <qmessagebox.h>
 #include <dialogs/editable_dialog.h>
+#include <graph/basic_node.h>
 
 using namespace spiritsaway::behavior_tree::editor;
 
-editable_dialog::editable_dialog(QWidget* _in_parent, node* _in_edit_node)
+editable_dialog::editable_dialog(QWidget* _in_parent, basic_node* _in_edit_node)
 	:QDialog(_in_parent)
 	, edit_node(_in_edit_node)
 {

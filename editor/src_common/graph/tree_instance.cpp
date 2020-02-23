@@ -14,13 +14,17 @@
 //#include <QSvgRenderer>
 
 #include <graph/tree_instance.h>
-#include <btree/nodes.h>
+#include <graph/basic_node.h>
 #include <dialogs/search_select_dialog.h>
 #include <choice_manager.h>
 #include <dialogs/editable_item.h>
 
+#include <behavior/nodes.h>
+#include <btree/btree_node.h>
+
 
 using namespace spiritsaway::behavior_tree::editor;
+using btree_node_type = spiritsaway::behavior_tree::common::node_type;
 
 tree_view::tree_view(QGraphicsScene* in_scene, tree_instance* in_graph_mgr)
 	: QGraphicsView(in_scene)
@@ -106,7 +110,7 @@ void tree_instance::focus_on(std::size_t node_idx)
 		focus_on(cur_node);
 	}
 }
-void tree_instance::focus_on(node* cur_node)
+void tree_instance::focus_on(basic_node* cur_node)
 {
 	auto temp_node = cur_node;
 	while (temp_node->_parent)
@@ -141,7 +145,7 @@ void tree_instance::focus_on(const node_graph* cur_node)
 
 
 tree_instance::tree_instance(const std::string& in_file_path, 
-	node* in_root, multi_instance_window* _in_main)
+	basic_node* in_root, multi_instance_window* _in_main)
 	: _root(in_root)
 	, parent(_in_main)
 	, _scene(new QGraphicsScene())
@@ -154,7 +158,7 @@ tree_instance::tree_instance(const std::string& in_file_path,
 	set_scene_background();
 	window = parent->add_sub_window(_view);
 	window->setWindowTitle(QString::fromStdString(file_name.string()));
-	std::deque<const node*>	all_nodes;
+	std::deque<const basic_node*>	all_nodes;
 	all_nodes.push_back(in_root);
 	while (!all_nodes.empty())
 	{
@@ -185,7 +189,7 @@ void tree_instance::display_tree()
 
 }
 
-node_graph* tree_instance::_build_tree_impl(node* cur_node)
+node_graph* tree_instance::_build_tree_impl(basic_node* cur_node)
 {
 	//_logger->debug("tree_instance _build_tree_impl  {} for node {}", 
 	//	file_name.string(), cur_node->_idx);
@@ -288,7 +292,7 @@ void tree_instance::select_changed(node_graph* cur_node, int state)
 		show_select_effect(selected_node);
 	}
 }
-void tree_instance::show_select_effect(node* cur_node)
+void tree_instance::show_select_effect(basic_node* cur_node)
 {
 	if (!cur_node)
 	{
@@ -304,7 +308,7 @@ void tree_instance::show_select_effect(node* cur_node)
 	//_logger->info("show_select_effect node {} color {}", cur_node->_idx, color_to_uint(Qt::magenta));
 	//cur_graph_node->set_outline_color(Qt::magenta);
 }
-void tree_instance::clean_select_effect(node* cur_node)
+void tree_instance::clean_select_effect(basic_node* cur_node)
 {
 	if (!cur_node)
 	{
@@ -334,20 +338,20 @@ void tree_instance::insert_handler()
 	{
 		return;
 	}
-	auto cur_type_opt = magic_enum::enum_cast<node_type>(cur_choice);
+	auto cur_type_opt = magic_enum::enum_cast<btree_node_type>(cur_choice);
 	if (!cur_type_opt.has_value())
 	{
 		return;
 	}
 	auto cur_type = cur_type_opt.value();
-	if (cur_type == node_type::invalid)
+	if (cur_type == btree_node_type::invalid)
 	{
 		return;
 	}
 	auto new_idx = next_node_seq();
 	_logger->debug("tree_instance {} get  new node idx {}",
 		file_name.string(), new_idx);
-	auto cur_new_node = node::default_node_by_type(cur_type, new_idx, selected_node);
+	auto cur_new_node = _root->create_sub_node(std::string(magic_enum::enum_name(cur_type)), selected_node, new_idx);
 	cur_new_node->refresh_editable_items();
 	_logger->debug("tree_instance {} create new node",
 		file_name.string());
@@ -365,7 +369,7 @@ void tree_instance::delete_handler()
 	{
 		return;
 	}
-	if (selected_node->_type == node_type::root)
+	if (!selected_node->_parent)
 	{
 		return;
 	}
@@ -374,7 +378,7 @@ void tree_instance::delete_handler()
 	selected_node = nullptr;
 	refresh();
 }
-node* tree_instance::copy_handler()
+basic_node* tree_instance::copy_handler()
 {
 	_logger->debug("tree_instance {} copy_handler ",
 		file_name.string());
@@ -387,7 +391,7 @@ node* tree_instance::copy_handler()
 	return result;
 
 }
-void tree_instance::paste_handler(node* cur_node)
+void tree_instance::paste_handler(basic_node* cur_node)
 {
 	
 	if (!selected_node)
@@ -398,7 +402,7 @@ void tree_instance::paste_handler(node* cur_node)
 	{
 		return;
 	}
-	std::deque<node*> all_nodes;
+	std::deque<basic_node*> all_nodes;
 	cur_node = cur_node->clone_recursive(nullptr);
 	all_nodes.push_back(cur_node);
 	while (!all_nodes.empty())
@@ -416,7 +420,7 @@ void tree_instance::paste_handler(node* cur_node)
 	selected_node->add_child(cur_node);
 	refresh();
 }
-node* tree_instance::cut_handler()
+basic_node* tree_instance::cut_handler()
 {
 	_logger->debug("tree_instance {} cut_handler ",
 		file_name.string());
@@ -424,7 +428,7 @@ node* tree_instance::cut_handler()
 	{
 		return nullptr;
 	}
-	if (selected_node->_type == node_type::root)
+	if (!selected_node)
 	{
 		return nullptr;
 	}
@@ -445,7 +449,7 @@ void tree_instance::move_handler(bool is_up)
 	selected_node->_parent->move_child(selected_node, is_up);
 	refresh();
 }
-node_graph* tree_instance::find_graph_by_node(node_graph* cur_graph, node* cur_node) const
+node_graph* tree_instance::find_graph_by_node(node_graph* cur_graph, basic_node* cur_node) const
 {
 	//_logger->debug("tree_instance {} find_graph_by_node cur_graph {} cur_node {} ",
 	//	file_name.string(), cur_graph->_model->_idx, cur_node->_idx);
@@ -481,9 +485,9 @@ node_graph* tree_instance::find_graph_by_idx(node_graph* cur_graph, std::uint32_
 	}
 	return nullptr;
 }
-node* tree_instance::find_node_by_idx(std::uint32_t idx)
+basic_node* tree_instance::find_node_by_idx(std::uint32_t idx)
 {
-	std::deque<node*> temp_nodes;
+	std::deque<basic_node*> temp_nodes;
 	temp_nodes.push_back(_root);
 	while (!temp_nodes.empty())
 	{
@@ -516,8 +520,8 @@ std::string tree_instance::save_handler()
 		return "";
 	}
 	node_seq_idx = 0;
-	std::deque<node*> all_nodes;
-	std::vector<node*> indexed_nodes;
+	std::deque<basic_node*> all_nodes;
+	std::vector<basic_node*> indexed_nodes;
 	indexed_nodes.reserve(20);
 	all_nodes.push_back(_root);
 	
@@ -541,7 +545,6 @@ std::string tree_instance::save_handler()
 			nodes_info.push_back(one_node->to_json());
 		}
 		json::object_t dump_json;
-		dump_json["agent_name"] = dynamic_cast<root_node*>(_root)->agent_name;
 		dump_json["nodes"] = nodes_info;
 		dump_json["extra"] = json::object_t();
 		dump_json["name"] = file_name.string();
@@ -641,8 +644,8 @@ void tree_instance::save_to_png()
 
 void tree_instance::search_node()
 {
-	std::vector<node*> all_nodes;
-	std::deque<node*> queue_nodes;
+	std::vector<basic_node*> all_nodes;
+	std::deque<basic_node*> queue_nodes;
 	queue_nodes.push_back(_root);
 	while (!queue_nodes.empty())
 	{

@@ -4,7 +4,8 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include <btree/nodes.h>
+
+#include "basic_node.h"
 
 namespace spiritsaway::behavior_tree::editor
 {
@@ -58,7 +59,7 @@ namespace spiritsaway::behavior_tree::editor
 		Q_OBJECT
 
 	public:
-		node* _model;
+		basic_node* _model;
 		tree_instance* _manager;
 		QGraphicsItem* selected_effect;
 		std::vector<node_graph*> _children;
@@ -68,7 +69,7 @@ namespace spiritsaway::behavior_tree::editor
 		float layout_y;
 		QRectF cur_bounding;
 	public:
-		node_graph(node* _in_model, tree_instance* _in_manager,
+		node_graph(basic_node* _in_model, tree_instance* _in_manager,
 			QColor _text_color);
 
 		QVariant itemChange(GraphicsItemChange change, const QVariant &value);

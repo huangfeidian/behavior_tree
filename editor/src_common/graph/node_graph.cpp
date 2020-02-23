@@ -4,7 +4,6 @@
 #include <qgraphicssceneevent.h>
 #include <graph/node_graph.h>
 #include <graph/tree_instance.h>
-#include <btree/nodes.h>
 #include <dialogs/info_dialog.h>
 #include <dialogs/editable_dialog.h>
 #include <dialogs/line_dialog.h>
@@ -15,7 +14,7 @@ using namespace spiritsaway::behavior_tree::editor;
 
 
 
-node_graph::node_graph(node* _in_model, tree_instance* _in_manager,
+node_graph::node_graph(basic_node* _in_model, tree_instance* _in_manager,
 	QColor _text_color) :
 	_model(_in_model),
 	_manager(_in_manager)

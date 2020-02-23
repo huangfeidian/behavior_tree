@@ -3,9 +3,11 @@
 #include <dialogs/info_dialog.h>
 #include <dialogs/editable_item.h>
 
+#include <graph/basic_node.h>
+
 using namespace spiritsaway::behavior_tree::editor;
 
-info_dialog::info_dialog(QWidget* _in_parent, node* _in_edit_node)
+info_dialog::info_dialog(QWidget* _in_parent, basic_node* _in_edit_node)
 	:QDialog(_in_parent)
 	, edit_node(_in_edit_node)
 {
