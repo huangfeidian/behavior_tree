@@ -1,6 +1,6 @@
 {
-	"action_agent": [
-		{
+	"action_agent": {
+		"has_key": {
 			"args": [
 				{
 					"comment": "key的名字",
@@ -12,7 +12,7 @@
 			"name": "has_key",
 			"return": "如果有这个key返回true 否则返回false"
 		},
-		{
+		"has_key_value":{
 			"args": [
 				{
 					"comment": "黑板key的名字.",
@@ -29,7 +29,7 @@
 			"name": "has_key_value",
 			"return": "如果没有这个key或者这个key的值不等于value 返回false 否则返回true"
 		},
-		{
+		"log_info": {
 			"args": [
 				{
 					"comment": "打印的等级 可选 debug info error warn",
@@ -46,7 +46,7 @@
 			"name": "log",
 			"return": "永远返回true"
 		},
-		{
+		"log_bb": {
 			"args": [
 				{
 					"comment": "打印的等级 可选debug info warn error.",
@@ -63,7 +63,7 @@
 			"name": "log_bb",
 			"return": "永远返回true\t"
 		},
-		{
+		"number_add": {
 			"args": [
 				{
 					"comment": "黑板里的特定key",
@@ -80,7 +80,7 @@
 			"name": "number_add",
 			"return": "如果黑板key不存在返回false 如果黑板key对应的值不是数值返回false 如果传入的value不是数值类型返回false 操作成功返回true\t\t\t\t"
 		},
-		{
+		"number_dec": {
 			"args": [
 				{
 					"comment": "黑板里的特定key",
@@ -97,7 +97,7 @@
 			"name": "number_dec",
 			"return": "如果黑板key不存在返回false 如果黑板key对应的值不是数值返回false 如果传入的value不是数值类型返回false 操作成功返回true\t"
 		},
-		{
+		"number_div": {
 			"args": [
 				{
 					"comment": "黑板里的特定key",
@@ -114,7 +114,7 @@
 			"name": "number_div",
 			"return": "如果黑板key不存在返回false 如果黑板key对应的值不是数值返回false 如果传入的value不是数值类型返回false 操作成功返回true\t"
 		},
-		{
+		"number_larger_than": {
 			"args": [
 				{
 					"comment": "黑板的名字",
@@ -131,7 +131,7 @@
 			"name": "number_larger_than",
 			"return": "如果黑板不存在 返回false 如果两个相比较的值不都是数值类型 返回false 如果黑板值大于传入的值 返回true\t否则返回false"
 		},
-		{
+		"number_less_than": {
 			"args": [
 				{
 					"comment": "黑板的名字",
@@ -148,7 +148,7 @@
 			"name": "number_less_than",
 			"return": "如果黑板不存在 返回false 如果两个相比较的值不都是数值类型 返回false 如果黑板值小于传入的值 返回true\t否则返回false"
 		},
-		{
+		"number_multiply": {
 			"args": [
 				{
 					"comment": "黑板里的特定key",
@@ -165,7 +165,7 @@
 			"name": "number_multiply",
 			"return": "如果黑板key不存在返回false 如果黑板key对应的值不是数值返回false 如果传入的value不是数值类型返回false 操作成功返回true\t"
 		},
-		{
+		"set_key_value": {
 			"args": [
 				{
 					"comment": "设置的黑板的key名字.",
@@ -182,7 +182,7 @@
 			"name": "set_key_value",
 			"return": ""
 		},
-		{
+		"wait_for_seconds": {
 			"args": [
 				{
 					"comment": "等待的秒数 为浮点类型",
@@ -193,6 +193,14 @@
 			"brief": "等待一段时间",
 			"name": "wait_for_seconds",
 			"return": "需要异步执行 永远返回true\t\t\t\t\t"
+		},
+		"nop":
+		{
+			"args": [
+			],
+			"brief": "什么都不做",
+			"name": "nop",
+			"return": "永远返回true"
 		}
-	]
+	}
 }

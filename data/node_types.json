@@ -1,0 +1,110 @@
+{
+    "root": {
+        "child_min": 1,
+        "child_max": 1,
+        "editable_item": {
+
+        }
+    },
+    "negative": {
+        "child_min": 1,
+        "child_max": 1,
+        "editable_item": {
+
+        }
+    },
+    "sequence": {
+        "child_min": 1,
+        "child_max": 20,
+        "editable_item": {
+
+        }
+    },
+    "alwasys_seq": {
+        "child_min": 1,
+        "child_max": 20,
+        "editable_item": {
+
+        }
+    },
+    "random_seq": {
+        "child_min": 1,
+        "child_max": 20,
+        "editable_item": {
+
+        }
+    },
+    "if_else": {
+        "child_min": 3,
+        "child_max": 3,
+        "editable_item": {
+
+        }
+    },
+    "while_loop": {
+        "child_min": 2,
+        "child_max": 2,
+        "editable_item": {
+
+        }
+    },
+    "wait_event": {
+        "child_min": 0,
+        "child_max": 0,
+        "editable_item": {
+
+        }
+    },
+    "reset": {
+        "child_min": 0,
+        "child_max": 0,
+        "editable_item": {
+
+        }
+    },
+    "sub_tree": {
+        "child_min": 0,
+        "child_max": 0,
+        "editable_item": {
+
+        }
+    },
+    "parallel": {
+        "child_min": 1,
+        "child_max": 1,
+        "editable_item": {
+
+        }
+    },
+    "action": {
+        "child_min": 0,
+        "child_max": 0,
+        "editable_item": {
+
+        }
+    },
+    "always_true": {
+        "child_min": 1,
+        "child_max": 1,
+        "editable_item": {
+
+        }
+    },
+    "select": {
+        "child_min": 1,
+        "child_max": 20,
+        "editable_item": {
+
+        }
+    },
+    "probility": {
+        "child_min": 1,
+        "child_max": 20,
+        "editable_item": {
+
+        }
+    }
+
+
+
+}
