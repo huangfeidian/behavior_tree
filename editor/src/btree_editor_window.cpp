@@ -195,52 +195,6 @@ bool btree_editor_window::load_config()
 }
 basic_node* btree_editor_window::create_node_from_desc(const basic_node_desc& cur_desc, basic_node* parent)
 {
-	auto cur_config = node_config_repo::instance().get_config(cur_desc.type);
-	if (!cur_config)
-	{
-		return nullptr;
-	}
-	basic_node* cur_node;
-	
-	if (!parent)
-	{
-		auto invalid_root = root_node("invalid");
-		cur_node = invalid_root.create_node(cur_desc.type, parent, cur_desc.idx);
-	}
-	else
-	{
-		cur_node = parent->create_node(cur_desc.type, parent, cur_desc.idx);
-
-	}
-	cur_node->color = cur_desc.color;
-	cur_node->_is_collapsed = cur_desc.is_collpased;
-	cur_node->comment = cur_desc.comment;
-	json::object_t extra = json(cur_desc.extra);
-	if (extra.empty())
-	{
-		if (cur_desc.type == "root")
-		{
-			extra["agent_name"] = agent_relation::instance().get_root_agent();
-		}
-		else if (cur_desc.type == "action")
-		{
-			extra["action_name"] = "nop";
-			extra["action_args"] = json::array();
-		}
-	}
-
-	if (!cur_node->set_extra(extra))
-	{
-		_logger->error("create_node_by_desc fail by desc {}", cur_desc.encode().dump());
-		delete cur_node;
-		return nullptr;
-	}
-	if (parent)
-	{
-		parent->add_child(cur_node);
-	}
-	cur_node->refresh_editable_items();
-
-	return cur_node;
+	return btree_node::create_node_from_desc(cur_desc, parent);
 }
 

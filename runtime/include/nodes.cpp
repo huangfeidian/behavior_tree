@@ -1,4 +1,6 @@
 ﻿#include <nodes.h>
+#include <magic_enum.hpp>
+
 namespace spiritsaway::behavior_tree::runtime
 {
 	using namespace spiritsaway::behavior_tree::common;
@@ -15,7 +17,7 @@ namespace spiritsaway::behavior_tree::runtime
 		result = new_result;
 		if (_agent->_debug_on)
 		{
-			_agent->push_cmd_queue(agent_cmd::node_leave, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx, new_result});
+			_agent->push_cmd_queue(agent_cmd::node_leave, {});
 		}
 		_state = node_state::dead;
 		backtrace();
@@ -79,7 +81,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		if (_agent->_debug_on)
 		{
-			_agent->push_cmd_queue(agent_cmd::node_enter, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx });
+			_agent->push_cmd_queue(agent_cmd::node_enter, {});
 		}
 	}
 	void node::leave()
@@ -88,14 +90,14 @@ namespace spiritsaway::behavior_tree::runtime
 		_state = node_state::leaving;
 		if (_agent->_debug_on)
 		{
-			_agent->push_cmd_queue(agent_cmd::node_leave, { _agent->get_tree_idx(btree_config.tree_name), node_config.idx });
+			_agent->push_cmd_queue(agent_cmd::node_leave, {});
 		}
 	}
 	void node::on_revisit()
 	{
 		_state = node_state::revisiting;
 	}
-	void node::visit_child(node_idx_type child_idx)
+	void node::visit_child(std::uint32_t child_idx)
 	{
 		if (child_idx >= children.size())
 		{
@@ -267,30 +269,31 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return false;
 		}
-		if (!prob_iter->second.is_vector())
+		if (!prob_iter->second.is_array())
 		{
 			return false;
 		}
-		const spiritsaway::serialize::any_vector& prob_vec = std::get<spiritsaway::serialize::any_vector>(prob_iter->second);
-		if (prob_vec.size() != children.size())
+		for (const auto& one_item : prob_iter->second)
 		{
-			return false;
-		}
-		for (auto& one_prob : prob_vec)
-		{
-			if (!one_prob.is_int())
+			if (!one_item.is_number_unsigned())
 			{
 				return false;
 			}
-			_probilities.push_back(static_cast<std::uint32_t>(std::get<any_int_type>(one_prob)));
+			_probilities.push_back(one_item.get<std::uint32_t>());
 		}
+		
+		if (_probilities.size() != children.size())
+		{
+			return false;
+		}
+
 		return true;
 	}
-	node_idx_type probility::prob_choose_child_idx() const
+	std::uint32_t probility::prob_choose_child_idx() const
 	{
-		node_idx_type prob_sum = std::accumulate(_probilities.begin(), _probilities.end(), 0);
+		std::uint32_t prob_sum = std::accumulate(_probilities.begin(), _probilities.end(), 0);
 		auto cur_choice = _distribution(_generator);
-		node_idx_type temp = cur_choice % prob_sum;
+		std::uint32_t temp = cur_choice % prob_sum;
 		for (std::size_t i = 0; i < children.size(); i++)
 		{
 			temp -= _probilities[0];
@@ -410,20 +413,13 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return false;
 		}
-		if (!sub_tree_iter->second.is_str())
+		if (!sub_tree_iter->second.is_string())
 		{
 			return false;
 		}
-		auto sub_tree_name = std::get<std::string>(sub_tree_iter->second);
-		const btree_desc* cur_tree_desc = btree_desc::load(sub_tree_name, _logger);
-		if (!cur_tree_desc)
-		{
-			_logger->warn("{} fail to load btree {}", debug_info(), sub_tree_name);
-			_agent->notify_stop();
-
-			return false;
-		}
-		auto new_root = node::create_node_by_idx(*cur_tree_desc, 0, this, _agent);
+		auto sub_tree_name = sub_tree_iter->second.get<std::string>();
+		
+		auto new_root = _agent->create_tree(sub_tree_name, this);
 		if (!new_root)
 		{
 			return false;
@@ -464,24 +460,24 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			if (!load_action_config())
 			{
-				_logger->warn("{} fail to load action args with extra {}", debug_info(), encode(node_config.extra).dump());
+				_logger->warn("{} fail to load action args with extra {}", debug_info(), serialize::encode(node_config.extra).dump());
 				_agent->notify_stop();
 				return;
 			}
 		}
-		any_vector real_action_args;
+		json::array_t real_action_args;
 		for (const auto& one_arg : action_args)
 		{
 			if (one_arg.first == action_arg_type::blackboard)
 			{
-				
-				if (!_agent->blackboard_has(std::get<std::string>(one_arg.second)))
+				auto cur_key = one_arg.second.get<std::string>();
+				if (!_agent->blackboard_has(cur_key))
 				{
-					_logger->warn("{} invalid blackboard arg name {}", debug_info(), std::get<std::string>(one_arg.second));
+					_logger->warn("{} invalid blackboard arg name {}", debug_info(), cur_key);
 					_agent->notify_stop();
 					return;
 				}
-				auto cur_bb_value = _agent->blackboard_get(std::get<std::string>(one_arg.second));
+				auto cur_bb_value = _agent->blackboard_get(cur_key);
 				real_action_args.push_back(cur_bb_value);
 			}
 			else
@@ -491,7 +487,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		if (_agent->during_debug())
 		{
-			_agent->push_cmd_queue(agent_cmd::node_action, { _agent->get_tree_idx(tree_name()), node_config.idx, action_name, real_action_args });
+			_agent->push_cmd_queue(agent_cmd::node_action, {action_name, real_action_args});
 		}
 		std::optional<bool> action_result = _agent->agent_action(action_name, real_action_args);
 		if (_agent->during_poll)
@@ -519,59 +515,59 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return false;
 		}
-		if (!action_iter->second.is_str())
+		if (!action_iter->second.is_string())
 		{
 			return false;
 		}
-		action_name = std::get<std::string>(action_iter->second);
+		action_name = action_iter->second.get<std::string>();
 		auto action_args_iter = extra.find("action_args");
 		if (action_args_iter == extra.end())
 		{
 			return false;
 		}
-		if (!action_args_iter->second.is_vector())
+		if (!action_args_iter->second.is_array())
 		{
 			return false;
 		}
-		const spiritsaway::serialize::any_vector& args_vec = std::get<spiritsaway::serialize::any_vector>(action_args_iter->second);
-		for (auto& one_arg : args_vec)
+		for (auto& one_arg : action_args_iter->second)
 		{
-			if (!one_arg.is_str_map())
+			if (!one_arg.is_object())
 			{
 				return false;
 			}
-			auto& one_arg_map = std::get<spiritsaway::serialize::any_str_map>(one_arg);
-			if (one_arg_map.size() != 2)
+			if (one_arg.size() != 2)
 			{
 				return false;
 			}
-			auto arg_type_iter = one_arg_map.find("arg_type");
-			if (arg_type_iter == one_arg_map.end())
+			auto arg_type_iter = one_arg.find("arg_type");
+			if (arg_type_iter == one_arg.end())
 			{
 				return false;
 			}
-			if (!arg_type_iter->second.is_str())
+			if (!arg_type_iter->is_string())
 			{
 				return false;
 			}
-			auto arg_value_iter = one_arg_map.find("arg_value");
-			if (arg_value_iter == one_arg_map.end())
+			auto cur_arg_type = arg_type_iter->get<std::string>();
+			auto arg_value_iter = one_arg.find("arg_value");
+			if (arg_value_iter == one_arg.end())
 			{
 				return false;
 			}
-
-			auto cur_arg_type = std::get<std::string>(arg_type_iter->second);
-			
 
 			if (cur_arg_type == "blackboard")
 			{
-				auto cur_arg_value = std::get<std::string>(arg_value_iter->second);
+				if (!arg_value_iter->is_string())
+				{
+					return false;
+				}
+				auto cur_arg_value = arg_value_iter->get<std::string>();
 				action_args.emplace_back(action_arg_type::blackboard, cur_arg_value);
 			}
 			else if (cur_arg_type == "plain")
 			{
 
-				action_args.emplace_back(action_arg_type::plain, arg_value_iter->second);
+				action_args.emplace_back(action_arg_type::plain, *arg_value_iter);
 			}
 			else
 			{
@@ -593,14 +589,14 @@ namespace spiritsaway::behavior_tree::runtime
 				_agent->notify_stop();
 				return;
 			}
-			if (!event_iter->second.is_str())
+			if (!event_iter->second.is_string())
 			{
 				_logger->warn("{} fail to load event form value {}", debug_info(), 
-					event_iter->second.to_string());
+					event_iter->second.dump());
 				_agent->notify_stop();
 				return;
 			}
-			event = std::get<std::string>(event_iter->second);
+			event = event_iter->second.get<std::string>();
 		}
 		_state = node_state::blocking;
 	}
@@ -611,7 +607,7 @@ namespace spiritsaway::behavior_tree::runtime
 		_agent->reset();
 
 	}
-	node* node::create_node_by_idx(const btree_desc& btree_config, node_idx_type node_idx, node* parent, agent* in_agent)
+	node* node::create_node_by_idx(const btree_desc& btree_config, std::uint32_t node_idx, node* parent, agent* in_agent)
 	{
 		if (node_idx >= btree_config.nodes.size())
 		{
@@ -624,7 +620,12 @@ namespace spiritsaway::behavior_tree::runtime
 			return nullptr;
 		}
 		auto& cur_node_desc = btree_config.nodes[node_idx];
-		switch (cur_node_desc.type)
+		auto opt_type = magic_enum::enum_cast<node_type>(cur_node_desc.type);
+		if (!opt_type)
+		{
+			return nullptr;
+		}
+		switch (opt_type.value())
 		{
 
 		case node_type::root:
@@ -716,7 +717,7 @@ namespace spiritsaway::behavior_tree::runtime
 			if (parent)
 			{
 				parent->_logger->warn("{} fail to create sub node idx {} with type {}",
-					parent->debug_info(), node_idx, static_cast<std::uint32_t>(cur_node_desc.type));
+					parent->debug_info(), node_idx, cur_node_desc.type);
 				parent->_agent->notify_stop();
 			}
 			return nullptr;

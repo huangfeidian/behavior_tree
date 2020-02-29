@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <optional>
-#include <behavior/nodes.h>
-#include <behavior/btree.h>
+#include <behavior/node_enums.h>
 #include <tree_editor/common/graph/basic_node.h>
 #include <behavior/btree_actions.h>
 #include <tree_editor/common/dialogs/editable_item.h>
@@ -11,10 +10,13 @@
 namespace spiritsaway::behavior_tree::editor
 {
 	using spiritsaway::tree_editor::basic_node;
+	using spiritsaway::tree_editor::basic_node_desc;
+
 	using spiritsaway::tree_editor::config_node;
 	using namespace spiritsaway;
 	using btree_node_type = behavior_tree::common::node_type;
 	using action_arg_type = behavior_tree::common::action_arg_type;
+
 	class btree_node: public config_node
 	{
 	public:
@@ -40,6 +42,55 @@ namespace spiritsaway::behavior_tree::editor
 			return true;
 		}
 		basic_node* create_node(std::string _type, basic_node* _in_parent, std::uint32_t _idx);
+		static basic_node* create_node_from_desc(const basic_node_desc& cur_desc, basic_node* parent)
+		{
+			auto cur_config = node_config_repo::instance().get_config(cur_desc.type);
+			if (!cur_config)
+			{
+				return nullptr;
+			}
+			basic_node* cur_node;
+
+			if (!parent)
+			{
+				auto invalid_root = root_node("invalid");
+				cur_node = invalid_root.create_node(cur_desc.type, parent, cur_desc.idx);
+			}
+			else
+			{
+				cur_node = parent->create_node(cur_desc.type, parent, cur_desc.idx);
+
+			}
+			cur_node->color = cur_desc.color;
+			cur_node->_is_collapsed = cur_desc.is_collpased;
+			cur_node->comment = cur_desc.comment;
+			json::object_t extra = json(cur_desc.extra);
+			if (extra.empty())
+			{
+				if (cur_desc.type == "root")
+				{
+					extra["agent_name"] = agent_relation::instance().get_root_agent();
+				}
+				else if (cur_desc.type == "action")
+				{
+					extra["action_name"] = "nop";
+					extra["action_args"] = json::array();
+				}
+			}
+
+			if (!cur_node->set_extra(extra))
+			{
+				delete cur_node;
+				return nullptr;
+			}
+			if (parent)
+			{
+				parent->add_child(cur_node);
+			}
+			cur_node->refresh_editable_items();
+
+			return cur_node;
+		}
 	};
 
 	class root_node : public btree_node

@@ -7,95 +7,131 @@ namespace spiritsaway::behavior_tree::runtime
 		return blackboard_has(bb_key);
 	}
 	bool action_agent::set_key_value(const std::string& bb_key, 
-		const any_value_type& new_value)
+		const json& new_value)
 	{
 		blackboard_set(bb_key, new_value);
 		return true;
 	}
 	bool action_agent::has_key_value(const std::string& bb_key, 
-		const any_value_type& value)
+		const json& value)
 	{
 		
 		return blackboard_get(bb_key) == value;
 
 	}
 	bool action_agent::number_add(const std::string& bb_key, 
-		const any_value_type& value)
+		const json& value)
 	{
 		auto pre_value = blackboard_get(bb_key);
 		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto result = pre_value.numeric_cal_add(value);
-		if (result)
+		if (!pre_value.is_number() || !value.is_number())
 		{
-			blackboard_set(bb_key, pre_value);
+			return false;
 		}
-		return result;
+		double new_value = pre_value.get<double>() + value.get<double>();
+		if (pre_value.is_number_float() || value.is_number_float())
+		{
+			blackboard_set(bb_key, new_value);
+		}
+		else
+		{
+			blackboard_set(bb_key, static_cast<int>(new_value));
+		}
+		
+		return true;
 	}
 	bool action_agent::number_dec(const std::string& bb_key, 
-		const any_value_type& value)
+		const json& value)
 	{
 		auto pre_value = blackboard_get(bb_key);
 		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto result = pre_value.numeric_cal_dec(value);
-		if (result)
+		if (!pre_value.is_number() || !value.is_number())
 		{
-			blackboard_set(bb_key, pre_value);
+			return false;
 		}
-		return result;
+		double new_value = pre_value.get<double>() - value.get<double>();
+		if (pre_value.is_number_float() || value.is_number_float())
+		{
+			blackboard_set(bb_key, new_value);
+		}
+		else
+		{
+			blackboard_set(bb_key, static_cast<int>(new_value));
+		}
+
+		return true;
 	}
 	bool action_agent::number_multiply(const std::string& bb_key, 
-		const any_value_type& value)
+		const json& value)
 	{
 		auto pre_value = blackboard_get(bb_key);
 		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto result = pre_value.numeric_cal_multiply(value);
-		if (result)
+		if (!pre_value.is_number() || !value.is_number())
 		{
-			blackboard_set(bb_key, pre_value);
+			return false;
 		}
-		return result;
+		double new_value = pre_value.get<double>() * value.get<double>();
+		if (pre_value.is_number_float() || value.is_number_float())
+		{
+			blackboard_set(bb_key, new_value);
+		}
+		else
+		{
+			blackboard_set(bb_key, static_cast<int>(new_value));
+		}
+
+		return true;
 	}
 	bool action_agent::number_div(const std::string& bb_key, 
-		const any_value_type& value)
+		const json& value)
 	{
 		auto pre_value = blackboard_get(bb_key);
 		if (pre_value.is_null())
 		{
 			return false;
 		}
-		auto result = pre_value.numeric_cal_div(value);
-		if (result)
+		if (!pre_value.is_number() || !value.is_number())
 		{
-			blackboard_set(bb_key, pre_value);
+			return false;
 		}
-		return result;
+		double new_value = pre_value.get<double>() + value.get<double>();
+		blackboard_set(bb_key, new_value);
+
+		return true;
 	}
 
 
 
 	bool action_agent::number_larger_than(const std::string& bb_key, 
-		const any_value_type& other_value)
+		const json& other_value)
 	{
 
-		auto cur_value = blackboard_get(bb_key);
-		auto result = cur_value.numeric_larger_than(other_value);
-		return result.value_or(false);
+		auto pre_value = blackboard_get(bb_key);
+		if (!pre_value.is_number() || !other_value.is_number())
+		{
+			return false;
+		}
+		return pre_value.get<double>() > other_value.get<double>();
+
 	}
 	bool action_agent::number_less_than(const std::string& bb_key, 
-		const any_value_type& other_value)
+		const json& other_value)
 	{
-		auto cur_value = blackboard_get(bb_key);
-		auto result = cur_value.numeric_less_than(other_value);
-		return result.value_or(false);
+		auto pre_value = blackboard_get(bb_key);
+		if (!pre_value.is_number() || !other_value.is_number())
+		{
+			return false;
+		}
+		return pre_value.get<double>() < other_value.get<double>();
 	}
 	std::optional<bool> action_agent::wait_for_seconds(double duration)
 	{
@@ -116,23 +152,23 @@ namespace spiritsaway::behavior_tree::runtime
 		_timers.insert(cur_timer_handler);
 		return std::nullopt;
 	}
-	bool action_agent::log(const std::string& log_level, const any_value_type& log_info)
+	bool action_agent::log(const std::string& log_level, const json& log_info)
 	{
 		if (log_level == "debug")
 		{
-			_logger->debug("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->debug("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		else if (log_level == "info")
 		{
-			_logger->info("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->info("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		else if (log_level == "warn")
 		{
-			_logger->warn("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->warn("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		else if (log_level == "error")
 		{
-			_logger->error("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->error("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		return true;
 	}
@@ -141,25 +177,25 @@ namespace spiritsaway::behavior_tree::runtime
 		auto log_info = blackboard_get(bb_key);
 		if (log_level == "debug")
 		{
-			_logger->debug("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->debug("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		else if (log_level == "info")
 		{
-			_logger->info("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->info("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		else if (log_level == "warn")
 		{
-			_logger->warn("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->warn("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		else if (log_level == "error")
 		{
-			_logger->error("agent {} log {}", reinterpret_cast<std::size_t>(this), encode(log_info).dump());
+			_logger->error("agent {} log {}", reinterpret_cast<std::size_t>(this), log_info.dump());
 		}
 		
 		return true;
 	}
 	std::optional<bool> action_agent::agent_action(const std::string& action_name, 
-		const any_vector& action_args)
+		const json::array_t& action_args)
 	{
 		auto action_iter = action_funcs_map.find(action_name);
 		if (action_iter == action_funcs_map.end())

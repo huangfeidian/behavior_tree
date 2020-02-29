@@ -4,14 +4,14 @@
 #include <deque>
 #include <string>
 #include <any_container/decode.h>
-#include <any_container/any_value.h>
 
 #include <spdlog/spdlog.h>
 #include "timer_manager.hpp"
 
-#include <behavior/btree.h>
+#include <tree_editor/common/debug_cmd.h>
 
-#include <behavior/nodes.h>
+#include <behavior/btree_desc.h>
+#include <filesystem>
 
 namespace spiritsaway::behavior_tree::runtime
 {
@@ -26,11 +26,12 @@ namespace spiritsaway::behavior_tree::runtime
 	};
 
 	using spiritsaway::behavior_tree::common::agent_cmd;
-	using spiritsaway::behavior_tree::common::agent_cmd_detail;
+	using spiritsaway::tree_editor::node_trace_cmd;
+	using spiritsaway::behavior_tree::common::btree_desc;
 	class agent
 	{
 	public:
-		agent();
+		agent(const std::filesystem::path& _in_data_folder);
 		friend class node;
 	public:
 		bool poll(); // first handle events then handle fronts
@@ -41,9 +42,10 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		void notify_stop();
 		bool load_btree(const std::string& btree_name);
-		spiritsaway::serialize::any_value_type blackboard_get(const std::string& key) const;
-		void blackboard_set(const std::string& key, const spiritsaway::serialize::any_value_type& value);
+		json blackboard_get(const std::string& key) const;
+		void blackboard_set(const std::string& key, const json& value);
 		bool blackboard_has(const std::string& key) const;
+		bool blackboard_pop(const std::string & key);
 	public:
 		bool during_poll = false;
 		std::vector<node*> _fronts; // node ready to run
@@ -51,16 +53,17 @@ namespace spiritsaway::behavior_tree::runtime
 		std::vector<event_type> _events; // events to be handled;
 		//std::unordered_map<const node*, timer_handler> _timers;
 		virtual std::optional<bool> agent_action(const std::string& action_name, 
-			const spiritsaway::serialize::any_vector& action_args);
+			const json::array_t& action_args);
 		void reset();
 		bool set_debug(bool debug_flag);
 		bool enable(bool enable_flag);
-		std::vector<agent_cmd_detail> dump_cmd_queue();
-		void push_cmd_queue(agent_cmd _cmd, const spiritsaway::serialize::any_vector& _param);
+		std::vector<node_trace_cmd> dump_cmd_queue();
+		void push_cmd_queue(std::uint32_t teee_idx, std::uint32_t node_idx, agent_cmd _cmd, const json::array_t& _param);
+		void push_cmd_queue(agent_cmd _cmd, const json::array_t& _param) ;
 		bool during_debug() const;
 		std::uint32_t get_tree_idx(const std::string& tree_name);
-	protected:
-		
+	public:
+		node* create_tree(const std::string& btree_name, node* parent);
 
 	protected:
 		
@@ -72,10 +75,11 @@ namespace spiritsaway::behavior_tree::runtime
 		bool _enabled = false;
 		bool _debug_on = false;
 		std::unordered_set<timer_handler, timer_handler_hash> _timers;
+		std::filesystem::path data_folder;
 	private:
-		spiritsaway::serialize::any_str_map _blackboard;
-		std::vector<std::string> _tree_indexes;
-		std::deque<agent_cmd_detail> _cmd_queue;
+		json::object_t _blackboard;
+		std::vector<const btree_desc*> _tree_descs;
+		std::deque<node_trace_cmd> _cmd_queue;
 		bool poll_fronts(); // run the nodes
 		bool poll_events(); // handle the events;
 		void poll_node(node* cur_node);// run one node

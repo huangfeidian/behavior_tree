@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <random>
 
-#include <behavior/nodes.h>
+#include <behavior/node_enums.h>
 #include <logger.h>
+#include <behavior/btree_desc.h>
+
 
 #include "agent.h"
 namespace spiritsaway::behavior_tree::runtime
@@ -49,13 +51,13 @@ namespace spiritsaway::behavior_tree::runtime
 		node_type _type;
 		std::uint8_t next_child_idx = 0;
 		agent* _agent;
-		const node_idx_type _node_idx;
+		const std::uint32_t _node_idx;
 		const btree_desc& btree_config;
-		const node_desc& node_config;
+		const basic_node_desc& node_config;
 		std::shared_ptr<node_closure> _closure;
 		std::shared_ptr<spdlog::logger> _logger;
 
-		node(node* in_parent, agent* in_agent, node_idx_type in_node_idx, 
+		node(node* in_parent, agent* in_agent, std::uint32_t in_node_idx, 
 			const btree_desc& in_btree, node_type in_type) :
 			_parent(in_parent),
 			_node_idx(in_node_idx),
@@ -86,14 +88,14 @@ namespace spiritsaway::behavior_tree::runtime
 		void create_children();
 		virtual void on_enter();
 		virtual void on_revisit();
-		virtual void visit_child(node_idx_type child_idx);
+		virtual void visit_child(std::uint32_t child_idx);
 		virtual void leave();
 		virtual void interrupt();
 		virtual void backtrace();
 		const std::string& tree_name() const;
 		std::string debug_info() const;
 		static node* create_node_by_idx(const btree_desc& btree_config,
-			node_idx_type node_idx, node* parent, agent* in_agent);
+			std::uint32_t node_idx, node* parent, agent* in_agent);
 	};
 
 	
@@ -128,7 +130,7 @@ namespace spiritsaway::behavior_tree::runtime
 	protected:
 		using node::node;
 	private:
-		std::vector<node_idx_type> _shuffle;
+		std::vector<std::uint32_t> _shuffle;
 		
 		void on_enter();
 		void on_revisit();
@@ -152,7 +154,7 @@ namespace spiritsaway::behavior_tree::runtime
 		
 		void on_enter();
 		bool init_prob_parameters();
-		node_idx_type prob_choose_child_idx() const;
+		std::uint32_t prob_choose_child_idx() const;
 		void on_revisit();
 		friend class node;
 
@@ -206,7 +208,7 @@ namespace spiritsaway::behavior_tree::runtime
 	{
 		using node::node;
 		std::string action_name;
-		std::vector<std::pair<action_arg_type, any_value_type>> action_args;
+		std::vector<std::pair<action_arg_type, json>> action_args;
 		void on_enter();
 		bool load_action_config();
 		friend class node;
@@ -226,7 +228,7 @@ namespace spiritsaway::behavior_tree::runtime
 	class reset : public node
 	{
 		using node::node;
-		reset(node* in_parent, agent* in_agent, node_idx_type in_node_idx,
+		reset(node* in_parent, agent* in_agent, std::uint32_t in_node_idx,
 			const btree_desc& in_btree, node_type in_type) :
 			node(in_parent, in_agent, in_node_idx, in_btree, in_type)
 		{
