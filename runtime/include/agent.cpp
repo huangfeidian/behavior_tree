@@ -15,7 +15,7 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	bool agent::during_debug() const
 	{
-		return _debug_on;
+		return _cmd_receiver != nullptr;
 	}
 	bool agent::poll()
 	{
@@ -165,7 +165,7 @@ namespace spiritsaway::behavior_tree::runtime
 	void agent::blackboard_set(const std::string& key, const json& value)
 	{
 		_blackboard[key] = value;
-		if (_debug_on)
+		if (_cmd_receiver)
 		{
 			json::array_t params;
 			params.push_back(key);
@@ -181,89 +181,10 @@ namespace spiritsaway::behavior_tree::runtime
 	void agent::push_cmd_queue(std::uint32_t tree_idx, std::uint32_t node_idx, agent_cmd _cmd, const json::array_t& _param)
 	{
 
-		auto microsecondsUTC = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		node_trace_cmd cur_cmd_trace;
-		switch (_cmd)
+		if (_cmd_receiver)
 		{
-		case spiritsaway::behavior_tree::common::agent_cmd::poll_begin:
-			cur_cmd_trace.cmd = "poll begin";
-			cur_cmd_trace.detail = _param;
-			break;
-		case spiritsaway::behavior_tree::common::agent_cmd::snapshot:
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::snapshot);
-			cur_cmd_trace.detail = _param;
-			break;
-		case spiritsaway::behavior_tree::common::agent_cmd::push_tree:
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::push_tree);
-			cur_cmd_trace.detail = _param;
-			break;
-		case spiritsaway::behavior_tree::common::agent_cmd::node_enter:
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::enter);
-			cur_cmd_trace.detail = _param;
-			break;
-		case spiritsaway::behavior_tree::common::agent_cmd::node_leave:
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::leave);
-			cur_cmd_trace.detail = _param;
-
-			break;
-		case spiritsaway::behavior_tree::common::agent_cmd::node_action:
-		{
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
-			json::array_t action_cmd_detail;
-			action_cmd_detail.push_back(magic_enum::enum_name(agent_cmd::node_action));
-			action_cmd_detail.push_back(_param);
-			cur_cmd_trace.detail = action_cmd_detail;
-			break;
+			_cmd_receiver->add(tree_idx, node_idx, _cmd, _param);
 		}
-		case spiritsaway::behavior_tree::common::agent_cmd::bb_set:
-		{
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
-			json::array_t action_cmd_detail;
-			action_cmd_detail.push_back("variable");
-			tree_editor::var_trace_cmd cur_bb_detail;
-			cur_bb_detail._cmd = tree_editor::var_cmd::set;
-			cur_bb_detail._detail = _param;
-
-			action_cmd_detail.push_back(cur_bb_detail.encode());
-			cur_cmd_trace.detail = action_cmd_detail;
-			break;
-		}
-		case spiritsaway::behavior_tree::common::agent_cmd::bb_clear:
-		{
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
-			json::array_t action_cmd_detail;
-			action_cmd_detail.push_back("variable");
-			tree_editor::var_trace_cmd cur_bb_detail;
-			cur_bb_detail._cmd = tree_editor::var_cmd::reset;
-			cur_bb_detail._detail = _param;
-
-			action_cmd_detail.push_back(cur_bb_detail.encode());
-			cur_cmd_trace.detail = action_cmd_detail;
-			break;
-		}
-			
-		case spiritsaway::behavior_tree::common::agent_cmd::bb_remove:
-		{
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
-			json::array_t action_cmd_detail;
-			action_cmd_detail.push_back("variable");
-			tree_editor::var_trace_cmd cur_bb_detail;
-			cur_bb_detail._cmd = tree_editor::var_cmd::remove;
-			cur_bb_detail._detail = _param;
-
-			action_cmd_detail.push_back(cur_bb_detail.encode());
-			cur_cmd_trace.detail = action_cmd_detail;
-			break;
-		}
-			
-		default:
-			break;
-		}
-		cur_cmd_trace.cmd = magic_enum::enum_name(_cmd);
-		cur_cmd_trace.ts = microsecondsUTC;
-		cur_cmd_trace.tree_idx = tree_idx;
-		cur_cmd_trace.node_idx = node_idx;
-		_cmd_queue.push_back(cur_cmd_trace);
 
 	}
 	void agent::push_cmd_queue(agent_cmd _cmd, const json::array_t& _param)
@@ -277,17 +198,7 @@ namespace spiritsaway::behavior_tree::runtime
 			push_cmd_queue(0, 0, _cmd, _param);
 		}
 	}
-	std::vector<node_trace_cmd> agent::dump_cmd_queue()
-	{
-		auto cur_queue_size = _cmd_queue.size();
-		std::vector<node_trace_cmd> result;
-		while (!_cmd_queue.empty())
-		{
-			result.push_back(_cmd_queue.front());
-			_cmd_queue.pop_front();
-		}
-		return result;
-	}
+
 	std::uint32_t agent::get_tree_idx(const std::string& tree_name)
 	{
 		for (std::uint32_t i = 0; i < _tree_descs.size(); i++)
@@ -301,19 +212,11 @@ namespace spiritsaway::behavior_tree::runtime
 		return 0;
 		
 	}
-	bool agent::set_debug(bool debug_flag)
+	cmd_receiver* agent::set_debug(cmd_receiver* _in_cmd_receiver)
 	{
-		if (debug_flag == _debug_on)
-		{
-			return false;
-		}
-
-		_debug_on = debug_flag;
-		if (!debug_flag)
-		{
-			_cmd_queue.clear();
-		}
-		else
+		auto result = _cmd_receiver;
+		_cmd_receiver = _in_cmd_receiver;
+		if(_cmd_receiver)
 		{
 			json::array_t snapshot_param;
 			std::vector<std::string> _tree_names;
@@ -332,7 +235,7 @@ namespace spiritsaway::behavior_tree::runtime
 
 			push_cmd_queue(agent_cmd::snapshot, snapshot_param);
 		}
-		return true;
+		return result;
 	}
 	std::optional<bool> agent::agent_action(const std::string& action_name, 
 		const json::array_t& action_args)
@@ -342,9 +245,9 @@ namespace spiritsaway::behavior_tree::runtime
 	void agent::reset()
 	{
 		_blackboard.clear();
-		if (_debug_on)
+		if (_cmd_receiver)
 		{
-			push_cmd_queue(agent_cmd::bb_clear, {});
+			push_cmd_queue(agent_cmd::reset, {});
 		}
 		reset_flag = true;
 		notify_stop();
@@ -382,18 +285,14 @@ namespace spiritsaway::behavior_tree::runtime
 				return nullptr;
 			}
 			_tree_descs.push_back(cur_btree);
+			if (_cmd_receiver)
+			{
+				json::array_t params;
+				params.push_back(cur_btree->tree_name);
+				push_cmd_queue(agent_cmd::push_tree, params);
+			}
 		}
 		
-		auto pre_tree_size = _tree_descs.size();
-
-		auto cur_tree_idx = get_tree_idx(cur_btree->tree_name);
-		if (_debug_on && pre_tree_size == cur_tree_idx)
-		{
-			json::array_t params;
-			params.push_back(cur_btree->tree_name);
-			params.push_back(pre_tree_size);
-			push_cmd_queue(agent_cmd::push_tree, params);
-		}
 		auto temp_root = node::create_node_by_idx(*cur_btree, 0, parent, this);
 		return temp_root;
 	}

@@ -15,7 +15,7 @@ namespace spiritsaway::behavior_tree::runtime
 			return;
 		}
 		result = new_result;
-		if (_agent->_debug_on)
+		if (_agent->during_debug())
 		{
 			_agent->push_cmd_queue(agent_cmd::node_leave, {});
 		}
@@ -79,7 +79,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			one_child->_state = node_state::init;
 		}
-		if (_agent->_debug_on)
+		if (_agent->during_debug())
 		{
 			_agent->push_cmd_queue(agent_cmd::node_enter, {});
 		}
@@ -88,7 +88,7 @@ namespace spiritsaway::behavior_tree::runtime
 	{
 		_closure.reset();
 		_state = node_state::leaving;
-		if (_agent->_debug_on)
+		if (_agent->during_debug())
 		{
 			_agent->push_cmd_queue(agent_cmd::node_leave, {});
 		}

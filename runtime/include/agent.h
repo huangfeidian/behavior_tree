@@ -8,10 +8,10 @@
 #include <spdlog/spdlog.h>
 #include "timer_manager.hpp"
 
-#include <tree_editor/common/debug_cmd.h>
 
 #include <behavior/btree_desc.h>
 #include <filesystem>
+#include <behavior/btree_debug.h>
 
 namespace spiritsaway::behavior_tree::runtime
 {
@@ -25,9 +25,9 @@ namespace spiritsaway::behavior_tree::runtime
 		blackboard_value,
 	};
 
-	using spiritsaway::behavior_tree::common::agent_cmd;
-	using spiritsaway::tree_editor::node_trace_cmd;
+	using spiritsaway::behavior_tree::common::cmd_receiver;
 	using spiritsaway::behavior_tree::common::btree_desc;
+	using spiritsaway::behavior_tree::common::agent_cmd;
 	class agent
 	{
 	public:
@@ -55,9 +55,8 @@ namespace spiritsaway::behavior_tree::runtime
 		virtual std::optional<bool> agent_action(const std::string& action_name, 
 			const json::array_t& action_args);
 		void reset();
-		bool set_debug(bool debug_flag);
+		cmd_receiver* set_debug(cmd_receiver* _in_receiver);
 		bool enable(bool enable_flag);
-		std::vector<node_trace_cmd> dump_cmd_queue();
 		void push_cmd_queue(std::uint32_t teee_idx, std::uint32_t node_idx, agent_cmd _cmd, const json::array_t& _param);
 		void push_cmd_queue(agent_cmd _cmd, const json::array_t& _param) ;
 		bool during_debug() const;
@@ -67,19 +66,18 @@ namespace spiritsaway::behavior_tree::runtime
 
 	protected:
 		
-
+		cmd_receiver* _cmd_receiver = nullptr;
 		node* current_poll_node = nullptr;
 		bool reset_flag = false;
 		node* cur_root_node = nullptr;
 		std::shared_ptr<spdlog::logger> _logger;
 		bool _enabled = false;
-		bool _debug_on = false;
 		std::unordered_set<timer_handler, timer_handler_hash> _timers;
 		std::filesystem::path data_folder;
+
 	private:
 		json::object_t _blackboard;
 		std::vector<const btree_desc*> _tree_descs;
-		std::deque<node_trace_cmd> _cmd_queue;
 		bool poll_fronts(); // run the nodes
 		bool poll_events(); // handle the events;
 		void poll_node(node* cur_node);// run one node

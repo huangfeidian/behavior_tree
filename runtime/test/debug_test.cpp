@@ -3,12 +3,17 @@
 #include <ctime>
 #include <filesystem>
 #include <any_container/encode.h>
+#include <tree_editor/common/debug_cmd.h>
+
+#include <magic_enum.hpp>
 
 using namespace spiritsaway::behavior_tree::common;
 using namespace spiritsaway::behavior_tree::runtime;
+using namespace spiritsaway;
 using namespace std;
 using namespace std::chrono_literals;
-
+using spiritsaway::serialize::encode;
+using spiritsaway::tree_editor::node_trace_cmd;
 
 std::string format_timepoint(std::uint64_t milliseconds_since_epoch)
 {
@@ -24,12 +29,102 @@ std::string format_timepoint(std::uint64_t milliseconds_since_epoch)
 	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S ", timeinfo);
 	return std::string(buffer) + std::to_string(milliseconds_since_epoch % 1000) + "ms";
 }
+struct btree_debug_cmd_receiver : public cmd_receiver
+{
+	std::deque<node_trace_cmd> _cmd_buffer;
+	void add(std::uint32_t tree_idx, std::uint32_t node_idx, agent_cmd _cmd, const json::array_t& _param)
+	{
+		auto microsecondsUTC = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		node_trace_cmd cur_cmd_trace;
+		switch (_cmd)
+		{
+		case spiritsaway::behavior_tree::common::agent_cmd::poll_begin:
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::group_by);
+			cur_cmd_trace.detail = _param;
+			break;
+		case spiritsaway::behavior_tree::common::agent_cmd::snapshot:
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::snapshot);
+			cur_cmd_trace.detail = _param;
+			break;
+		case spiritsaway::behavior_tree::common::agent_cmd::push_tree:
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::push_tree);
+			cur_cmd_trace.detail = _param;
+			break;
+		case spiritsaway::behavior_tree::common::agent_cmd::node_enter:
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::enter);
+			cur_cmd_trace.detail = _param;
+			break;
+		case spiritsaway::behavior_tree::common::agent_cmd::node_leave:
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::leave);
+			cur_cmd_trace.detail = _param;
+
+			break;
+		case spiritsaway::behavior_tree::common::agent_cmd::node_action:
+		{
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
+			json::array_t action_cmd_detail;
+			action_cmd_detail.push_back(magic_enum::enum_name(agent_cmd::node_action));
+			action_cmd_detail.push_back(_param);
+			cur_cmd_trace.detail = action_cmd_detail;
+			break;
+		}
+		case spiritsaway::behavior_tree::common::agent_cmd::bb_set:
+		{
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
+			json::array_t action_cmd_detail;
+			action_cmd_detail.push_back("variable");
+			tree_editor::var_trace_cmd cur_bb_detail;
+			cur_bb_detail._cmd = tree_editor::var_cmd::set;
+			cur_bb_detail._detail = _param;
+
+			action_cmd_detail.push_back(cur_bb_detail.encode());
+			cur_cmd_trace.detail = action_cmd_detail;
+			break;
+		}
+		case spiritsaway::behavior_tree::common::agent_cmd::bb_clear:
+		{
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
+			json::array_t action_cmd_detail;
+			action_cmd_detail.push_back("variable");
+			tree_editor::var_trace_cmd cur_bb_detail;
+			cur_bb_detail._cmd = tree_editor::var_cmd::reset;
+			cur_bb_detail._detail = _param;
+
+			action_cmd_detail.push_back(cur_bb_detail.encode());
+			cur_cmd_trace.detail = action_cmd_detail;
+			break;
+		}
+
+		case spiritsaway::behavior_tree::common::agent_cmd::bb_remove:
+		{
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::mutate);
+			json::array_t action_cmd_detail;
+			action_cmd_detail.push_back("variable");
+			tree_editor::var_trace_cmd cur_bb_detail;
+			cur_bb_detail._cmd = tree_editor::var_cmd::remove;
+			cur_bb_detail._detail = _param;
+
+			action_cmd_detail.push_back(cur_bb_detail.encode());
+			cur_cmd_trace.detail = action_cmd_detail;
+			break;
+		}
+
+		default:
+			break;
+		}
+		cur_cmd_trace.ts = microsecondsUTC;
+		cur_cmd_trace.tree_idx = tree_idx;
+		cur_cmd_trace.node_idx = node_idx;
+		_cmd_buffer.push_back(cur_cmd_trace);
+	}
+};
 int main()
 {
 	std::string test_btree_name = "new_btree_1.json";
 	std::filesystem::path data_folder = "../../data/btree";
 	action_agent cur_agent(data_folder);
-	cur_agent.set_debug(true);
+	auto cur_receiver = new btree_debug_cmd_receiver();
+	cur_agent.set_debug(cur_receiver);
 	cur_agent.load_btree(test_btree_name);
 	cur_agent.enable(true);
 	auto cur_logger = spiritsaway::behavior_tree::common::logger_mgr::instance().create_logger("btree");
@@ -37,20 +132,21 @@ int main()
 	std::vector<node_trace_cmd> total_logs;
 	for (int i = 0; i < 2; i++)
 	{
-		auto logs = cur_agent.dump_cmd_queue();
-		for (auto one_log : logs)
+		while(!cur_receiver->_cmd_buffer.empty())
 		{
+			auto one_log = cur_receiver->_cmd_buffer.front();
+			cur_receiver->_cmd_buffer.pop_front();
 			total_logs.push_back(one_log);
-			if (_trace.push_cmd(one_log))
+			if (_trace.push_cmd(one_log) ||true)
 			{
-				cur_logger->info("ts: {} cmd: {}, tree {} fronts {} blackboards {} ", format_timepoint(one_log.ts), one_log.cmd, spiritsaway::serialize::encode(_trace._latest_state->tree_indexes).dump(), spiritsaway::serialize::encode(_trace._latest_state->_current_nodes).dump(), spiritsaway::serialize::encode(_trace._latest_state->_vars).dump());
+				cur_logger->info("ts: {} cmd: {}, args {} tree {} fronts {} blackboards {} ", format_timepoint(one_log.ts), one_log.cmd, encode(one_log.detail).dump(), encode(_trace._latest_state->tree_indexes).dump(), encode(_trace._latest_state->_current_nodes).dump(), encode(_trace._latest_state->_vars).dump());
 			}
 		}
 		this_thread::sleep_for(100ms);
 		timer_manager::instance().poll(std::chrono::system_clock::now());
 	}
-	cur_logger->info("after run tree {} fronts {} blackboards {} ", spiritsaway::serialize::encode(_trace._latest_state->tree_indexes).dump(), spiritsaway::serialize::encode(_trace._latest_state->_current_nodes).dump(), spiritsaway::serialize::encode(_trace._latest_state->_vars).dump());
+	cur_logger->info("after run tree {} fronts {} blackboards {} ", encode(_trace._latest_state->tree_indexes).dump(), encode(_trace._latest_state->_current_nodes).dump(), encode(_trace._latest_state->_vars).dump());
 	ofstream cmd_log_file = ofstream("../../data/history/btree_cmd_log.json");
-	cmd_log_file << spiritsaway::serialize::encode(total_logs).dump(4) << endl;
+	cmd_log_file << encode(total_logs).dump(4) << endl;
 	cmd_log_file.close();
 }

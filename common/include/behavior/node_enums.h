@@ -37,17 +37,7 @@ namespace spiritsaway::behavior_tree::common
 		wait_child,
 		dead,
 	};
-	enum class agent_cmd
-	{
-		poll_begin = 0,
-		snapshot, //tree_indexes node_idxes blackboard
-		push_tree,// new tree name, tree_idx
-		node_enter,//
-		node_leave,//
-		node_action,//action_name, action_args
-		bb_set,//key, value
-		bb_remove, //key
-		bb_clear,
-	};
-	
+
+
+
 }
