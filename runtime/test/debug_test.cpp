@@ -39,7 +39,7 @@ struct btree_debug_cmd_receiver : public cmd_receiver
 		switch (_cmd)
 		{
 		case spiritsaway::behavior_tree::common::agent_cmd::poll_begin:
-			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::group_by);
+			cur_cmd_trace.cmd = magic_enum::enum_name(tree_editor::nodes_cmd::group_begin);
 			cur_cmd_trace.detail = _param;
 			break;
 		case spiritsaway::behavior_tree::common::agent_cmd::snapshot:

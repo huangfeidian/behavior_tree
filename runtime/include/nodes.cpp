@@ -17,7 +17,7 @@ namespace spiritsaway::behavior_tree::runtime
 		result = new_result;
 		if (_agent->during_debug())
 		{
-			_agent->push_cmd_queue(agent_cmd::node_leave, {});
+			_agent->push_cmd_queue(_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
 		}
 		_state = node_state::dead;
 		backtrace();
@@ -81,7 +81,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		if (_agent->during_debug())
 		{
-			_agent->push_cmd_queue(agent_cmd::node_enter, {});
+			_agent->push_cmd_queue(_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_enter, {});
 		}
 	}
 	void node::leave()
@@ -90,7 +90,7 @@ namespace spiritsaway::behavior_tree::runtime
 		_state = node_state::leaving;
 		if (_agent->during_debug())
 		{
-			_agent->push_cmd_queue(agent_cmd::node_leave, {});
+			_agent->push_cmd_queue(_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
 		}
 	}
 	void node::on_revisit()

@@ -10,11 +10,10 @@
 
 namespace spiritsaway::behavior_tree::editor
 {
-	using spiritsaway::tree_editor::basic_node;
-	using spiritsaway::tree_editor::basic_node_desc;
 
-	using spiritsaway::tree_editor::config_node;
+
 	using namespace spiritsaway;
+	using namespace spiritsaway::tree_editor;
 	using btree_node_type = behavior_tree::common::node_type;
 	using action_arg_type = behavior_tree::common::action_arg_type;
 	class btree_node: public config_node
