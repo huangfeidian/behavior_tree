@@ -146,7 +146,10 @@ int main()
 		timer_manager::instance().poll(std::chrono::system_clock::now());
 	}
 	cur_logger->info("after run tree {} fronts {} blackboards {} ", encode(_trace._latest_state->tree_indexes).dump(), encode(_trace._latest_state->_current_nodes).dump(), encode(_trace._latest_state->_vars).dump());
+	json::object_t dump_file_content;
+	dump_file_content["entity_id"] = "sample";
+	dump_file_content["debug_cmds"] = encode(total_logs);
 	ofstream cmd_log_file = ofstream("../../data/history/btree_cmd_log.json");
-	cmd_log_file << encode(total_logs).dump(4) << endl;
+	cmd_log_file << json(dump_file_content).dump(4) << endl;
 	cmd_log_file.close();
 }
