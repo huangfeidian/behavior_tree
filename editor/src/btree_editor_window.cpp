@@ -117,6 +117,9 @@ bool btree_editor_window::load_config()
 		agent_desc_path = temp_result[2];
 		save_path = temp_result[3];
 	}
+	std::vector<std::string> arg_type_choice = { std::string(magic_enum::enum_name(action_arg_type::blackboard)), std::string(magic_enum::enum_name(action_arg_type::plain)) };
+	choice_manager::instance().add_choice("action_arg_type", arg_type_choice, arg_type_choice);
+
 	// agent relation
 	std::vector<std::string> agent_names;
 

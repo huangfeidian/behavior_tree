@@ -22,7 +22,7 @@
 				{
 					"comment": "要比较的值",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "判断黑板里特定key是否等于特定值",
@@ -39,7 +39,7 @@
 				{
 					"comment": "需要打印的值",
 					"name": "log_info",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "打印信息到log",
@@ -73,7 +73,7 @@
 				{
 					"comment": "用来增加的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "将特定黑板值增加一定数值 然后用结果更新次黑板值",
@@ -90,7 +90,7 @@
 				{
 					"comment": "用来减去的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "将特定黑板值减去一定数值 然后用结果更新次黑板值",
@@ -107,7 +107,7 @@
 				{
 					"comment": "用来乘以的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "将特定黑板值除以一定数值 然后用结果更新次黑板值",
@@ -124,7 +124,7 @@
 				{
 					"comment": "用来比较的值",
 					"name": "other_value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "判断特定黑板值是否大于传入的值",
@@ -141,7 +141,7 @@
 				{
 					"comment": "用来比较的值",
 					"name": "other_value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "判断特定黑板值是否小于传入的值",
@@ -158,7 +158,7 @@
 				{
 					"comment": "用来乘以的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "将特定黑板值乘于一定数值 然后用结果更新次黑板值",
@@ -175,7 +175,7 @@
 				{
 					"comment": "设置的新的值",
 					"name": "new_value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "const nlohmann::basic_json<std::map, std::vector, std::string, bool, long long, unsigned long long, double, std::allocator, adl_serializer> &"
 				}
 			],
 			"brief": "将黑板里特定key设置为特定值",
