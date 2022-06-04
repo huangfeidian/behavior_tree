@@ -9,6 +9,7 @@
 2. json https://github.com/nlohmann/json
 3. spdlog https://github.com/gabime/spdlog
 4. magic_enum https://github.com/Neargye/magic_enum
+5. any_container https://github.com/huangfeidian/any_container
 
 ## 运行时
 
