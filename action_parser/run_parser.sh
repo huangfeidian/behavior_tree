@@ -1,0 +1,1 @@
+./parser  ../runtime/include/action_agent.cpp -I../common/include > parser.log 2>& 1
