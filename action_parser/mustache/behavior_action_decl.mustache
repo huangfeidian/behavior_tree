@@ -1,3 +1,4 @@
+#ifndef __meta_parse__
 private:
 using action_func_type = std::optional<bool> ({{class_name}}::*)(const std::vector<json>&);
 
@@ -10,6 +11,7 @@ static void init_action_funcs_map(); // called in _static_constructor_
 std::optional<bool> {{func_name}}_action_wrapper(const std::vector<json>& data);
 {{/is_inherited}}
 {{/behavior_actions}}
+#endif
 
 
 
