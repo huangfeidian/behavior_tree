@@ -1,4 +1,5 @@
 
+#ifndef __meta_parse__
 using namespace nlohmann;
 std::unordered_map<std::string, {{class_full_name}}::action_func_type> {{class_full_name}}::action_funcs_map;
 
@@ -32,4 +33,5 @@ std::optional<bool> {{class_full_name}}::{{func_name}}_action_wrapper(const std:
 }
 {{/is_inherited}}
 {{/behavior_actions}}
+#endif
 
