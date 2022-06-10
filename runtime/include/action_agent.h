@@ -179,6 +179,8 @@ namespace spiritsaway::behavior_tree::runtime
 		//! \return 永远返回true	
 
 		Meta(behavior_action) bool log_bb(const std::string& log_level, const std::string& bb_key);
+#ifndef __meta_parse__
 #include "action_agent.generated_h"
+#endif
 	} Meta(behavior);
 }

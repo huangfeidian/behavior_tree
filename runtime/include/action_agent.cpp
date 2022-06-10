@@ -211,4 +211,6 @@ namespace spiritsaway::behavior_tree::runtime
 		return (this->*(action_iter->second))(action_args);
 	}
 }
+#ifndef __meta_parse__
 #include "action_agent.generated_cpp"
+#endif
