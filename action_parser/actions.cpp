@@ -5,6 +5,7 @@ namespace spiritsaway::behavior_tree
 	struct alternate_typenames
 	{
 		Meta(typename(std::string)) std::string a;
+		Meta(typename(const std::string&)) const std::string& a_1;
 		Meta(typename(json)) json b;
 		Meta(typename(std::vector<json>)) std::vector<json> c;
 		Meta(typename(const json&)) const json& d;
