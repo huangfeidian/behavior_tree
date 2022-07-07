@@ -1,1 +1,1 @@
-./parser  ../runtime/include/action_agent.cpp -I../common/include > parser.log 2>& 1
+./generate_behavior  ./actions.cpp -I../common/include -I../runtime/include> parser.log 2>& 1

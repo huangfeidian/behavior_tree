@@ -1,4 +1,5 @@
 
+#ifndef __meta_parse__
 using namespace nlohmann;
 std::unordered_map<std::string, spiritsaway::behavior_tree::runtime::action_agent::action_func_type> spiritsaway::behavior_tree::runtime::action_agent::action_funcs_map;
 
@@ -20,16 +21,16 @@ void spiritsaway::behavior_tree::runtime::action_agent::init_action_funcs_map()
 
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::has_key_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action has_key when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action has_key when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action has_key when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action has_key when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -37,29 +38,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::has_key_a
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::has_key_value_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action has_key_value when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action has_key_value when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action has_key_value when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action has_key_value when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action has_key_value when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action has_key_value when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action has_key_value when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action has_key_value when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -67,29 +68,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::has_key_v
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::log_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_log_level;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_log_level;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action log when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action log when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_log_level))
     {
-        _logger->warn("fail to call action log when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action log when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_log_info;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_log_info;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action log when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action log when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_log_info))
     {
-        _logger->warn("fail to call action log when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action log when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -97,29 +98,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::log_actio
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::log_bb_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_log_level;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_log_level;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action log_bb when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action log_bb when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_log_level))
     {
-        _logger->warn("fail to call action log_bb when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action log_bb when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action log_bb when convert 1  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action log_bb when convert 1  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_bb_key))
     {
-        _logger->warn("fail to call action log_bb when convert arg 1 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[1].dump());
+        _logger->warn("fail to call action log_bb when convert arg 1 with value {} to type const std::string& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -127,29 +128,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::log_bb_ac
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_add_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action number_add when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action number_add when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_add when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action number_add when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_add when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action number_add when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_add when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action number_add when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -157,29 +158,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_ad
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_dec_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action number_dec when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action number_dec when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_dec when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action number_dec when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_dec when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action number_dec when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_dec when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action number_dec when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -187,29 +188,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_de
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_div_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action number_div when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action number_div when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_div when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action number_div when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_div when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action number_div when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_div when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action number_div when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -217,29 +218,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_di
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_larger_than_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action number_larger_than when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action number_larger_than when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_larger_than when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action number_larger_than when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_other_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_other_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_larger_than when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action number_larger_than when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_other_value))
     {
-        _logger->warn("fail to call action number_larger_than when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action number_larger_than when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -247,29 +248,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_la
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_less_than_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action number_less_than when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action number_less_than when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_less_than when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action number_less_than when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_other_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_other_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_less_than when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action number_less_than when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_other_value))
     {
-        _logger->warn("fail to call action number_less_than when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action number_less_than when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -277,29 +278,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_le
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_multiply_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action number_multiply when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action number_multiply when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action number_multiply when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action number_multiply when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action number_multiply when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action number_multiply when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_value))
     {
-        _logger->warn("fail to call action number_multiply when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action number_multiply when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -307,29 +308,29 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::number_mu
 }
 std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::set_key_value_action_wrapper(const std::vector<json>& data)
 {
-    std::remove_const_t<std::remove_reference_t<const std::basic_string<char, std::char_traits<char>, std::allocator<char>> &>> tmp_bb_key;
+    std::remove_const_t<std::remove_reference_t<const std::string&>> tmp_bb_key;
     if(0 >= data.size())
     {
-        _logger->warn("fail to call action set_key_value when convert 0  to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail, vector access fail");
+        _logger->warn("fail to call action set_key_value when convert 0  to type const std::string& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[0], tmp_bb_key))
     {
-        _logger->warn("fail to call action set_key_value when convert arg 0 with value {} to type const std::basic_string<char, std::char_traits<char>, std::allocator<char>> & fail", data[0].dump());
+        _logger->warn("fail to call action set_key_value when convert arg 0 with value {} to type const std::string& fail", data[0].dump());
         notify_stop();
         return std::nullopt;
     }
-    std::remove_const_t<std::remove_reference_t<const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> &>> tmp_new_value;
+    std::remove_const_t<std::remove_reference_t<const json&>> tmp_new_value;
     if(1 >= data.size())
     {
-        _logger->warn("fail to call action set_key_value when convert 1  to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail, vector access fail");
+        _logger->warn("fail to call action set_key_value when convert 1  to type const json& fail, vector access fail");
         notify_stop();
         return std::nullopt;
     }
     if(!spiritsaway::serialize::decode(data[1], tmp_new_value))
     {
-        _logger->warn("fail to call action set_key_value when convert arg 1 with value {} to type const nlohmann::basic_json<std::map, std::vector, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, bool, long long, unsigned long long, double, std::allocator, adl_serializer, std::vector<unsigned char, std::allocator<unsigned char>>> & fail", data[1].dump());
+        _logger->warn("fail to call action set_key_value when convert arg 1 with value {} to type const json& fail", data[1].dump());
         notify_stop();
         return std::nullopt;
     }
@@ -352,6 +353,7 @@ std::optional<bool> spiritsaway::behavior_tree::runtime::action_agent::wait_for_
     }
     return wait_for_seconds(tmp_duration);
 }
+#endif
 
 // this file should be end of generated cpp file
 spiritsaway::behavior_tree::runtime::action_agent::static_constructor_for_action_agent spiritsaway::behavior_tree::runtime::action_agent::_static_constructor_;

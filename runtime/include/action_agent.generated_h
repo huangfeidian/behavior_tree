@@ -5,6 +5,7 @@ struct static_constructor_for_action_agent
     static_constructor_for_action_agent();
 };
 static static_constructor_for_action_agent _static_constructor_;
+#ifndef __meta_parse__
 private:
 using action_func_type = std::optional<bool> (action_agent::*)(const std::vector<json>&);
 
@@ -24,6 +25,7 @@ std::optional<bool> number_less_than_action_wrapper(const std::vector<json>& dat
 std::optional<bool> number_multiply_action_wrapper(const std::vector<json>& data);
 std::optional<bool> set_key_value_action_wrapper(const std::vector<json>& data);
 std::optional<bool> wait_for_seconds_action_wrapper(const std::vector<json>& data);
+#endif
 
 
 
