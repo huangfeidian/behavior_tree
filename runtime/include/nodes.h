@@ -19,65 +19,61 @@ namespace spiritsaway::behavior_tree::runtime
 
 	public:
 		node_closure(node* _in_node):
-			_node(_in_node)
-		{
-
-		}
-		virtual void operator()()
+			m_node(_in_node)
 		{
 
 		}
 		virtual ~node_closure() 
 		{
-			_node = nullptr;
+			m_node = nullptr;
 		}
 	protected:
-		node* _node;
+		node* m_node;
 	};
 
 	
 	class node
 	{
 	protected:
-		static std::mt19937 _generator;
-		static std::uniform_int_distribution<std::uint32_t> _distribution;
+		static std::mt19937 m_generator;
+		static std::uniform_int_distribution<std::uint32_t> m_distribution;
 	public:
 		bool in_fronts = false;
-		node* _parent = nullptr;
+		node* m_parent = nullptr;
 		std::vector<node*> children;
 		bool result = false;
 		bool running = false;
-		node_state _state;
-		node_type _type;
+		node_state m_state;
+		node_type m_type;
 		std::uint8_t next_child_idx = 0;
-		agent* _agent;
-		const std::uint32_t _node_idx;
+		agent* m_agent;
+		const std::uint32_t m_node_idx;
 		const btree_desc& btree_config;
 		const basic_node_desc& node_config;
-		std::shared_ptr<node_closure> _closure;
-		std::shared_ptr<spdlog::logger> _logger;
+		std::shared_ptr<node_closure> m_closure; // 主要用来处理异常中断时的任务释放 同时外部任务也可以通过weak_ptr的形式来判断任务是否已经被中止
+		std::shared_ptr<spdlog::logger> m_logger;
 
 		node(node* in_parent, agent* in_agent, std::uint32_t in_node_idx, 
 			const btree_desc& in_btree, node_type in_type) :
-			_parent(in_parent),
-			_node_idx(in_node_idx),
+			m_parent(in_parent),
+			m_node_idx(in_node_idx),
 			btree_config(in_btree),
-			_state(node_state::init),
+			m_state(node_state::init),
 			next_child_idx(0),
-			_agent(in_agent),
-			_type(in_type),
+			m_agent(in_agent),
+			m_type(in_type),
 			node_config(in_btree.nodes[in_node_idx]),
-			_logger(std::move(logger_mgr::instance().create_logger("btree")))
+			m_logger(std::move(logger_mgr::instance().create_logger("btree")))
 		{
 
 		}
 		bool node_state_is_ready()
 		{
-			return _state == node_state::init || _state == node_state::awaken;
+			return m_state == node_state::init || m_state == node_state::awaken;
 		}
 		bool node_state_is_forbid_enter()
 		{
-			return _state == node_state::leaving || _state == node_state::dead;
+			return m_state == node_state::leaving || m_state == node_state::dead;
 		}
 		void set_result(bool new_result);
 		virtual bool handle_event(const event_type& cur_event)
@@ -130,7 +126,7 @@ namespace spiritsaway::behavior_tree::runtime
 	protected:
 		using node::node;
 	private:
-		std::vector<std::uint32_t> _shuffle;
+		std::vector<std::uint32_t> m_shuffle;
 		
 		void on_enter();
 		void on_revisit();
@@ -150,7 +146,7 @@ namespace spiritsaway::behavior_tree::runtime
 	{
 		using node::node;
 	private:
-		std::vector<std::uint32_t> _probilities;
+		std::vector<std::uint32_t> m_probilities;
 		
 		void on_enter();
 		bool init_prob_parameters();
@@ -247,7 +243,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		virtual void operator()()
 		{
-			_node->set_result(true);
+			m_node->set_result(true);
 
 		}
 		virtual ~timeout_closure()

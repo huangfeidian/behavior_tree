@@ -23,10 +23,10 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			friend class timer_handler_hash;
 		private:
-			time_handler_t _handler;
+			time_handler_t m_handler;
 		public:
 			timer_handler_impl(time_handler_t in_handler) :
-				_handler(in_handler)
+				m_handler(in_handler)
 			{
 
 			}
@@ -34,17 +34,17 @@ namespace spiritsaway::behavior_tree::runtime
 			timer_handler_impl& operator=(const timer_handler_impl& other) = default;
 			bool is_active() const
 			{
-				return timer_manager::instance().is_timer_active(_handler);
+				return timer_manager::instance().is_timer_active(m_handler);
 			}
 			bool cancel()
 			{
-				auto pre_handler = _handler;
-				_handler = 0;
+				auto pre_handler = m_handler;
+				m_handler = 0;
 				return timer_manager::instance().cancel_timer(pre_handler);
 			}
 			bool operator==(const timer_handler_impl& other) const
 			{
-				return _handler == other._handler;
+				return m_handler == other.m_handler;
 			}
 		};
 	private:
@@ -55,7 +55,7 @@ namespace spiritsaway::behavior_tree::runtime
 	private:
 		time_handler_t max_handler_used = 0;
 		std::vector<time_handler_t> handler_for_reuse;
-		std::unordered_map<time_handler_t, callback_type> _callbacks;
+		std::unordered_map<time_handler_t, callback_type> m_callbacks;
 		std::priority_queue<std::pair<ts_t, time_handler_t>> ts_handlers;
 	private:
 		time_handler_t gen_handler()
@@ -82,7 +82,7 @@ namespace spiritsaway::behavior_tree::runtime
 		timer_handler_impl add_timer_with_ts(ts_t cur_expire_ts, callback_type cur_callback)
 		{
 			auto cur_handler = gen_handler();
-			_callbacks[cur_handler] = cur_callback;
+			m_callbacks[cur_handler] = cur_callback;
 			ts_handlers.emplace(cur_expire_ts, cur_handler);
 			return timer_handler_impl(cur_handler);
 		}
@@ -99,19 +99,19 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		bool is_timer_active(time_handler_t cur_handler)
 		{
-			auto cur_iter = _callbacks.find(cur_handler);
-			return cur_iter == _callbacks.end();
+			auto cur_iter = m_callbacks.find(cur_handler);
+			return cur_iter == m_callbacks.end();
 		}
 		bool cancel_timer(time_handler_t cur_handler)
 		{
-			auto cur_iter = _callbacks.find(cur_handler);
-			if (cur_iter == _callbacks.end())
+			auto cur_iter = m_callbacks.find(cur_handler);
+			if (cur_iter == m_callbacks.end())
 			{
 				return false;
 			}
 			else
 			{
-				_callbacks.erase(cur_iter);
+				m_callbacks.erase(cur_iter);
 				return true;
 			}
 		}
@@ -125,11 +125,11 @@ namespace spiritsaway::behavior_tree::runtime
 				{
 					auto cur_handler = cur_item.second;
 					ts_handlers.pop();
-					auto cur_iter = _callbacks.find(cur_handler);
-					if (cur_iter != _callbacks.end())
+					auto cur_iter = m_callbacks.find(cur_handler);
+					if (cur_iter != m_callbacks.end())
 					{
 						auto cur_callback = cur_iter->second;
-						_callbacks.erase(cur_iter);
+						m_callbacks.erase(cur_iter);
 						cur_callback();
 						
 					}
@@ -150,7 +150,7 @@ namespace spiritsaway::behavior_tree::runtime
 	public:
 		std::size_t operator()(const timer_handler& cur_handler) const
 		{
-			return cur_handler._handler;
+			return cur_handler.m_handler;
 		}
 	};
 }

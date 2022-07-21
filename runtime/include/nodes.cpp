@@ -4,53 +4,53 @@
 namespace spiritsaway::behavior_tree::runtime
 {
 	using namespace spiritsaway::behavior_tree::common;
-	std::mt19937 node::_generator;
-	std::uniform_int_distribution<std::uint32_t> node::_distribution;
+	std::mt19937 node::m_generator;
+	std::uniform_int_distribution<std::uint32_t> node::m_distribution;
 	void node::set_result(bool new_result)
 	{
 		if (node_state_is_forbid_enter())
 		{
-			_logger->warn("current state is {} while set result {} at node {}", int(_state), new_result, node_config.idx);
-			_agent->notify_stop();
+			m_logger->warn("current state is {} while set result {} at node {}", int(m_state), new_result, node_config.idx);
+			m_agent->notify_stop();
 			return;
 		}
 		result = new_result;
-		if (_agent->during_debug())
+		if (m_agent->during_debug())
 		{
-			_agent->push_cmd_queue(_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
+			m_agent->push_cmd_queue(m_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
 		}
-		_state = node_state::dead;
+		m_state = node_state::dead;
 		backtrace();
 	}
 	void node::visit()
 	{
 
-		switch (_state)
+		switch (m_state)
 		{
 		case node_state::init:
 			create_children();
 			on_enter();
-			if (_state == node_state::entering)
+			if (m_state == node_state::entering)
 			{
-				_logger->warn("btree {} on_enter node {} while after state {}",
-					btree_config.tree_name, node_config.idx, int(_state));
-				_agent->notify_stop();
+				m_logger->warn("btree {} on_enter node {} while after state {}",
+					btree_config.tree_name, node_config.idx, int(m_state));
+				m_agent->notify_stop();
 			}
 			break;
 		case node_state::awaken:
 			on_revisit();
-			if (_state == node_state::revisiting)
+			if (m_state == node_state::revisiting)
 			{
-				_logger->warn("btree {} revisit node {} while after state {}",
-					btree_config.tree_name, node_config.idx, int(_state));
-				_agent->notify_stop();
+				m_logger->warn("btree {} revisit node {} while after state {}",
+					btree_config.tree_name, node_config.idx, int(m_state));
+				m_agent->notify_stop();
 			}
 			break;
 
 		default:
-			_logger->warn("btree {} visit node {} with invalid state {}",
-				btree_config.tree_name, node_config.idx, int(_state));
-			_agent->notify_stop();
+			m_logger->warn("btree {} visit node {} with invalid state {}",
+				btree_config.tree_name, node_config.idx, int(m_state));
+			m_agent->notify_stop();
 			break;
 		}
 	}
@@ -61,7 +61,7 @@ namespace spiritsaway::behavior_tree::runtime
 			// 初始化所有的子节点
 			for (auto one_child_idx : node_config.children)
 			{
-				auto one_child = node::create_node_by_idx(btree_config, one_child_idx, this, _agent);
+				auto one_child = node::create_node_by_idx(btree_config, one_child_idx, this, m_agent);
 				if (!one_child)
 				{
 					return;
@@ -72,65 +72,65 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	void node::on_enter()
 	{
-		_state = node_state::entering;
+		m_state = node_state::entering;
 		next_child_idx = 0;
 		result = false;
 		for (auto one_child : children)
 		{
-			one_child->_state = node_state::init;
+			one_child->m_state = node_state::init;
 		}
-		if (_agent->during_debug())
+		if (m_agent->during_debug())
 		{
-			_agent->push_cmd_queue(_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_enter, {});
+			m_agent->push_cmd_queue(m_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_enter, {});
 		}
 	}
 	void node::leave()
 	{
-		_closure.reset();
-		_state = node_state::leaving;
-		if (_agent->during_debug())
+		m_closure.reset();
+		m_state = node_state::leaving;
+		if (m_agent->during_debug())
 		{
-			_agent->push_cmd_queue(_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
+			m_agent->push_cmd_queue(m_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
 		}
 	}
 	void node::on_revisit()
 	{
-		_state = node_state::revisiting;
+		m_state = node_state::revisiting;
 	}
 	void node::visit_child(std::uint32_t child_idx)
 	{
 		if (child_idx >= children.size())
 		{
-			_logger->warn("btree {} visit child {} at node {} while children size is {}",
+			m_logger->warn("btree {} visit child {} at node {} while children size is {}",
 				btree_config.tree_name, child_idx, node_config.idx, children.size());
-			_agent->notify_stop();
+			m_agent->notify_stop();
 			return;
 		}
-		children[child_idx]->_state = node_state::init;
-		_agent->_fronts.push_back(children[child_idx]);
-		_state = node_state::wait_child;
+		children[child_idx]->m_state = node_state::init;
+		m_agent->m_fronts.push_back(children[child_idx]);
+		m_state = node_state::wait_child;
 	}
 	void node::backtrace()
 	{
-		if (_parent)
+		if (m_parent)
 		{
-			_agent->_fronts.push_back(_parent);
-			_parent->_state = node_state::awaken;
+			m_agent->m_fronts.push_back(m_parent);
+			m_parent->m_state = node_state::awaken;
 		}
 		else
 		{
-			_agent->_fronts.push_back(this);
-			_state = node_state::awaken;
+			m_agent->m_fronts.push_back(this);
+			m_state = node_state::awaken;
 		}
-		_agent->poll();
+		m_agent->poll();
 	}
 	void node::interrupt()
 	{
-		if (_closure)
+		if (m_closure)
 		{
-			_closure.reset();
+			m_closure.reset();
 		}
-		_state = node_state::dead;
+		m_state = node_state::dead;
 		next_child_idx = 0;
 	}
 	const std::string& node::tree_name() const
@@ -150,7 +150,7 @@ namespace spiritsaway::behavior_tree::runtime
 	void root::on_revisit()
 	{
 		node::on_revisit();
-		if (!_parent)
+		if (!m_parent)
 		{
 			on_enter();
 		}
@@ -197,21 +197,21 @@ namespace spiritsaway::behavior_tree::runtime
 	void random_seq::on_enter()
 	{
 		node::on_enter();
-		if (_shuffle.empty())
+		if (m_shuffle.empty())
 		{
-			_shuffle.reserve(children.size());
+			m_shuffle.reserve(children.size());
 			for (std::size_t i = 0; i < children.size(); i++)
 			{
-				_shuffle.push_back(i);
+				m_shuffle.push_back(i);
 			}
 		}
-		std::shuffle(_shuffle.begin(), _shuffle.end(), _generator);
-		visit_child(_shuffle[0]);
+		std::shuffle(m_shuffle.begin(), m_shuffle.end(), m_generator);
+		visit_child(m_shuffle[0]);
 	}
 	void random_seq::on_revisit()
 	{
 		node::on_revisit();
-		if (!children[_shuffle[next_child_idx]]->result)
+		if (!children[m_shuffle[next_child_idx]]->result)
 		{
 			set_result(false);
 			return;
@@ -222,7 +222,7 @@ namespace spiritsaway::behavior_tree::runtime
 			set_result(true);
 			return;
 		}
-		visit_child(_shuffle[next_child_idx]);
+		visit_child(m_shuffle[next_child_idx]);
 	}
 	void select::on_enter()
 	{
@@ -249,13 +249,13 @@ namespace spiritsaway::behavior_tree::runtime
 	void probility::on_enter()
 	{
 		node::on_enter();
-		if (_probilities.empty())
+		if (m_probilities.empty())
 		{
 			if (!init_prob_parameters())
 			{
-				_logger->warn("{} init_prob_parameters fail", debug_info());
-				_probilities.clear();
-				_agent->notify_stop();
+				m_logger->warn("{} init_prob_parameters fail", debug_info());
+				m_probilities.clear();
+				m_agent->notify_stop();
 				return;
 			}
 		}
@@ -279,10 +279,10 @@ namespace spiritsaway::behavior_tree::runtime
 			{
 				return false;
 			}
-			_probilities.push_back(one_item.get<std::uint32_t>());
+			m_probilities.push_back(one_item.get<std::uint32_t>());
 		}
 		
-		if (_probilities.size() != children.size())
+		if (m_probilities.size() != children.size())
 		{
 			return false;
 		}
@@ -291,12 +291,12 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	std::uint32_t probility::prob_choose_child_idx() const
 	{
-		std::uint32_t prob_sum = std::accumulate(_probilities.begin(), _probilities.end(), 0);
-		auto cur_choice = _distribution(_generator);
+		std::uint32_t prob_sum = std::accumulate(m_probilities.begin(), m_probilities.end(), 0);
+		auto cur_choice = m_distribution(m_generator);
 		std::uint32_t temp = cur_choice % prob_sum;
 		for (std::size_t i = 0; i < children.size(); i++)
 		{
-			temp -= _probilities[0];
+			temp -= m_probilities[0];
 			if (temp <= 0)
 			{
 				return i;
@@ -338,7 +338,7 @@ namespace spiritsaway::behavior_tree::runtime
 			set_result(children[2]->result);
 			break;
 		default:
-			_logger->warn("{} invalid state visit if else node ", debug_info());
+			m_logger->warn("{} invalid state visit if else node ", debug_info());
 			break;
 		}
 	}
@@ -368,7 +368,7 @@ namespace spiritsaway::behavior_tree::runtime
 			visit_child(next_child_idx);
 			break;
 		default:
-			_logger->warn("{} invalid state visit while_node node ", debug_info());
+			m_logger->warn("{} invalid state visit while_node node ", debug_info());
 			break;
 		}
 	}
@@ -399,7 +399,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			if (!create_sub_tree_node())
 			{
-				_logger->warn("{} fail to load sub tree", debug_info());
+				m_logger->warn("{} fail to load sub tree", debug_info());
 				return;
 			}
 
@@ -419,7 +419,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		auto sub_tree_name = sub_tree_iter->second.get<std::string>();
 		
-		auto new_root = _agent->create_tree(sub_tree_name, this);
+		auto new_root = m_agent->create_tree(sub_tree_name, this);
 		if (!new_root)
 		{
 			return false;
@@ -444,7 +444,7 @@ namespace spiritsaway::behavior_tree::runtime
 		bool final_result = false;
 		for (auto one_child : children)
 		{
-			if (one_child->_state == node_state::dead)
+			if (one_child->m_state == node_state::dead)
 			{
 				final_result = one_child->result;
 			}
@@ -460,8 +460,8 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			if (!load_action_config())
 			{
-				_logger->warn("{} fail to load action args with extra {}", debug_info(), serialize::encode(node_config.extra).dump());
-				_agent->notify_stop();
+				m_logger->warn("{} fail to load action args with extra {}", debug_info(), serialize::encode(node_config.extra).dump());
+				m_agent->notify_stop();
 				return;
 			}
 		}
@@ -471,13 +471,13 @@ namespace spiritsaway::behavior_tree::runtime
 			if (one_arg.first == action_arg_type::blackboard)
 			{
 				auto cur_key = one_arg.second.get<std::string>();
-				if (!_agent->blackboard_has(cur_key))
+				if (!m_agent->blackboard_has(cur_key))
 				{
-					_logger->warn("{} invalid blackboard arg name {}", debug_info(), cur_key);
-					_agent->notify_stop();
+					m_logger->warn("{} invalid blackboard arg name {}", debug_info(), cur_key);
+					m_agent->notify_stop();
 					return;
 				}
-				auto cur_bb_value = _agent->blackboard_get(cur_key);
+				auto cur_bb_value = m_agent->blackboard_get(cur_key);
 				real_action_args.push_back(cur_bb_value);
 			}
 			else
@@ -485,16 +485,16 @@ namespace spiritsaway::behavior_tree::runtime
 				real_action_args.push_back(one_arg.second);
 			}
 		}
-		if (_agent->during_debug())
+		if (m_agent->during_debug())
 		{
-			_agent->push_cmd_queue(agent_cmd::node_action, {action_name, real_action_args});
+			m_agent->push_cmd_queue(agent_cmd::node_action, {action_name, real_action_args});
 		}
-		std::optional<bool> action_result = _agent->agent_action(action_name, real_action_args);
-		if (_agent->during_poll)
+		std::optional<bool> action_result = m_agent->agent_action(action_name, real_action_args);
+		if (m_agent->m_during_poll)
 		{
 			if (!action_result)
 			{
-				_state = node_state::blocking;
+				m_state = node_state::blocking;
 				return;
 			}
 			else
@@ -585,26 +585,26 @@ namespace spiritsaway::behavior_tree::runtime
 			auto event_iter = node_config.extra.find("event");
 			if (event_iter == node_config.extra.end())
 			{
-				_logger->warn("{} fail to load event", debug_info());
-				_agent->notify_stop();
+				m_logger->warn("{} fail to load event", debug_info());
+				m_agent->notify_stop();
 				return;
 			}
 			if (!event_iter->second.is_string())
 			{
-				_logger->warn("{} fail to load event form value {}", debug_info(), 
+				m_logger->warn("{} fail to load event form value {}", debug_info(), 
 					event_iter->second.dump());
-				_agent->notify_stop();
+				m_agent->notify_stop();
 				return;
 			}
 			event = event_iter->second.get<std::string>();
 		}
-		_state = node_state::blocking;
+		m_state = node_state::blocking;
 	}
 	void reset::on_enter()
 	{
 		node::on_enter();
-		_state = node_state::init;
-		_agent->reset();
+		m_state = node_state::init;
+		m_agent->reset();
 
 	}
 	node* node::create_node_by_idx(const btree_desc& btree_config, std::uint32_t node_idx, node* parent, agent* in_agent)
@@ -613,9 +613,9 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			if (parent)
 			{
-				parent->_logger->warn("{} fail to create sub node idx {} vector access fail",
+				parent->m_logger->warn("{} fail to create sub node idx {} vector access fail",
 					parent->debug_info(), node_idx);
-				parent->_agent->notify_stop();
+				parent->m_agent->notify_stop();
 			}
 			return nullptr;
 		}
@@ -716,9 +716,9 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			if (parent)
 			{
-				parent->_logger->warn("{} fail to create sub node idx {} with type {}",
+				parent->m_logger->warn("{} fail to create sub node idx {} with type {}",
 					parent->debug_info(), node_idx, cur_node_desc.type);
-				parent->_agent->notify_stop();
+				parent->m_agent->notify_stop();
 			}
 			return nullptr;
 		}

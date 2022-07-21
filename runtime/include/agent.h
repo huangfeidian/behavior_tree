@@ -38,7 +38,7 @@ namespace spiritsaway::behavior_tree::runtime
 		void dispatch_event(const event_type& new_event);
 		bool is_running() const
 		{
-			return _enabled;
+			return m_enabled;
 		}
 		void notify_stop();
 		bool load_btree(const std::string& btree_name);
@@ -47,10 +47,10 @@ namespace spiritsaway::behavior_tree::runtime
 		bool blackboard_has(const std::string& key) const;
 		bool blackboard_pop(const std::string & key);
 	public:
-		bool during_poll = false;
-		std::vector<node*> _fronts; // node ready to run
-		std::vector<node*> pre_fronts;
-		std::vector<event_type> _events; // events to be handled;
+		bool m_during_poll = false;
+		std::vector<node*> m_fronts; // node ready to run
+		std::vector<node*> m_pre_fronts;
+		std::vector<event_type> m_events; // events to be handled;
 		//std::unordered_map<const node*, timer_handler> _timers;
 		virtual std::optional<bool> agent_action(const std::string& action_name, 
 			const json::array_t& action_args);
@@ -66,18 +66,18 @@ namespace spiritsaway::behavior_tree::runtime
 
 	protected:
 		
-		cmd_receiver* _cmd_receiver = nullptr;
+		cmd_receiver* m_cmd_receiver = nullptr;
 		node* current_poll_node = nullptr;
 		bool reset_flag = false;
 		node* cur_root_node = nullptr;
-		std::shared_ptr<spdlog::logger> _logger;
-		bool _enabled = false;
-		std::unordered_set<timer_handler, timer_handler_hash> _timers;
-		std::filesystem::path data_folder;
+		std::shared_ptr<spdlog::logger> m_logger;
+		bool m_enabled = false;
+		std::unordered_set<timer_handler, timer_handler_hash> m_timers;
+		std::filesystem::path m_data_folder;
 
 	private:
-		json::object_t _blackboard;
-		std::vector<const btree_desc*> _tree_descs;
+		json::object_t m_blackboard;
+		std::vector<const btree_desc*> m_tree_descs;
 		bool poll_fronts(); // run the nodes
 		bool poll_events(); // handle the events;
 		void poll_node(node* cur_node);// run one node
