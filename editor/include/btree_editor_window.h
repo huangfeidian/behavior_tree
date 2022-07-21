@@ -9,6 +9,8 @@ namespace spiritsaway::behavior_tree::editor
 		bool load_config();
 		basic_node* create_node_from_desc(const basic_node_desc& desc, basic_node* parent) override;
 	private:
-		std::string new_file_name();
+		std::string new_file_name() override;
+	protected:
+		std::string action_tree_type_impl() override;
 	};
 }

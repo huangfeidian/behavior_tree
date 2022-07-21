@@ -84,7 +84,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			auto agent_widget = _show_widget->find("agent_name");
+			auto agent_widget = m_show_widget->find("agent_name");
 			if (!agent_widget)
 			{
 				return false;
@@ -111,7 +111,7 @@ namespace spiritsaway::behavior_tree::editor
 			temp_item["type"] = magic_enum::enum_name(editable_item_type::_choice);
 			temp_item["choice_type"] = "agent_name";
 			temp_item["value"] = agent_name;
-			_show_widget->push(temp_item);
+			m_show_widget->push(temp_item);
 		}
 	};
 	class sequence_node :public btree_node
@@ -230,9 +230,9 @@ namespace spiritsaway::behavior_tree::editor
 		}
 		std::string check_valid() const
 		{
-			if (weights.size() != _children.size())
+			if (weights.size() != m_children.size())
 			{
-				return fmt::format("probility node {} has {} children while weight size {}", _idx, _children.size(),
+				return fmt::format("probility node {} has {} children while weight size {}", m_idx, m_children.size(),
 					weights.size());
 			}
 			return basic_node::check_valid();
@@ -280,7 +280,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			auto weight_info = _show_widget->find("weight");
+			auto weight_info = m_show_widget->find("weight");
 			if (!weight_info)
 			{
 				return false;
@@ -319,7 +319,7 @@ namespace spiritsaway::behavior_tree::editor
 			list_item["value"] = weights;
 			list_item["item_base"] = item_base;
 
-			_show_widget->push(list_item);
+			m_show_widget->push(list_item);
 		}
 		bool check_item_edit_refresh(std::shared_ptr<editable_item> change_item)
 		{
@@ -413,7 +413,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			auto event_widget = _show_widget->find("event");
+			auto event_widget = m_show_widget->find("event");
 			if (!event_widget)
 			{
 				return false;
@@ -438,7 +438,7 @@ namespace spiritsaway::behavior_tree::editor
 			temp_item["name"] = "event";
 			temp_item["type"] = magic_enum::enum_name(editable_item_type::single_line_text);
 			temp_item["value"] = cur_event;
-			_show_widget->push(temp_item);
+			m_show_widget->push(temp_item);
 		}
 		bool set_extra(const json::object_t& data)
 		{
@@ -466,7 +466,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 			if (sub_tree_name.empty())
 			{
-				return fmt::format("sub_tree_node node {} has empty tree_name ", _idx);
+				return fmt::format("sub_tree_node node {} has empty tree_name ", m_idx);
 			}
 			return basic_node::check_valid();
 		}
@@ -478,13 +478,13 @@ namespace spiritsaway::behavior_tree::editor
 		}
 		virtual std::string display_text() const
 		{
-			if (comment.size())
+			if (m_comment.size())
 			{
-				return fmt::format("{}:{}:{}", _idx, _type, comment);
+				return fmt::format("{}:{}:{}", m_idx, m_type, m_comment);
 			}
 			else
 			{
-				return fmt::format("{}:{}:{}", _idx, _type, sub_tree_name);
+				return fmt::format("{}:{}:{}", m_idx, m_type, sub_tree_name);
 			}
 		}
 		basic_node* clone_self(basic_node* _in_parent) const
@@ -498,7 +498,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			auto event_widget = _show_widget->find("tree_name");
+			auto event_widget = m_show_widget->find("tree_name");
 			if (!event_widget)
 			{
 				return false;
@@ -523,7 +523,7 @@ namespace spiritsaway::behavior_tree::editor
 			temp_item["name"] = "sub_tree";
 			temp_item["type"] = magic_enum::enum_name(editable_item_type::single_line_text);
 			temp_item["value"] = sub_tree_name;
-			_show_widget->push(temp_item);
+			m_show_widget->push(temp_item);
 		}
 		bool set_extra(const json::object_t& data)
 		{
@@ -575,9 +575,9 @@ namespace spiritsaway::behavior_tree::editor
 		}
 		virtual std::string display_text() const
 		{
-			if (comment.size())
+			if (m_comment.size())
 			{
-				return fmt::format("{}:{}:{}", _type, _idx, comment);
+				return fmt::format("{}:{}:{}", m_type, m_idx, m_comment);
 			}
 			else
 			{
@@ -603,7 +603,7 @@ namespace spiritsaway::behavior_tree::editor
 					show_text += ")";
 				}
 
-				return fmt::format("{}:{}:{}", _type, _idx, show_text);
+				return fmt::format("{}:{}:{}", m_type, m_idx, show_text);
 			}
 		}
 		basic_node* clone_self(basic_node* _in_parent) const
@@ -619,17 +619,17 @@ namespace spiritsaway::behavior_tree::editor
 				return false;
 			}
 			std::string agent_name = get_agent_name();
-			auto action_widget = _show_widget->find("action");
+			auto action_widget = m_show_widget->find("action");
 			if (!action_widget)
 			{
 				return false;
 			}
-			std::cout << "action_node " << _idx << " check edit " << action_widget->_value.dump() << std::endl;
-			if (!action_widget->_value.is_string())
+			std::cout << "action_node " << m_idx << " check edit " << action_widget->m_value.dump() << std::endl;
+			if (!action_widget->m_value.is_string())
 			{
 				return false;
 			}
-			auto temp_action_str = action_widget->_value.get<std::string>();
+			auto temp_action_str = action_widget->m_value.get<std::string>();
 			if (temp_action_str.empty())
 			{
 				return false;
@@ -653,7 +653,7 @@ namespace spiritsaway::behavior_tree::editor
 			}
 			else
 			{
-				auto temp_args_widget = _show_widget->find("args");
+				auto temp_args_widget = m_show_widget->find("args");
 				if (!temp_args_widget)
 				{
 					return false;
@@ -697,7 +697,7 @@ namespace spiritsaway::behavior_tree::editor
 			std::string agent_name = get_agent_name();
 			std::cout << "action_node refresh  with agent " << agent_name << " action " <<
 				action_name << " args " << json(action_args).dump() << std::endl;
-			if (!_parent || agent_name.empty())
+			if (!m_parent || agent_name.empty())
 			{
 				return;
 			}
@@ -707,7 +707,7 @@ namespace spiritsaway::behavior_tree::editor
 
 			action_base["choice_type"] = agent_name + "_actions";
 			action_base["value"] = action_name;
-			_show_widget->push(action_base);
+			m_show_widget->push(action_base);
 
 			json::object_t arg_list;
 			arg_list["name"] = "args";
@@ -720,24 +720,24 @@ namespace spiritsaway::behavior_tree::editor
 			if (cur_action_iter == all_actions.end())
 			{
 				std::cout << fmt::format("fail to construct action node {} invalid action {} for agent {}",
-					_idx, action_name, agent_name) << std::endl;
+					m_idx, action_name, agent_name) << std::endl;
 				return;
 			}
 			json action_return_info = json::object_t();
 			action_return_info["type"] = magic_enum::enum_name(editable_item_type::text_browser);
 			action_return_info["name"] = "return";
 			action_return_info["value"] = cur_action_iter->second.return_info;
-			_show_widget->push(action_return_info);
+			m_show_widget->push(action_return_info);
 
 			const auto& cur_arg_names = cur_action_iter->second.args;
 			if (action_args.size() > cur_arg_names.size())
 			{
 				std::cout << fmt::format("fail to construct action node {} arg size {} exceed {}",
-					_idx, action_args.size(), cur_arg_names.size()) << std::endl;
+					m_idx, action_args.size(), cur_arg_names.size()) << std::endl;
 				return;
 			}
 			std::shared_ptr<tree_editor::struct_items> arg_list_widget = std::dynamic_pointer_cast<tree_editor::struct_items>(
-				_show_widget->push(arg_list));
+				m_show_widget->push(arg_list));
 
 			json arg_base = json::object_t();
 			arg_base["type"] = magic_enum::enum_name(editable_item_type::_struct);
@@ -776,7 +776,7 @@ namespace spiritsaway::behavior_tree::editor
 		}
 		bool check_item_edit_refresh(std::shared_ptr<editable_item> change_item)
 		{
-			auto result = _show_widget->find("action") == change_item;
+			auto result = m_show_widget->find("action") == change_item;
 			return check_edit() && result;
 		}
 		bool set_extra(const json::object_t& data)
@@ -950,9 +950,9 @@ namespace spiritsaway::behavior_tree::editor
 			cur_node = parent->create_node(cur_desc.type, parent, cur_desc.idx);
 
 		}
-		cur_node->color = cur_desc.color;
-		cur_node->_is_collapsed = cur_desc.is_collpased;
-		cur_node->comment = cur_desc.comment;
+		cur_node->m_color = cur_desc.color;
+		cur_node->m_is_collapsed = cur_desc.is_collpased;
+		cur_node->m_comment = cur_desc.comment;
 		json::object_t extra = json(cur_desc.extra);
 		if (extra.empty())
 		{

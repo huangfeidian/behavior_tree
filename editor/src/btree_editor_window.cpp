@@ -3,6 +3,7 @@
 
 #include <qfiledialog.h>
 #include <tree_editor/common/dialogs/path_config_dialog.h>
+#include <tree_editor/common/dialogs/search_select_dialog.h>
 #include <tree_editor/common/choice_manager.h>
 #include <tree_editor/common/graph/tree_instance.h>
 
@@ -19,11 +20,11 @@ using namespace std;
 std::string btree_editor_window::new_file_name()
 {
 	std::string temp = fmt::format("new_btree_{}.json", get_seq());
-	std::filesystem::path temp_path = data_folder / temp;
+	std::filesystem::path temp_path = m_data_folder / temp;
 	while (already_open(temp) || std::filesystem::exists(temp_path))
 	{
 		temp = fmt::format("new_btree_{}.json", get_seq());
-		temp_path = data_folder / temp;
+		temp_path = m_data_folder / temp;
 	}
 	return temp;
 }
@@ -68,7 +69,7 @@ bool btree_editor_window::load_config()
 
 		auto cur_dialog = new path_config_dialog(path_reqs, config_file_name, this);
 		auto temp_result = cur_dialog->run();
-		if (!cur_dialog->valid)
+		if (!cur_dialog->m_valid)
 		{
 			QMessageBox::about(this, QString("Error"),
 				QString::fromStdString("invalid btree config"));
@@ -193,7 +194,7 @@ bool btree_editor_window::load_config()
 		node_config_repo::instance().load_config(std::get<json::object_t>(node_json_variant));
 	}
 
-	data_folder = save_path;
+	m_data_folder = save_path;
 	return true;
 }
 basic_node* btree_editor_window::create_node_from_desc(const basic_node_desc& cur_desc, basic_node* parent)
@@ -201,3 +202,20 @@ basic_node* btree_editor_window::create_node_from_desc(const basic_node_desc& cu
 	return btree_node::create_node_from_desc(cur_desc, parent);
 }
 
+std::string btree_editor_window::action_tree_type_impl()
+{
+	if (!m_active_instance)
+	{
+		return {};
+	}
+	std::vector<std::string> all_agent_names = *choice_manager::instance().get_choice("agent_name").first;
+
+	auto cur_search_dialog = new search_select_dialog(all_agent_names, this);
+	auto result = cur_search_dialog->run();
+	if (result.empty())
+	{
+		return {};
+	}
+	return {};
+
+}
