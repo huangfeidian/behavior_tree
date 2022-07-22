@@ -1,6 +1,6 @@
 {
     "root": {
-        "child_min": 1,
+        "child_min": 0,
         "child_max": 1,
         "editable_item": {
 
