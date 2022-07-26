@@ -6,7 +6,7 @@
 #include <tree_editor/common/dialogs/editable_item.h>
 #include <tree_editor/common/choice_manager.h>
 #include <magic_enum.hpp>
-#include <iostream>
+#include <tree_editor/common/logger.h>
 
 namespace spiritsaway::behavior_tree::editor
 {
@@ -42,6 +42,10 @@ namespace spiritsaway::behavior_tree::editor
 		}
 		basic_node* create_node(std::string _type, basic_node* _in_parent, std::uint32_t _idx);
 		static basic_node* create_node_from_desc(const basic_node_desc& cur_desc, basic_node* parent);
+		static std::shared_ptr<spdlog::logger> logger()
+		{
+			return tree_editor::logger_mgr::instance().create_logger("btree");
+		}
 	};
 
 	class root_node : public btree_node
@@ -624,7 +628,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			std::cout << "action_node " << m_idx << " check edit " << action_widget->m_value.dump() << std::endl;
+			logger()->error("action_node {} check edit {}", m_idx, action_widget->m_value.dump());
 			if (!action_widget->m_value.is_string())
 			{
 				return false;
@@ -695,8 +699,8 @@ namespace spiritsaway::behavior_tree::editor
 		{
 			basic_node::refresh_editable_items();
 			std::string agent_name = get_agent_name();
-			std::cout << "action_node refresh  with agent " << agent_name << " action " <<
-				action_name << " args " << json(action_args).dump() << std::endl;
+			logger()->debug("action_node refresh  with agent {} action {} args {}", agent_name,
+				action_name, json(action_args).dump());
 			if (!m_parent || agent_name.empty())
 			{
 				return;
@@ -719,8 +723,8 @@ namespace spiritsaway::behavior_tree::editor
 			auto cur_action_iter = all_actions.find(action_name);
 			if (cur_action_iter == all_actions.end())
 			{
-				std::cout << fmt::format("fail to construct action node {} invalid action {} for agent {}",
-					m_idx, action_name, agent_name) << std::endl;
+				logger()->error("fail to construct action node {} invalid action {} for agent {}",
+					m_idx, action_name, agent_name);
 				return;
 			}
 			json action_return_info = json::object_t();
@@ -732,8 +736,8 @@ namespace spiritsaway::behavior_tree::editor
 			const auto& cur_arg_names = cur_action_iter->second.args;
 			if (action_args.size() > cur_arg_names.size())
 			{
-				std::cout << fmt::format("fail to construct action node {} arg size {} exceed {}",
-					m_idx, action_args.size(), cur_arg_names.size()) << std::endl;
+				logger()->error("fail to construct action node {} arg size {} exceed {}",
+					m_idx, action_args.size(), cur_arg_names.size()) ;
 				return;
 			}
 			std::shared_ptr<tree_editor::struct_items> arg_list_widget = std::dynamic_pointer_cast<tree_editor::struct_items>(

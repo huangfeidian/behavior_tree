@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="windows-1252"?>
 <>
-  <InputFile>D:\Github\behavior_tree\editor\build\Release\behavior_tree_editor.exe</InputFile>
-  <OutputFile>D:\Github\behavior_tree\editor\build\Release\behavior_tree_editor_boxed.exe</OutputFile>
+  <InputFile>C:\git\behavior_tree\editor\build\Release\behavior_tree_editor.exe</InputFile>
+  <OutputFile>C:\git\behavior_tree\editor\build\Release\behavior_tree_editor_boxed.exe</OutputFile>
   <Files>
     <Enabled>True</Enabled>
     <DeleteExtractedOnExit>False</DeleteExtractedOnExit>
@@ -18,7 +18,7 @@
           <File>
             <Type>2</Type>
             <Name>Qt5Core.dll</Name>
-            <File>D:\Github\behavior_tree\editor\build\Release\Qt5Core.dll</File>
+            <File>C:\git\behavior_tree\editor\build\Release\Qt5Core.dll</File>
             <ActiveX>False</ActiveX>
             <ActiveXInstall>False</ActiveXInstall>
             <Action>0</Action>
@@ -30,7 +30,7 @@
           <File>
             <Type>2</Type>
             <Name>Qt5Gui.dll</Name>
-            <File>D:\Github\behavior_tree\editor\build\Release\Qt5Gui.dll</File>
+            <File>C:\git\behavior_tree\editor\build\Release\Qt5Gui.dll</File>
             <ActiveX>False</ActiveX>
             <ActiveXInstall>False</ActiveXInstall>
             <Action>0</Action>
@@ -42,7 +42,7 @@
           <File>
             <Type>2</Type>
             <Name>Qt5Svg.dll</Name>
-            <File>D:\Github\behavior_tree\editor\build\Release\Qt5Svg.dll</File>
+            <File>C:\git\behavior_tree\editor\build\Release\Qt5Svg.dll</File>
             <ActiveX>False</ActiveX>
             <ActiveXInstall>False</ActiveXInstall>
             <Action>0</Action>
@@ -54,7 +54,7 @@
           <File>
             <Type>2</Type>
             <Name>Qt5Widgets.dll</Name>
-            <File>D:\Github\behavior_tree\editor\build\Release\Qt5Widgets.dll</File>
+            <File>C:\git\behavior_tree\editor\build\Release\Qt5Widgets.dll</File>
             <ActiveX>False</ActiveX>
             <ActiveXInstall>False</ActiveXInstall>
             <Action>0</Action>
@@ -66,7 +66,7 @@
           <File>
             <Type>2</Type>
             <Name>D3Dcompiler_47.dll</Name>
-            <File>D:\Github\behavior_tree\editor\build\Release\D3Dcompiler_47.dll</File>
+            <File>C:\git\behavior_tree\editor\build\Release\D3Dcompiler_47.dll</File>
             <ActiveX>False</ActiveX>
             <ActiveXInstall>False</ActiveXInstall>
             <Action>0</Action>
@@ -86,7 +86,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qsvgicon.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\iconengines\qsvgicon.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\iconengines\qsvgicon.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -108,7 +108,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qgif.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qgif.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qgif.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -120,7 +120,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qicns.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qicns.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qicns.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -132,7 +132,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qico.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qico.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qico.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -144,7 +144,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qjpeg.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qjpeg.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qjpeg.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -156,7 +156,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qsvg.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qsvg.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qsvg.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -168,7 +168,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qtga.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qtga.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qtga.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -180,7 +180,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qtiff.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qtiff.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qtiff.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -192,7 +192,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qwbmp.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qwbmp.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qwbmp.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -204,7 +204,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qwebp.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\imageformats\qwebp.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\imageformats\qwebp.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -226,7 +226,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qwindows.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\platforms\qwindows.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\platforms\qwindows.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -248,7 +248,7 @@
               <File>
                 <Type>2</Type>
                 <Name>qwindowsvistastyle.dll</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\styles\qwindowsvistastyle.dll</File>
+                <File>C:\git\behavior_tree\editor\build\Release\styles\qwindowsvistastyle.dll</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>
@@ -270,7 +270,7 @@
               <File>
                 <Type>2</Type>
                 <Name>window_icon.png</Name>
-                <File>D:\Github\behavior_tree\editor\build\Release\resources\window_icon.png</File>
+                <File>C:\git\behavior_tree\editor\build\Release\resources\window_icon.png</File>
                 <ActiveX>False</ActiveX>
                 <ActiveXInstall>False</ActiveXInstall>
                 <Action>0</Action>

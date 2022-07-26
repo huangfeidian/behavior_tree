@@ -128,6 +128,45 @@ namespace spiritsaway::behavior_tree::editor
 				return cur_iter->second;
 			}
 		}
+		std::string merge_parent_actions(const std::unordered_map<std::string, std::string>& agent_parents)
+		{
+			std::unordered_map<std::string, bool> temp_agent_masks;
+			for (int i = 0; i < agent_parents.size(); i++)
+			{
+				for (const auto& one_pair : agent_parents)
+				{
+					if (temp_agent_masks[one_pair.first])
+					{
+						continue;
+					}
+					if (one_pair.second.empty())
+					{
+						temp_agent_masks[one_pair.first] = true;
+						continue;
+					}
+					if (!temp_agent_masks[one_pair.second])
+					{
+						continue;
+					}
+					temp_agent_masks[one_pair.first] = true;
+					auto parent_iter = actions_by_agent.find(one_pair.second);
+					if (parent_iter == actions_by_agent.end())
+					{
+						return std::string("fail to find actions for agent ") + one_pair.second;
+					}
+					auto child_iter = actions_by_agent.find(one_pair.first);
+					if (child_iter == actions_by_agent.end())
+					{
+						return std::string("fail to find actions for agent ") + one_pair.first;
+					}
+					for (const auto& one_action : parent_iter->second)
+					{
+						child_iter->second.insert(one_action);
+					}
+				}
+			}
+			return {};
+		}
 		static btree_action_repo& instance()
 		{
 			static btree_action_repo _instance;

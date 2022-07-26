@@ -166,8 +166,16 @@ bool btree_editor_window::load_config()
 				QString::fromStdString(notify_info));
 			return false;
 		}
+		auto cur_merge_err = btree_action_repo::instance().merge_parent_actions(agent_relation::instance().relations());
+		if (!cur_merge_err.empty())
+		{
+			QMessageBox::about(this, QString("Error"),
+				QString::fromStdString(cur_merge_err));
+			return false;
+		}
 		for (const auto& one_agent : agent_names)
 		{
+
 			std::vector<std::string> action_names;
 			std::vector<std::string> action_comments;
 			const auto& cur_actions = btree_action_repo::instance().get_actions_by_agent(one_agent);
@@ -178,6 +186,8 @@ bool btree_editor_window::load_config()
 			}
 			choice_manager::instance().add_choice(one_agent + "_actions", action_names, action_comments);
 		}
+		
+		
 	}
 	
 	//nodes depends on choice
@@ -200,22 +210,4 @@ bool btree_editor_window::load_config()
 basic_node* btree_editor_window::create_node_from_desc(const basic_node_desc& cur_desc, basic_node* parent)
 {
 	return btree_node::create_node_from_desc(cur_desc, parent);
-}
-
-std::string btree_editor_window::action_tree_type_impl()
-{
-	if (!m_active_instance)
-	{
-		return {};
-	}
-	std::vector<std::string> all_agent_names = *choice_manager::instance().get_choice("agent_name").first;
-
-	auto cur_search_dialog = new search_select_dialog(all_agent_names, this);
-	auto result = cur_search_dialog->run();
-	if (result.empty())
-	{
-		return {};
-	}
-	return {};
-
 }
