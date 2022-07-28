@@ -621,7 +621,7 @@ namespace spiritsaway::behavior_tree::runtime
 			}
 			return nullptr;
 		}
-		auto& cur_node_desc = btree_config.nodes[node_idx];
+		auto& cur_node_desc = btree_config.get_node(node_idx);
 		auto opt_type = magic_enum::enum_cast<node_type>(cur_node_desc.type);
 		if (!opt_type)
 		{

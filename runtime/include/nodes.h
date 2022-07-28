@@ -62,7 +62,7 @@ namespace spiritsaway::behavior_tree::runtime
 			next_child_idx(0),
 			m_agent(in_agent),
 			m_type(in_type),
-			node_config(in_btree.nodes[in_node_idx]),
+			node_config(in_btree.get_node(in_node_idx)),
 			m_logger(std::move(logger_mgr::instance().create_logger("btree")))
 		{
 

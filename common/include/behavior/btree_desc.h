@@ -17,7 +17,6 @@ namespace spiritsaway::behavior_tree::common
 	private:
 		bool load_from_json(const json& btree_file_data, std::shared_ptr<spdlog::logger> _logger)
 		{
-
 			if (!btree_file_data.is_object())
 			{
 				_logger->error("cant parse to btree_desc, not str map");
@@ -65,14 +64,15 @@ namespace spiritsaway::behavior_tree::common
 				_logger->error("value for key nodes is not is_vector");
 				return false;
 			}
-
-			if (!serialize::decode(cur_nodes, nodes))
+			std::vector< basic_node_desc> temp_nodes;
+			if (!serialize::decode(cur_nodes, temp_nodes))
 			{
 				_logger->error("cant decode nodes");
 				return false;
 			}
-			for (const auto& one_node : nodes)
+			for (const auto& one_node : temp_nodes)
 			{
+				nodes[one_node.idx] = one_node;
 				if (one_node.type != "root")
 				{
 					continue;
@@ -90,9 +90,25 @@ namespace spiritsaway::behavior_tree::common
 				}
 				agent_name = agent_name_iter->second.get<std::string>();
 			}
+			for (const auto& one_node : temp_nodes)
+			{
+				for (auto one_child : one_node.children)
+				{
+					if (nodes.find(one_child) == nodes.end())
+					{
+						_logger->error("node {} has invalid child {}", one_node.idx, one_child);
+						return false;
+					}
+				}
+				if (one_node.parent && nodes.find(one_node.parent.value()) == nodes.end())
+				{
+					_logger->error("node {} has invalid parent {}", one_node.idx, one_node.parent.value());
+					return false;
+				}
+			}
 			if (agent_name.empty())
 			{
-
+				_logger->error("agent empty");
 				return false;
 			}
 			return true;
@@ -100,6 +116,7 @@ namespace spiritsaway::behavior_tree::common
 	public:
 		btree_desc(const std::string& btree_file_path, std::shared_ptr<spdlog::logger> _logger)
 		{
+			_logger->info("loading btree {}", btree_file_path);
 			auto btree_file_stream = std::ifstream(btree_file_path);
 			std::string btree_file_str = std::string(std::istreambuf_iterator<char>(btree_file_stream),
 				std::istreambuf_iterator<char>());
@@ -113,8 +130,21 @@ namespace spiritsaway::behavior_tree::common
 				return;
 			}
 		}
+		const basic_node_desc& get_node(std::uint32_t cur_idx) const
+		{
+			auto cur_iter = nodes.find(cur_idx);
+			if (cur_iter == nodes.end())
+			{
+				return invalid_node;
+			}
+			else
+			{
+				return cur_iter->second;
+			}
+		}
 	public:
-		std::vector<basic_node_desc> nodes;
+		std::unordered_map<std::uint32_t, basic_node_desc> nodes;
+		basic_node_desc invalid_node;
 		std::string tree_name;
 		std::string agent_name;
 		std::string signature;
