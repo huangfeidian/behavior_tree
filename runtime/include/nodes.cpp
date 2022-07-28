@@ -15,10 +15,6 @@ namespace spiritsaway::behavior_tree::runtime
 			return;
 		}
 		result = new_result;
-		if (m_agent->during_debug())
-		{
-			m_agent->push_cmd_queue(m_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
-		}
 		m_state = node_state::dead;
 		backtrace();
 	}
@@ -292,18 +288,19 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	std::uint32_t probility::prob_choose_child_idx() const
 	{
-		std::uint32_t prob_sum = std::accumulate(m_probilities.begin(), m_probilities.end(), 0);
+		std::uint32_t prob_sum = std::accumulate(m_probilities.begin(), m_probilities.end(), 0) * 100;
 		auto cur_choice = m_distribution(m_generator);
 		std::uint32_t temp = cur_choice % prob_sum;
 		for (std::size_t i = 0; i < children.size(); i++)
 		{
-			temp -= m_probilities[0];
-			if (temp <= 0)
+			
+			if (temp < m_probilities[i] * 100)
 			{
 				return i;
 			}
+			temp -= m_probilities[i] * 100;
 		}
-		return 0;
+		return children.size() - 1;
 
 	}
 	void probility::on_revisit()

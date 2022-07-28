@@ -130,7 +130,7 @@ int main()
 	auto cur_logger = spiritsaway::behavior_tree::common::logger_mgr::instance().create_logger("btree");
 	spiritsaway::tree_editor::tree_state_traces _trace;
 	std::vector<node_trace_cmd> total_logs;
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		while(!cur_receiver->_cmd_buffer.empty())
 		{
@@ -142,7 +142,7 @@ int main()
 				cur_logger->info("ts: {} cmd: {}, args {} tree {} fronts {} blackboards {} ", format_timepoint(one_log.ts), one_log.cmd, encode(one_log.detail).dump(), encode(_trace._latest_state->tree_indexes).dump(), encode(_trace._latest_state->_current_nodes).dump(), encode(_trace._latest_state->_vars).dump());
 			}
 		}
-		this_thread::sleep_for(100ms);
+		this_thread::sleep_for(1000ms);
 		timer_manager::instance().poll(std::chrono::system_clock::now());
 	}
 	cur_logger->info("after run tree {} fronts {} blackboards {} ", encode(_trace._latest_state->tree_indexes).dump(), encode(_trace._latest_state->_current_nodes).dump(), encode(_trace._latest_state->_vars).dump());

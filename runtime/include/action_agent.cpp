@@ -169,7 +169,7 @@ namespace spiritsaway::behavior_tree::runtime
 		};
 		duration = std::max(0.5, duration);
 		auto cur_timer_handler = timer_manager::instance().add_timer_with_gap(
-			std::chrono::microseconds(static_cast<int>(duration * 1000)), timeout_lambda);
+			std::chrono::microseconds(static_cast<int>(duration * 1000 * 1000)), timeout_lambda);
 		return std::nullopt;
 	}
 	bool action_agent::log(const std::string& log_level, const json& log_info)
