@@ -107,19 +107,20 @@ namespace spiritsaway::behavior_tree::runtime
 			return;
 		}
 		children[child_idx]->m_state = node_state::init;
-		m_agent->m_fronts.push_back(children[child_idx]);
+		m_agent->add_to_front(children[child_idx]);
 		m_state = node_state::wait_child;
 	}
 	void node::backtrace()
 	{
+		leave();
 		if (m_parent)
 		{
-			m_agent->m_fronts.push_back(m_parent);
+			m_agent->add_to_front(m_parent);
 			m_parent->m_state = node_state::awaken;
 		}
 		else
 		{
-			m_agent->m_fronts.push_back(this);
+			m_agent->add_to_front(this);
 			m_state = node_state::awaken;
 		}
 		m_agent->poll();
@@ -490,11 +491,12 @@ namespace spiritsaway::behavior_tree::runtime
 			m_agent->push_cmd_queue(agent_cmd::node_action, {action_name, real_action_args});
 		}
 		std::optional<bool> action_result = m_agent->agent_action(action_name, real_action_args);
-		if (m_agent->m_during_poll)
+		if (m_agent->during_poll())
 		{
 			if (!action_result)
 			{
 				m_state = node_state::blocking;
+				m_agent->add_to_front(this);
 				return;
 			}
 			else

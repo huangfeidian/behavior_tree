@@ -47,7 +47,7 @@ namespace spiritsaway::behavior_tree::runtime
 			else
 			{
 				reset_flag = false;
-				m_fronts.push_back(cur_root_node);
+				add_to_front(cur_root_node);
 			}
 			poll_count += 1;
 		}
@@ -88,6 +88,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return false;
 		}
+		m_pre_fronts.clear();
 		std::swap(m_pre_fronts, m_fronts);
 		int ready_count = 0;
 		for (const auto& one_node : m_pre_fronts)
@@ -104,7 +105,10 @@ namespace spiritsaway::behavior_tree::runtime
 			}
 			else
 			{
-				m_fronts.push_back(one_node);
+				if (one_node->m_state == node_state::blocking)
+				{
+					add_to_front(one_node);
+				}
 			}
 		}
 		m_pre_fronts.clear();
@@ -131,15 +135,13 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			m_logger->warn("btree stop while current_poll_node empty");
 		}
-		for (auto one_timer : m_timers)
-		{
-			one_timer.cancel();
-		}
+		std::swap(m_pre_fronts, m_fronts);
 		for (const auto i : m_pre_fronts)
 		{
 			m_logger->warn(i->debug_info());
 			i->interrupt();
 		}
+		m_pre_fronts.clear();
 		m_fronts.clear();
 		m_events.clear();
 		current_poll_node = nullptr;
@@ -261,7 +263,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return false;
 		}
-		m_fronts.push_back(cur_root_node);
+		add_to_front(cur_root_node);
 		return true;
 
 	}
@@ -324,5 +326,17 @@ namespace spiritsaway::behavior_tree::runtime
 				return true;
 			}
 		}
+	}
+
+	void agent::add_to_front(node* cur_node)
+	{
+		for (auto one_node : m_fronts)
+		{
+			if (one_node == cur_node)
+			{
+				return;
+			}
+		}
+		m_fronts.push_back(cur_node);
 	}
 }
