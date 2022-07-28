@@ -608,16 +608,6 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	node* node::create_node_by_idx(const btree_desc& btree_config, std::uint32_t node_idx, node* parent, agent* in_agent)
 	{
-		if (node_idx >= btree_config.nodes.size())
-		{
-			if (parent)
-			{
-				parent->m_logger->warn("{} fail to create sub node idx {} vector access fail",
-					parent->debug_info(), node_idx);
-				parent->m_agent->notify_stop();
-			}
-			return nullptr;
-		}
 		auto& cur_node_desc = btree_config.get_node(node_idx);
 		auto opt_type = magic_enum::enum_cast<node_type>(cur_node_desc.type);
 		if (!opt_type)
