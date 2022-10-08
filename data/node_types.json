@@ -20,7 +20,7 @@
 
         }
     },
-    "alwasys_seq": {
+    "always_seq": {
         "child_min": 1,
         "child_max": 20,
         "editable_item": {
