@@ -10,8 +10,8 @@
 #include <any_container/decode.h>
 
 #include <btree_editor_window.h>
-#include <behavior/btree_actions.h>
-#include <behavior/btree_node.h>
+#include "btree_actions.h"
+#include "btree_node.h"
 
 using namespace spiritsaway::behavior_tree::editor;
 using namespace spiritsaway::tree_editor;

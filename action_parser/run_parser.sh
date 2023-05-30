@@ -1,1 +1,0 @@
-./generate_behavior  ./actions.cpp -I../common/include -I../runtime/include> parser.log 2>& 1

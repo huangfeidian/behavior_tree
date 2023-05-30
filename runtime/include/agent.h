@@ -6,12 +6,11 @@
 #include <any_container/decode.h>
 
 #include <spdlog/spdlog.h>
-#include "timer_manager.hpp"
 
-
-#include <behavior/btree_desc.h>
+#include <memory>
+#include "btree_desc.h"
 #include <filesystem>
-#include <behavior/btree_debug.h>
+#include "btree_debug.h"
 
 namespace spiritsaway::behavior_tree::runtime
 {
@@ -31,7 +30,7 @@ namespace spiritsaway::behavior_tree::runtime
 	class agent
 	{
 	public:
-		agent(const std::filesystem::path& _in_data_folder);
+		agent(const std::filesystem::path& in_data_folder, std::shared_ptr<spdlog::logger> in_logger);
 		friend class node;
 	public:
 		bool poll(); // first handle events then handle fronts
@@ -48,7 +47,6 @@ namespace spiritsaway::behavior_tree::runtime
 		bool blackboard_pop(const std::string & key);
 	public:
 
-		//std::unordered_map<const node*, timer_handler> _timers;
 		virtual std::optional<bool> agent_action(const std::string& action_name, 
 			const json::array_t& action_args);
 		void reset();
@@ -62,6 +60,10 @@ namespace spiritsaway::behavior_tree::runtime
 		bool during_poll() const
 		{
 			return m_during_poll;
+		}
+		std::shared_ptr<spdlog::logger> logger() const
+		{
+			return m_logger;
 		}
 	public:
 		node* create_tree(const std::string& btree_name, node* parent);

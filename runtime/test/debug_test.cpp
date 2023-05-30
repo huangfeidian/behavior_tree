@@ -4,8 +4,11 @@
 #include <filesystem>
 #include <any_container/encode.h>
 #include <tree_editor/common/debug_cmd.h>
-
+#include "timer_manager.hpp"
 #include <magic_enum.hpp>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 using namespace spiritsaway::behavior_tree::common;
 using namespace spiritsaway::behavior_tree::runtime;
@@ -29,6 +32,21 @@ std::string format_timepoint(std::uint64_t milliseconds_since_epoch)
 	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S ", timeinfo);
 	return std::string(buffer) + std::to_string(milliseconds_since_epoch % 1000) + "ms";
 }
+std::shared_ptr<spdlog::logger> create_logger(const std::string& name)
+{
+	
+	auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+	console_sink->set_level(spdlog::level::debug);
+	std::string pattern = "[" + name + "] [%^%l%$] %v";
+	console_sink->set_pattern(pattern);
+
+	auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(name + ".log", true);
+	file_sink->set_level(spdlog::level::trace);
+	auto logger = std::make_shared<spdlog::logger>(name, spdlog::sinks_init_list{ console_sink, file_sink });
+	logger->set_level(spdlog::level::trace);
+	return logger;
+}
+
 struct btree_debug_cmd_receiver : public cmd_receiver
 {
 	std::deque<node_trace_cmd> _cmd_buffer;
@@ -122,12 +140,13 @@ int main()
 {
 	std::string test_btree_name = "new_btree_1.json";
 	std::filesystem::path data_folder = "../../data/btree";
-	action_agent cur_agent(data_folder);
+	auto cur_logger = create_logger("btree");
+	action_agent cur_agent(data_folder, cur_logger);
 	auto cur_receiver = new btree_debug_cmd_receiver();
 	cur_agent.set_debug(cur_receiver);
 	cur_agent.load_btree(test_btree_name);
 	cur_agent.enable(true);
-	auto cur_logger = spiritsaway::behavior_tree::common::logger_mgr::instance().create_logger("btree");
+	
 	spiritsaway::tree_editor::tree_state_traces _trace;
 	std::vector<node_trace_cmd> total_logs;
 	for (int i = 0; i < 5; i++)

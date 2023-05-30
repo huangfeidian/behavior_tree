@@ -56,7 +56,7 @@ namespace spiritsaway::behavior_tree::runtime
 		time_handler_t max_handler_used = 0;
 		std::vector<time_handler_t> handler_for_reuse;
 		std::unordered_map<time_handler_t, callback_type> m_callbacks;
-		std::priority_queue<std::pair<ts_t, time_handler_t>> ts_handlers;
+		std::priority_queue<std::pair<ts_t, time_handler_t>> m_ts_handlers;
 	private:
 		time_handler_t gen_handler()
 		{
@@ -83,7 +83,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			auto cur_handler = gen_handler();
 			m_callbacks[cur_handler] = cur_callback;
-			ts_handlers.emplace(cur_expire_ts, cur_handler);
+			m_ts_handlers.emplace(cur_expire_ts, cur_handler);
 			return timer_handler_impl(cur_handler);
 		}
 		timer_handler_impl add_timer_with_gap(std::chrono::microseconds cur_expire_gap, callback_type cur_callback)
@@ -118,13 +118,13 @@ namespace spiritsaway::behavior_tree::runtime
 		std::size_t poll(std::chrono::system_clock::time_point _in_now)
 		{
 			std::size_t count = 0;
-			while (!ts_handlers.empty())
+			while (!m_ts_handlers.empty())
 			{
-				auto cur_item = ts_handlers.top();
+				auto cur_item = m_ts_handlers.top();
 				if (cur_item.first < _in_now)
 				{
 					auto cur_handler = cur_item.second;
-					ts_handlers.pop();
+					m_ts_handlers.pop();
 					auto cur_iter = m_callbacks.find(cur_handler);
 					if (cur_iter != m_callbacks.end())
 					{

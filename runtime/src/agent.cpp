@@ -1,15 +1,14 @@
 ﻿#include "agent.h"
 #include "nodes.h"
-#include <logger.h>
 #include <magic_enum.hpp>
 
 namespace spiritsaway::behavior_tree::runtime
 {
 	using namespace spiritsaway::behavior_tree::common;
 	using namespace spiritsaway;
-	agent::agent(const std::filesystem::path& _in_data_folder)
-		: m_logger(std::move(logger_mgr::instance().create_logger("btree")))
-		, m_data_folder(_in_data_folder)
+	agent::agent(const std::filesystem::path& in_data_folder, std::shared_ptr<spdlog::logger> in_logger)
+		: m_logger(in_logger)
+		, m_data_folder(in_data_folder)
 	{
 
 	}

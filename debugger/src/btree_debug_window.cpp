@@ -1,6 +1,6 @@
 ﻿#include <btree_debug_window.h>
-#include <behavior/btree_actions.h>
-#include <behavior/btree_node.h>
+#include "btree_actions.h"
+#include "btree_node.h"
 #include <tree_editor/common/dialogs/path_config_dialog.h>
 #include <tree_editor/common/choice_manager.h>
 #include <tree_editor/common/graph/tree_instance.h>

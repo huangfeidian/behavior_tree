@@ -8,6 +8,7 @@
 #include "node_enums.h"
 #include "basic_node_desc.h"
 
+#include <spdlog/logger.h>
 
 namespace spiritsaway::behavior_tree::common
 {

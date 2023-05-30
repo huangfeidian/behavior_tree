@@ -1,13 +1,15 @@
 ﻿#include "action_agent.h"
 #include <any_container/decode.h>
+#include "timer_manager.hpp"
+
 using namespace nlohmann;
 
 namespace spiritsaway::behavior_tree::runtime
 {
 	using namespace spiritsaway::behavior_tree::common;
 	
-	action_agent::action_agent(const std::filesystem::path& _in_data_folder)
-		: agent(_in_data_folder)
+	action_agent::action_agent(const std::filesystem::path& in_data_folder, std::shared_ptr<spdlog::logger> in_logger)
+		: agent(in_data_folder, in_logger)
 	{
 		add_action("has_key", this, &action_agent::has_key);
 		add_action("has_key_value", this, &action_agent::has_key_value);

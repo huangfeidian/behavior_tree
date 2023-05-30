@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <optional>
-#include <behavior/node_enums.h>
+#include "node_enums.h"
 #include <tree_editor/common/graph/basic_node.h>
-#include <behavior/btree_actions.h>
+#include "btree_actions.h"
 #include <tree_editor/common/dialogs/editable_item.h>
 #include <tree_editor/common/choice_manager.h>
 #include <magic_enum.hpp>

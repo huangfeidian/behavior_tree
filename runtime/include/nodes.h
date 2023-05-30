@@ -3,9 +3,8 @@
 #include <algorithm>
 #include <random>
 
-#include <behavior/node_enums.h>
-#include <logger.h>
-#include <behavior/btree_desc.h>
+#include "node_enums.h"
+#include "btree_desc.h"
 
 
 #include "agent.h"
@@ -63,7 +62,7 @@ namespace spiritsaway::behavior_tree::runtime
 			m_agent(in_agent),
 			m_type(in_type),
 			node_config(in_btree.get_node(in_node_idx)),
-			m_logger(std::move(logger_mgr::instance().create_logger("btree")))
+			m_logger(in_agent->logger())
 		{
 
 		}
