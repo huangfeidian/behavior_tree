@@ -2,6 +2,7 @@
 
 project(behavior_tree_runtime LANGUAGES CXX)
 
+option(WITHOUT_TEST "without test" OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -39,9 +40,10 @@ INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 add_library(behavior_tree_runtime  ${SRC_FILES})
 
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container)
-
+if(NOT WITHOUT_TEST)
 add_executable(debug_test ${PROJECT_SOURCE_DIR}/test/debug_test.cpp)
 target_link_libraries(debug_test behavior_tree_runtime)
+endif()
 
 foreach(p LIB BIN INCLUDE)
 	set(var CMAKE_INSTALL_${p}DIR)
