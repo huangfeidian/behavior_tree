@@ -23,6 +23,7 @@ namespace spiritsaway::behavior_tree::runtime
 		add_action("log", this, &action_agent::log);
 		add_action("log_bb", this, &action_agent::log_bb);
 		add_async_action("wait_for_seconds", this, &action_agent::wait_for_seconds);
+		add_node_closure_creator< timeout_closure>();
 	}
 
 	bool action_agent::has_key(const std::string& bb_key)
@@ -158,22 +159,16 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	std::optional<bool> action_agent::wait_for_seconds(double duration)
 	{
-		auto cur_timeout_closure = std::make_shared<timeout_closure>(current_poll_node);
-		std::weak_ptr<timeout_closure> weak_closure = cur_timeout_closure;
-		current_poll_node->m_closure = std::move(cur_timeout_closure);
-		auto timeout_lambda = [=]()
-		{
-			auto temp_callback = weak_closure.lock();
-			if (temp_callback)
-			{
-				temp_callback->operator()();
-			}
-		};
 		duration = std::max(0.5, duration);
-		auto cur_timer_handler = timer_manager::instance().add_timer_with_gap(
-			std::chrono::microseconds(static_cast<int>(duration * 1000 * 1000)), timeout_lambda);
+
+		auto cur_timer_handler = create_timer(int(duration*1000));
+
+		auto cur_timeout_closure = std::make_shared<timeout_closure>(current_poll_node, json(cur_timer_handler));
+		current_poll_node->m_closure = cur_timeout_closure;
+		add_timer(cur_timer_handler, current_poll_node);
 		return std::nullopt;
 	}
+
 	bool action_agent::log(const std::string& log_level, const json& log_info)
 	{
 		if (log_level == "debug")
@@ -228,4 +223,173 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		return action_iter->second.operator()(action_args);
 	}
+
+	json action_agent::encode() const
+	{
+		json result;
+		if (!cur_root_node)
+		{
+			return result;
+		}
+		result["tree_name"] = cur_root_node->tree_name();
+		result["blackboards"] = m_blackboard;
+		std::vector<std::vector<std::pair<std::uint8_t, json>>> front_nodes_chain;
+		front_nodes_chain.reserve(m_fronts.size());
+		for (auto one_node : m_fronts)
+		{
+			front_nodes_chain.push_back({});
+			auto& cur_chain_vec = front_nodes_chain.back();
+			while (one_node)
+			{
+				cur_chain_vec.push_back(std::make_pair(one_node->next_child_idx, one_node->encode()));
+				one_node = one_node->m_parent;
+			}
+			std::reverse(cur_chain_vec.begin(), cur_chain_vec.end());
+		}
+		result["front_nodes"] = front_nodes_chain;
+		result["next_timer_seq"] = m_next_timer_seq;
+		result["enabled"] = m_enabled;
+		return result;
+	}
+
+	bool action_agent::decode(const json& data)
+	{
+
+		if (data.is_null())
+		{
+			return true;
+		}
+		m_active_timers.clear();
+		std::string tree_name;
+		std::vector<std::vector<std::pair<std::uint8_t,json>>> front_nodes_chain;
+		try
+		{
+			data.at("blackboards").get_to(m_blackboard);
+			data.at("tree_name").get_to(tree_name);
+			data.at("front_nodes").get_to(front_nodes_chain);
+			data.at("next_timer_seq").get_to(m_next_timer_seq);
+		}
+		catch (std::exception& e)
+		{
+			m_logger->error("fail to action_agent::decode with exception {}", e.what());
+			return false;
+		}
+		load_btree(tree_name);
+		m_fronts.clear();
+		
+		for (int i = 0; i < front_nodes_chain.size(); i++)
+		{
+			const auto& cur_chain = front_nodes_chain[i];
+			auto cur_node = cur_root_node;
+			for (int j = 0; j < cur_chain.size(); j++)
+			{
+				cur_node->create_children();
+				cur_node->decode(cur_chain[j].second);
+				cur_node->next_child_idx = cur_chain[j].first;
+				cur_node->m_state = node_state::wait_child;
+				if (cur_node->m_type == node_type::random_seq)
+				{
+					cur_node = cur_node->children[dynamic_cast<random_seq*>(cur_node)->shuffle_children()[cur_chain[j].first]];
+					
+				}
+				else if(cur_node->m_type == node_type::action)
+				{
+					dynamic_cast<action*>(cur_node)->load_action_config();
+				}
+				else
+				{
+					if (!cur_node->children.empty())
+					{
+						cur_node = cur_node->children[cur_chain[j].first];
+					}
+				}
+				
+			}
+			cur_node->m_state = node_state::blocking;
+			auto closure_name_iter = cur_chain.back().second.find("closure_name");
+			if (closure_name_iter != cur_chain.back().second.end())
+			{
+				std::string closure_name;
+				json closure_data;
+				try
+				{
+					closure_name_iter->get_to(closure_name);
+					cur_chain.back().second.at("closure_data").get_to(closure_data);
+				}
+				catch (std::exception& e)
+				{
+					m_logger->error("action_agent::decode fail to decode closure with err {}", e.what());
+					return false;
+				}
+				auto closure_ctor_iter = m_node_closure_creators.find(closure_name);
+				if (closure_ctor_iter == m_node_closure_creators.end())
+				{
+					return false;
+				}
+				cur_node->m_closure = closure_ctor_iter->second(dynamic_cast<node*>(cur_node), closure_data);
+			}
+			m_fronts.push_back(cur_node);
+		}
+		return true;
+		
+	}
+
+	timeout_closure::timeout_closure(node* cur_node, const json& data)
+		: node_closure(cur_node, timeout_closure::closure_name(), data)
+		, m_timer_handler(data.get<std::uint64_t>())
+	{
+		
+		auto cur_agent = dynamic_cast<action_agent*>(m_node->m_agent);
+		cur_agent->add_timer(m_timer_handler, cur_node);
+	}
+
+	timeout_closure::~timeout_closure()
+	{
+		auto cur_agent = dynamic_cast<action_agent*>(m_node->m_agent);
+		cur_agent->remove_timer(m_timer_handler, false);
+	}
+
+	std::uint64_t action_agent::create_timer(std::uint64_t expire_gap_ms)
+	{
+		auto result_handler = m_next_timer_seq + 1;
+		m_next_timer_seq++;
+		timer_manager::instance().add_timer_with_gap(std::chrono::milliseconds(expire_gap_ms), [=]()
+			{
+				invoke_timer(result_handler);
+			});
+		return result_handler;
+	}
+
+	void action_agent::add_timer(std::uint64_t timer_handler, node* cur_node)
+	{
+		m_active_timers.push_back(std::make_pair(timer_handler, cur_node));
+	}
+
+	void action_agent::invoke_timer(std::uint64_t timer_handler)
+	{
+		remove_timer(timer_handler, true);
+	}
+
+	void action_agent::remove_timer(std::uint64_t timer_handler, bool with_invoke)
+	{
+		for (int i = 0; i < m_active_timers.size(); i++)
+		{
+			if (m_active_timers[i].first == timer_handler)
+			{
+				auto cur_node = m_active_timers[i].second;
+				m_active_timers[i].second = nullptr;
+				if (i + 1 != m_active_timers.size())
+				{
+					std::swap(m_active_timers.back(), m_active_timers[i]);
+				}
+				m_active_timers.pop_back();
+				if (with_invoke && cur_node)
+				{
+					cur_node->set_result(true);
+				}
+				return;
+			}
+		}
+	}
+
 }

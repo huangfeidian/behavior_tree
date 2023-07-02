@@ -81,7 +81,7 @@ namespace spiritsaway::behavior_tree::runtime
 		bool m_enabled = false;
 		std::filesystem::path m_data_folder;
 
-	private:
+	protected:
 		json::object_t m_blackboard;
 		std::vector<const btree_desc*> m_tree_descs;
 		bool poll_fronts(); // run the nodes

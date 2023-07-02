@@ -3,11 +3,27 @@
 #include "nodes.h"
 namespace spiritsaway::behavior_tree::runtime
 {
+	class timeout_closure : public node_closure
+	{
+	public:
+		const std::uint64_t m_timer_handler;
+		timeout_closure(node* cur_node, const json& data);
+
+		static std::string closure_name()
+		{
+			return "time_out";
+		}
+		virtual ~timeout_closure();
+
+
+	};
+
 	class action_agent : public agent
 	{
 	public:
 		using action_func_type = std::function<std::optional<bool>(const std::vector<json>&)>;
 		action_agent(const std::filesystem::path& in_data_folder, std::shared_ptr<spdlog::logger> in_logger);
+		using node_closure_creator_type = std::function < std::shared_ptr<node_closure>(node*, const json&)>;
 		// actions return true or false for immediate result
 		// if the result is not immediate then return nullopt
 		// all the arguments should take the form const T& or T
@@ -177,6 +193,7 @@ namespace spiritsaway::behavior_tree::runtime
 		bool log_bb(const std::string& log_level, const std::string& bb_key);
 	private:
 		std::unordered_map<std::string, action_func_type> m_action_funcs_map;
+		std::unordered_map<std::string, node_closure_creator_type> m_node_closure_creators;
 	private:
 
 
@@ -225,5 +242,28 @@ namespace spiritsaway::behavior_tree::runtime
 			};
 			m_action_funcs_map[name] = cur_lambda;
 		}
+
+		template <typename T>
+		void add_node_closure_creator()
+		{
+			auto cur_closure_name = T::closure_name();
+			auto cur_lambda = [=](node* cur_node, const json& cur_info)
+			{
+				return std::make_shared<T>(cur_node, cur_info);
+			};
+			m_node_closure_creators[cur_closure_name] = cur_lambda;
+		}
+		virtual json encode() const;
+		virtual bool decode(const json& data);
+	protected:
+		std::vector<std::pair<std::uint64_t, node*>> m_active_timers;
+		std::uint64_t m_next_timer_seq = 0;
+	public:
+		virtual std::uint64_t create_timer(std::uint64_t expire_gap_ms);
+		void add_timer(std::uint64_t timer_handler, node* cur_node);
+		void invoke_timer(std::uint64_t timer_handler);
+
+		void remove_timer(std::uint64_t handler, bool with_invoke);
+
 	};
 }

@@ -65,6 +65,26 @@ namespace spiritsaway::behavior_tree::runtime
 				children.push_back(one_child);
 			}
 		}
+		if (m_type == node_type::sub_tree && children.empty())
+		{
+			auto sub_tree_iter = node_config.extra.find("sub_tree");
+			if (sub_tree_iter == node_config.extra.end())
+			{
+				return;
+			}
+			if (!sub_tree_iter->second.is_string())
+			{
+				return;
+			}
+			auto sub_tree_name = sub_tree_iter->second.get<std::string>();
+
+			auto new_root = m_agent->create_tree(sub_tree_name, this);
+			if (!new_root)
+			{
+				return;
+			}
+			children.push_back(new_root);
+		}
 	}
 	void node::on_enter()
 	{
@@ -139,6 +159,17 @@ namespace spiritsaway::behavior_tree::runtime
 		return fmt::format("btree {} node {} child_idx {}",
 			btree_config.tree_name, node_config.idx, next_child_idx);
 	}
+
+	json node::encode() const
+	{
+		json result;
+		if (m_closure)
+		{
+			result["closure_name"] = m_closure->m_name;
+			result["closure_data"] = m_closure->m_data;
+		}
+		return result;
+	}
 	void root::on_enter()
 	{
 		node::on_enter();
@@ -197,7 +228,7 @@ namespace spiritsaway::behavior_tree::runtime
 		if (m_shuffle.empty())
 		{
 			m_shuffle.reserve(children.size());
-			for (std::size_t i = 0; i < children.size(); i++)
+			for (std::uint32_t i = 0; i < children.size(); i++)
 			{
 				m_shuffle.push_back(i);
 			}
@@ -220,6 +251,31 @@ namespace spiritsaway::behavior_tree::runtime
 			return;
 		}
 		visit_child(m_shuffle[next_child_idx]);
+	}
+
+	json random_seq::encode() const
+	{
+		json result = node::encode();
+		result["shuffle"] = m_shuffle;
+		return result;
+	}
+
+	bool random_seq::decode(const json& data)
+	{
+		if (!node::decode(data))
+		{
+			return false;
+		}
+		try
+		{
+			data.at("shuffle").get_to(m_shuffle);
+			return true;
+		}
+		catch (std::exception& e)
+		{
+			m_logger->error("random_seq::decode fail with err {}", e.what());
+			return false;
+		}
 	}
 	void select::on_enter()
 	{
@@ -291,7 +347,7 @@ namespace spiritsaway::behavior_tree::runtime
 		std::uint32_t prob_sum = std::accumulate(m_probilities.begin(), m_probilities.end(), 0) * 100;
 		auto cur_choice = m_distribution(m_generator);
 		std::uint32_t temp = cur_choice % prob_sum;
-		for (std::size_t i = 0; i < children.size(); i++)
+		for (std::uint32_t i = 0; i < children.size(); i++)
 		{
 			
 			if (temp < m_probilities[i] * 100)
@@ -300,8 +356,7 @@ namespace spiritsaway::behavior_tree::runtime
 			}
 			temp -= m_probilities[i] * 100;
 		}
-		return children.size() - 1;
-
+		return std::uint32_t(children.size() - 1);
 	}
 	void probility::on_revisit()
 	{
@@ -393,38 +448,9 @@ namespace spiritsaway::behavior_tree::runtime
 	void sub_tree::on_enter()
 	{
 		node::on_enter();
-		if (children.empty())
-		{
-			if (!create_sub_tree_node())
-			{
-				m_logger->warn("{} fail to load sub tree", debug_info());
-				return;
-			}
-
-		}
 		visit_child(0);
 	}
-	bool sub_tree::create_sub_tree_node()
-	{
-		auto sub_tree_iter = node_config.extra.find("sub_tree");
-		if (sub_tree_iter == node_config.extra.end())
-		{
-			return false;
-		}
-		if (!sub_tree_iter->second.is_string())
-		{
-			return false;
-		}
-		auto sub_tree_name = sub_tree_iter->second.get<std::string>();
-		
-		auto new_root = m_agent->create_tree(sub_tree_name, this);
-		if (!new_root)
-		{
-			return false;
-		}
-		children.push_back(new_root);
-		return true;
-	}
+
 	void sub_tree::on_revisit()
 	{
 		set_result(children[0]->result);
@@ -432,7 +458,7 @@ namespace spiritsaway::behavior_tree::runtime
 	void parallel::on_enter()
 	{
 		node::on_enter();
-		for (std::size_t i = 0; i < children.size(); i++)
+		for (std::uint32_t i = 0; i < children.size(); i++)
 		{
 			visit_child(i);
 		}
@@ -454,14 +480,11 @@ namespace spiritsaway::behavior_tree::runtime
 	void action::on_enter()
 	{
 		node::on_enter();
-		if (action_name.empty())
+		if (!load_action_config())
 		{
-			if (!load_action_config())
-			{
-				m_logger->warn("{} fail to load action args with extra {}", debug_info(), serialize::encode(node_config.extra).dump());
-				m_agent->notify_stop();
-				return;
-			}
+			m_logger->warn("{} fail to load action args with extra {}", debug_info(), serialize::encode(node_config.extra).dump());
+			m_agent->notify_stop();
+			return;
 		}
 		json::array_t real_action_args;
 		for (const auto& one_arg : action_args)
@@ -508,6 +531,10 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	bool action::load_action_config()
 	{
+		if (!action_name.empty())
+		{
+			return true;
+		}
 		auto& extra = node_config.extra;
 		auto action_iter = extra.find("action_name");
 		if (action_iter == extra.end())

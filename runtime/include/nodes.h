@@ -17,8 +17,10 @@ namespace spiritsaway::behavior_tree::runtime
 	{
 
 	public:
-		node_closure(node* _in_node):
-			m_node(_in_node)
+		node_closure(node* in_node, const std::string& name, const json& data)
+			: m_node(in_node)
+			, m_data(data)
+			, m_name(name)
 		{
 
 		}
@@ -26,8 +28,19 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			m_node = nullptr;
 		}
+
 	protected:
 		node* m_node;
+		
+	public:
+		const json m_data;
+		const std::string m_name;
+		static std::string closure_name() 
+		{
+			return "invalid";
+		}
+
+
 	};
 
 	
@@ -37,7 +50,6 @@ namespace spiritsaway::behavior_tree::runtime
 		static std::mt19937 m_generator;
 		static std::uniform_int_distribution<std::uint32_t> m_distribution;
 	public:
-		bool in_fronts = false;
 		node* m_parent = nullptr;
 		std::vector<node*> children;
 		bool result = false;
@@ -47,15 +59,18 @@ namespace spiritsaway::behavior_tree::runtime
 		std::uint8_t next_child_idx = 0;
 		agent* m_agent;
 		const std::uint32_t m_node_idx;
+		const std::uint32_t m_tree_idx;
 		const btree_desc& btree_config;
 		const basic_node_desc& node_config;
-		std::shared_ptr<node_closure> m_closure; // 主要用来处理异常中断时的任务释放 同时外部任务也可以通过weak_ptr的形式来判断任务是否已经被中止
+		// 主要用来处理异常中断时的任务释放 同时外部任务也可以通过weak_ptr的形式来判断任务是否已经被中止
+		std::shared_ptr<node_closure> m_closure; 
 		std::shared_ptr<spdlog::logger> m_logger;
 
 		node(node* in_parent, agent* in_agent, std::uint32_t in_node_idx, 
 			const btree_desc& in_btree, node_type in_type) :
 			m_parent(in_parent),
 			m_node_idx(in_node_idx),
+			m_tree_idx(in_agent->get_tree_idx(in_btree.tree_name)),
 			btree_config(in_btree),
 			m_state(node_state::init),
 			next_child_idx(0),
@@ -89,6 +104,11 @@ namespace spiritsaway::behavior_tree::runtime
 		virtual void backtrace();
 		const std::string& tree_name() const;
 		std::string debug_info() const;
+		virtual json encode() const;
+		virtual bool decode(const json& data)
+		{
+			return true;
+		}
 		static node* create_node_by_idx(const btree_desc& btree_config,
 			std::uint32_t node_idx, node* parent, agent* in_agent);
 	};
@@ -126,10 +146,16 @@ namespace spiritsaway::behavior_tree::runtime
 		using node::node;
 	private:
 		std::vector<std::uint32_t> m_shuffle;
-		
 		void on_enter();
 		void on_revisit();
 		friend class node;
+	public:
+		const std::vector<std::uint32_t>& shuffle_children() const
+		{
+			return m_shuffle;
+		}
+		json encode() const override;
+		bool decode(const json& data) override;
 
 	};
 	class select : public node
@@ -186,7 +212,6 @@ namespace spiritsaway::behavior_tree::runtime
 	{
 		using node::node;
 		void on_enter();
-		bool create_sub_tree_node();
 		void on_revisit();
 		friend class node;
 
@@ -205,6 +230,7 @@ namespace spiritsaway::behavior_tree::runtime
 		std::string action_name;
 		std::vector<std::pair<action_arg_type, json>> action_args;
 		void on_enter();
+	public:
 		bool load_action_config();
 		friend class node;
 	};
@@ -232,22 +258,5 @@ namespace spiritsaway::behavior_tree::runtime
 		void on_enter();
 		friend class node;
 	};
-	class timeout_closure : public node_closure
-	{
-	public:
-		timeout_closure(node* cur_node) :
-			node_closure(cur_node)
-		{
 
-		}
-		virtual void operator()()
-		{
-			m_node->set_result(true);
-
-		}
-		virtual ~timeout_closure()
-		{
-
-		}
-	};
 }

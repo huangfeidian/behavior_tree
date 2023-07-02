@@ -146,7 +146,10 @@ int main()
 	cur_agent.set_debug(cur_receiver);
 	cur_agent.load_btree(test_btree_name);
 	cur_agent.enable(true);
-	
+	auto cur_agent_state = cur_agent.encode();
+	cur_agent.enable(false);
+	cur_agent.decode(cur_agent_state);
+	cur_agent.enable(true);
 	spiritsaway::tree_editor::tree_state_traces _trace;
 	std::vector<node_trace_cmd> total_logs;
 	for (int i = 0; i < 5; i++)
