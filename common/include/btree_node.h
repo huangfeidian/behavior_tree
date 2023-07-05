@@ -628,7 +628,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			logger()->error("action_node {} check edit {}", m_idx, action_widget->m_value.dump());
+			logger()->debug("action_node {} check edit {}", m_idx, action_widget->m_value.dump());
 			if (!action_widget->m_value.is_string())
 			{
 				return false;
@@ -681,7 +681,7 @@ namespace spiritsaway::behavior_tree::editor
 
 				}
 				action_args.swap(temp_arg_values);
-				refresh_editable_items();
+				// refresh_editable_items();
 				return true;
 
 			}
