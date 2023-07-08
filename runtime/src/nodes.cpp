@@ -52,7 +52,7 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	void node::create_children()
 	{
-		if (!node_config.children.empty() && children.empty())
+		if (!node_config.children.empty() && m_children.empty())
 		{
 			// 初始化所有的子节点
 			for (auto one_child_idx : node_config.children)
@@ -62,10 +62,10 @@ namespace spiritsaway::behavior_tree::runtime
 				{
 					return;
 				}
-				children.push_back(one_child);
+				m_children.push_back(one_child);
 			}
 		}
-		if (m_type == node_type::sub_tree && children.empty())
+		if (m_type == node_type::sub_tree && m_children.empty())
 		{
 			auto sub_tree_iter = node_config.extra.find("sub_tree");
 			if (sub_tree_iter == node_config.extra.end())
@@ -83,7 +83,7 @@ namespace spiritsaway::behavior_tree::runtime
 			{
 				return;
 			}
-			children.push_back(new_root);
+			m_children.push_back(new_root);
 		}
 	}
 	void node::on_enter()
@@ -91,7 +91,7 @@ namespace spiritsaway::behavior_tree::runtime
 		m_state = node_state::entering;
 		next_child_idx = 0;
 		result = false;
-		for (auto one_child : children)
+		for (auto one_child : m_children)
 		{
 			one_child->m_state = node_state::init;
 		}
@@ -115,15 +115,15 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	void node::visit_child(std::uint32_t child_idx)
 	{
-		if (child_idx >= children.size())
+		if (child_idx >= m_children.size())
 		{
-			m_logger->warn("btree {} visit child {} at node {} while children size is {}",
-				btree_config.tree_name, child_idx, node_config.idx, children.size());
+			m_logger->warn("btree {} visit child {} at node {} while m_children size is {}",
+				btree_config.tree_name, child_idx, node_config.idx, m_children.size());
 			m_agent->notify_stop();
 			return;
 		}
-		children[child_idx]->m_state = node_state::init;
-		m_agent->add_to_front(children[child_idx]);
+		m_children[child_idx]->m_state = node_state::init;
+		m_agent->add_to_front(m_children[child_idx]);
 		m_state = node_state::wait_child;
 	}
 	void node::backtrace()
@@ -170,6 +170,16 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		return result;
 	}
+
+	node::~node()
+	{
+		m_closure.reset();
+		for (auto one_child : m_children)
+		{
+			delete one_child;
+		}
+		m_children.clear();
+	}
 	void root::on_enter()
 	{
 		node::on_enter();
@@ -184,7 +194,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		else
 		{
-			bool result = children[0]->result;
+			bool result = m_children[0]->result;
 			set_result(result);
 		}
 	}
@@ -197,13 +207,13 @@ namespace spiritsaway::behavior_tree::runtime
 	void sequence::on_revisit()
 	{
 		node::on_revisit();
-		if (!children[next_child_idx]->result)
+		if (!m_children[next_child_idx]->result)
 		{
 			set_result(false);
 			return;
 		}
 		next_child_idx += 1;
-		if (next_child_idx == children.size())
+		if (next_child_idx == m_children.size())
 		{
 			set_result(true);
 			return;
@@ -215,7 +225,7 @@ namespace spiritsaway::behavior_tree::runtime
 		node::on_revisit();
 
 		next_child_idx += 1;
-		if (next_child_idx == children.size())
+		if (next_child_idx == m_children.size())
 		{
 			set_result(true);
 			return;
@@ -227,8 +237,8 @@ namespace spiritsaway::behavior_tree::runtime
 		node::on_enter();
 		if (m_shuffle.empty())
 		{
-			m_shuffle.reserve(children.size());
-			for (std::uint32_t i = 0; i < children.size(); i++)
+			m_shuffle.reserve(m_children.size());
+			for (std::uint32_t i = 0; i < m_children.size(); i++)
 			{
 				m_shuffle.push_back(i);
 			}
@@ -239,13 +249,13 @@ namespace spiritsaway::behavior_tree::runtime
 	void random_seq::on_revisit()
 	{
 		node::on_revisit();
-		if (!children[m_shuffle[next_child_idx]]->result)
+		if (!m_children[m_shuffle[next_child_idx]]->result)
 		{
 			set_result(false);
 			return;
 		}
 		next_child_idx += 1;
-		if (next_child_idx == children.size())
+		if (next_child_idx == m_children.size())
 		{
 			set_result(true);
 			return;
@@ -286,13 +296,13 @@ namespace spiritsaway::behavior_tree::runtime
 	void select::on_revisit()
 	{
 		node::on_revisit();
-		if (children[next_child_idx]->result)
+		if (m_children[next_child_idx]->result)
 		{
 			set_result(true);
 			return;
 		}
 		next_child_idx += 1;
-		if (next_child_idx == children.size())
+		if (next_child_idx == m_children.size())
 		{
 			set_result(false);
 			return;
@@ -335,7 +345,7 @@ namespace spiritsaway::behavior_tree::runtime
 			m_probilities.push_back(one_item.get<std::uint32_t>());
 		}
 		
-		if (m_probilities.size() != children.size())
+		if (m_probilities.size() != m_children.size())
 		{
 			return false;
 		}
@@ -347,7 +357,7 @@ namespace spiritsaway::behavior_tree::runtime
 		std::uint32_t prob_sum = std::accumulate(m_probilities.begin(), m_probilities.end(), 0) * 100;
 		auto cur_choice = m_distribution(m_generator);
 		std::uint32_t temp = cur_choice % prob_sum;
-		for (std::uint32_t i = 0; i < children.size(); i++)
+		for (std::uint32_t i = 0; i < m_children.size(); i++)
 		{
 			
 			if (temp < m_probilities[i] * 100)
@@ -356,12 +366,12 @@ namespace spiritsaway::behavior_tree::runtime
 			}
 			temp -= m_probilities[i] * 100;
 		}
-		return std::uint32_t(children.size() - 1);
+		return std::uint32_t(m_children.size() - 1);
 	}
 	void probility::on_revisit()
 	{
 		node::on_revisit();
-		set_result(children[next_child_idx]->result);
+		set_result(m_children[next_child_idx]->result);
 	}
 	void if_else::on_enter()
 	{
@@ -374,7 +384,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 		case 0:
 			// the if node
-			if (children[0]->result)
+			if (m_children[0]->result)
 			{
 				next_child_idx = 1;
 			}
@@ -385,10 +395,10 @@ namespace spiritsaway::behavior_tree::runtime
 			visit_child(next_child_idx);
 			break;
 		case 1:
-			set_result(children[1]->result);
+			set_result(m_children[1]->result);
 			break;
 		case 2:
-			set_result(children[2]->result);
+			set_result(m_children[2]->result);
 			break;
 		default:
 			m_logger->warn("{} invalid state visit if else node ", debug_info());
@@ -406,7 +416,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 		case 0:
 			// the if node
-			if (children[0]->result)
+			if (m_children[0]->result)
 			{
 				next_child_idx = 1;
 				visit_child(next_child_idx);
@@ -433,7 +443,7 @@ namespace spiritsaway::behavior_tree::runtime
 	void negative::on_revisit()
 	{
 		node::on_revisit();
-		set_result(!children[0]->result);
+		set_result(!m_children[0]->result);
 	}
 	void always_true::on_enter()
 	{
@@ -453,12 +463,12 @@ namespace spiritsaway::behavior_tree::runtime
 
 	void sub_tree::on_revisit()
 	{
-		set_result(children[0]->result);
+		set_result(m_children[0]->result);
 	}
 	void parallel::on_enter()
 	{
 		node::on_enter();
-		for (std::uint32_t i = 0; i < children.size(); i++)
+		for (std::uint32_t i = 0; i < m_children.size(); i++)
 		{
 			visit_child(i);
 		}
@@ -466,7 +476,7 @@ namespace spiritsaway::behavior_tree::runtime
 	void parallel::on_revisit()
 	{
 		bool final_result = false;
-		for (auto one_child : children)
+		for (auto one_child : m_children)
 		{
 			if (one_child->m_state == node_state::dead)
 			{

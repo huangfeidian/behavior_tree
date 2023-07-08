@@ -256,7 +256,19 @@ namespace spiritsaway::behavior_tree::runtime
 
 	bool agent::load_btree(const std::string& btree_name)
 	{
-		
+		if (cur_root_node)
+		{
+			reset();
+			if (cur_root_node->tree_name() == btree_name)
+			{
+				return true;
+			}
+			else
+			{
+				delete cur_root_node;
+				cur_root_node = nullptr;
+			}
+		}
 		cur_root_node = create_tree(btree_name, nullptr);
 		if (!cur_root_node)
 		{

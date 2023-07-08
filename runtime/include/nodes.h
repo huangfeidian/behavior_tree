@@ -51,7 +51,7 @@ namespace spiritsaway::behavior_tree::runtime
 		static std::uniform_int_distribution<std::uint32_t> m_distribution;
 	public:
 		node* m_parent = nullptr;
-		std::vector<node*> children;
+		std::vector<node*> m_children;
 		bool result = false;
 		bool running = false;
 		node_state m_state;
@@ -109,6 +109,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return true;
 		}
+		virtual ~node();
 		static node* create_node_by_idx(const btree_desc& btree_config,
 			std::uint32_t node_idx, node* parent, agent* in_agent);
 	};

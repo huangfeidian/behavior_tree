@@ -289,7 +289,7 @@ namespace spiritsaway::behavior_tree::runtime
 				cur_node->m_state = node_state::wait_child;
 				if (cur_node->m_type == node_type::random_seq)
 				{
-					cur_node = cur_node->children[dynamic_cast<random_seq*>(cur_node)->shuffle_children()[cur_chain[j].first]];
+					cur_node = cur_node->m_children[dynamic_cast<random_seq*>(cur_node)->shuffle_children()[cur_chain[j].first]];
 					
 				}
 				else if(cur_node->m_type == node_type::action)
@@ -298,9 +298,9 @@ namespace spiritsaway::behavior_tree::runtime
 				}
 				else
 				{
-					if (!cur_node->children.empty())
+					if (!cur_node->m_children.empty())
 					{
-						cur_node = cur_node->children[cur_chain[j].first];
+						cur_node = cur_node->m_children[cur_chain[j].first];
 					}
 				}
 				
