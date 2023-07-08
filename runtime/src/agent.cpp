@@ -350,4 +350,20 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		m_fronts.push_back(cur_node);
 	}
+
+	agent::~agent()
+	{
+		notify_stop();
+		if (cur_root_node)
+		{
+			delete cur_root_node;
+			cur_root_node = nullptr;
+		}
+		for (auto one_tree : m_tree_descs)
+		{
+			delete one_tree;
+		}
+		m_tree_descs.clear();
+		m_fronts.clear();
+	}
 }
