@@ -67,7 +67,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 	public:
 		node* create_tree(const std::string& btree_name, node* parent);
-		~agent();
+		virtual ~agent();
 	protected:
 		bool m_during_poll = false;
 		std::vector<node*> m_fronts; // node ready to run
