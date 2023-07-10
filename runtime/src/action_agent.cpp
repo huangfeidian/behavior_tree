@@ -387,9 +387,14 @@ namespace spiritsaway::behavior_tree::runtime
 				{
 					cur_node->set_result(true);
 				}
+				do_remove_timer(timer_handler);
 				return;
 			}
 		}
 	}
 
+	void action_agent::do_remove_timer(std::uint64_t handler)
+	{
+		timer_manager::instance().cancel_timer(handler);
+	}
 }

@@ -255,9 +255,11 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		virtual json encode() const;
 		virtual bool decode(const json& data);
+		virtual void do_remove_timer(std::uint64_t handler);
 	protected:
 		std::vector<std::pair<std::uint64_t, node*>> m_active_timers;
 		std::uint64_t m_next_timer_seq = 0;
+		
 	public:
 		virtual std::uint64_t create_timer(std::uint64_t expire_gap_ms);
 		void add_timer(std::uint64_t timer_handler, node* cur_node);
