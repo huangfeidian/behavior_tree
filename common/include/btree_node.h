@@ -32,8 +32,9 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
+			assert(false);
 			return nullptr;
 		}
 		bool set_extra(const json::object_t& data) override
@@ -57,7 +58,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			return nullptr;
 		}
@@ -126,7 +127,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new sequence_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -142,7 +143,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new always_seq_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 
@@ -158,7 +159,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new random_seq_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -173,7 +174,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new negative_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -187,7 +188,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new always_true_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -201,7 +202,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new always_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -216,7 +217,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent)
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new select_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -250,7 +251,7 @@ namespace spiritsaway::behavior_tree::editor
 			return result;
 		}
 		std::vector<std::uint32_t> weights;
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new probility_node(reinterpret_cast<btree_node*>(_in_parent), 0, weights);
 			return new_node;
@@ -339,7 +340,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new if_else_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -354,7 +355,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new while_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -369,7 +370,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new parallel_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -384,7 +385,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new reset_node(reinterpret_cast<btree_node*>(_in_parent), 0);
 			return new_node;
@@ -395,20 +396,31 @@ namespace spiritsaway::behavior_tree::editor
 	public:
 		wait_node(btree_node* _in_parent, std::uint32_t _in_idx, const std::string& _in_event)
 			: btree_node(btree_node_type::wait_event, _in_parent, _in_idx)
-			, cur_event(_in_event)
+			, m_wait_event(_in_event)
 		{
 
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
-			auto new_node = new wait_node(reinterpret_cast<btree_node*>(_in_parent), 0, cur_event);
+			auto new_node = new wait_node(reinterpret_cast<btree_node*>(_in_parent), 0, m_wait_event);
 			return new_node;
 		}
-		std::string cur_event;
+		std::string display_text() const override
+		{
+			if (m_comment.size())
+			{
+				return fmt::format("{}:{}:{}", m_idx, m_type, m_comment);
+			}
+			else
+			{
+				return fmt::format("{}:{}:{}", m_idx, m_type, m_wait_event);
+			}
+		}
+		std::string m_wait_event;
 		json to_json() const
 		{
 			auto result = basic_node::to_json();
-			result["extra"] = json::object({ {"event", cur_event} });
+			result["extra"] = json::object({ {"event", m_wait_event} });
 			return result;
 		}
 		virtual bool check_edit()
@@ -432,7 +444,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			cur_event = temp_str;
+			m_wait_event = temp_str;
 			return true;
 		}
 		void refresh_editable_items()override
@@ -441,7 +453,7 @@ namespace spiritsaway::behavior_tree::editor
 			json temp_item = json::object_t();
 			temp_item["name"] = "event";
 			temp_item["type"] = magic_enum::enum_name(editable_item_type::single_line_text);
-			temp_item["value"] = cur_event;
+			temp_item["value"] = m_wait_event;
 			m_show_widget->push(temp_item);
 		}
 		bool set_extra(const json::object_t& data)
@@ -451,7 +463,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			cur_event = cur_iter->second.get<std::string>();
+			m_wait_event = cur_iter->second.get<std::string>();
 			return true;
 		}
 
@@ -491,7 +503,7 @@ namespace spiritsaway::behavior_tree::editor
 				return fmt::format("{}:{}:{}", m_idx, m_type, sub_tree_name);
 			}
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new sub_tree_node(reinterpret_cast<btree_node*>(_in_parent), 0, sub_tree_name);
 			return new_node;
@@ -610,7 +622,7 @@ namespace spiritsaway::behavior_tree::editor
 				return fmt::format("{}:{}:{}", m_type, m_idx, show_text);
 			}
 		}
-		basic_node* clone_self(basic_node* _in_parent) const
+		basic_node* clone_self(basic_node* _in_parent) const override
 		{
 			auto new_node = new action_node(reinterpret_cast<btree_node*>(_in_parent), 0, action_name, action_args);
 			//new_node->agent_name = agent_name;
