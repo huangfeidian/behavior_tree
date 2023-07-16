@@ -514,7 +514,7 @@ namespace spiritsaway::behavior_tree::editor
 			{
 				return false;
 			}
-			auto event_widget = m_show_widget->find("tree_name");
+			auto event_widget = m_show_widget->find("sub_tree");
 			if (!event_widget)
 			{
 				return false;
