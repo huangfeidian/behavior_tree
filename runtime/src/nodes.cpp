@@ -67,10 +67,10 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		if (m_type == node_type::sub_tree && m_children.empty())
 		{
-			auto sub_tree_iter = node_config.extra.find("sub_tree");
+			auto sub_tree_iter = node_config.extra.find("sub_tree_name");
 			if (sub_tree_iter == node_config.extra.end())
 			{
-				m_logger->error("fail to find sub_tree in node {} tree {}", m_node_idx, btree_config.tree_name);
+				m_logger->error("fail to find sub_tree_name in node {} tree {}", m_node_idx, btree_config.tree_name);
 				return;
 			}
 			if (!sub_tree_iter->second.is_string())
