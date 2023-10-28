@@ -741,6 +741,12 @@ namespace spiritsaway::behavior_tree::runtime
 				btree_config, node_type::probility);
 			return temp_node;
 		}
+		case node_type::parallel:
+		{
+			auto temp_node = new parallel(parent, in_agent, node_idx,
+				btree_config, node_type::parallel);
+			return temp_node;
+		}
 		default:
 		{
 			if (parent)
