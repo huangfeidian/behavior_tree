@@ -297,6 +297,10 @@ namespace spiritsaway::behavior_tree::runtime
 				m_logger->warn("fail to load btree {}", btree_name);
 				return nullptr;
 			}
+			if (cur_btree->tree_name != btree_name)
+			{
+				m_logger->error("btree name not match in file {}", btree_name);
+			}
 			m_tree_descs.push_back(cur_btree);
 			if (m_cmd_receiver)
 			{

@@ -16,11 +16,11 @@ namespace spiritsaway::behavior_tree::common
 	class btree_desc
 	{
 	private:
-		bool load_from_json(const json& btree_file_data, std::shared_ptr<spdlog::logger> _logger)
+		bool load_from_json(const json& btree_file_data, std::shared_ptr<spdlog::logger> in_logger)
 		{
 			if (!btree_file_data.is_object())
 			{
-				_logger->error("cant parse to btree_desc, not str map");
+				in_logger->error("cant parse to btree_desc, not str map");
 				return false;
 			}
 			const auto& cur_map = btree_file_data.get<json::object_t>();
@@ -28,12 +28,12 @@ namespace spiritsaway::behavior_tree::common
 			auto tree_name_iter = cur_map.find("name");
 			if (tree_name_iter == cur_map.end())
 			{
-				_logger->error("cant find key name in btree data ");
+				in_logger->error("cant find key name in btree data ");
 				return false;
 			}
 			if (!tree_name_iter->second.is_string())
 			{
-				_logger->error("value for key name is not str");
+				in_logger->error("value for key name is not str");
 				return false;
 			}
 			tree_name = tree_name_iter->second.get<std::string>();
@@ -43,12 +43,12 @@ namespace spiritsaway::behavior_tree::common
 			auto extra_iter = cur_map.find("extra");
 			if (extra_iter == cur_map.end())
 			{
-				_logger->error("cant find key extra in btree data ");
+				in_logger->error("cant find key extra in btree data ");
 				return false;
 			}
 			if (!extra_iter->second.is_object())
 			{
-				_logger->error("value for key extra is not str map");
+				in_logger->error("value for key extra is not str map");
 				return false;
 			}
 			extra = extra_iter->second.get<json::object_t>();
@@ -56,19 +56,19 @@ namespace spiritsaway::behavior_tree::common
 			auto nodes_iter = cur_map.find("nodes");
 			if (nodes_iter == cur_map.end())
 			{
-				_logger->error("cant find key nodes in btree data ");
+				in_logger->error("cant find key nodes in btree data ");
 				return false;
 			}
 			auto& cur_nodes = nodes_iter->second;
 			if (!cur_nodes.is_array())
 			{
-				_logger->error("value for key nodes is not is_vector");
+				in_logger->error("value for key nodes is not is_vector");
 				return false;
 			}
 			std::vector< basic_node_desc> temp_nodes;
 			if (!serialize::decode(cur_nodes, temp_nodes))
 			{
-				_logger->error("cant decode nodes");
+				in_logger->error("cant decode nodes");
 				return false;
 			}
 			for (const auto& one_node : temp_nodes)
@@ -81,12 +81,12 @@ namespace spiritsaway::behavior_tree::common
 				auto agent_name_iter = one_node.extra.find("agent_name");
 				if (agent_name_iter == one_node.extra.end())
 				{
-					_logger->error("cant find key agent_name in btree data ");
+					in_logger->error("cant find key agent_name in btree data ");
 					return false;
 				}
 				if (!agent_name_iter->second.is_string())
 				{
-					_logger->error("value for key agent_name is not str");
+					in_logger->error("value for key agent_name is not str");
 					return false;
 				}
 				agent_name = agent_name_iter->second.get<std::string>();
@@ -97,36 +97,36 @@ namespace spiritsaway::behavior_tree::common
 				{
 					if (nodes.find(one_child) == nodes.end())
 					{
-						_logger->error("node {} has invalid child {}", one_node.idx, one_child);
+						in_logger->error("node {} has invalid child {}", one_node.idx, one_child);
 						return false;
 					}
 				}
 				if (one_node.parent && nodes.find(one_node.parent.value()) == nodes.end())
 				{
-					_logger->error("node {} has invalid parent {}", one_node.idx, one_node.parent.value());
+					in_logger->error("node {} has invalid parent {}", one_node.idx, one_node.parent.value());
 					return false;
 				}
 			}
 			if (agent_name.empty())
 			{
-				_logger->error("agent empty");
+				in_logger->error("agent empty");
 				return false;
 			}
 			return true;
 		}
 	public:
-		btree_desc(const std::string& btree_file_path, std::shared_ptr<spdlog::logger> _logger)
+		btree_desc(const std::string& btree_file_path, std::shared_ptr<spdlog::logger> in_logger)
 		{
-			_logger->info("loading btree {}", btree_file_path);
+			in_logger->info("loading btree {}", btree_file_path);
 			auto btree_file_stream = std::ifstream(btree_file_path);
 			std::string btree_file_str = std::string(std::istreambuf_iterator<char>(btree_file_stream),
 				std::istreambuf_iterator<char>());
 			json data = json::parse(btree_file_str, nullptr, false);
 
 
-			if (!load_from_json(data, _logger))
+			if (!load_from_json(data, in_logger))
 			{
-				_logger->error("fail to construct btree_desc from {}", data.dump());
+				in_logger->error("fail to construct btree_desc from {}", data.dump());
 				nodes.clear();
 				return;
 			}

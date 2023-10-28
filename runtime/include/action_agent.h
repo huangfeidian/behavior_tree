@@ -191,6 +191,7 @@ namespace spiritsaway::behavior_tree::runtime
 		//! \return 永远返回true	
 
 		bool log_bb(const std::string& log_level, const std::string& bb_key);
+
 	private:
 		std::unordered_map<std::string, action_func_type> m_action_funcs_map;
 		std::unordered_map<std::string, node_closure_creator_type> m_node_closure_creators;
