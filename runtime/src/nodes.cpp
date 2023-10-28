@@ -70,10 +70,12 @@ namespace spiritsaway::behavior_tree::runtime
 			auto sub_tree_iter = node_config.extra.find("sub_tree");
 			if (sub_tree_iter == node_config.extra.end())
 			{
+				m_logger->error("fail to find sub_tree in node {} tree {}", m_node_idx, btree_config.tree_name);
 				return;
 			}
 			if (!sub_tree_iter->second.is_string())
 			{
+				m_logger->error("fail to str value for sub_tree in node {} tree {}", m_node_idx, btree_config.tree_name);
 				return;
 			}
 			auto sub_tree_name = sub_tree_iter->second.get<std::string>();
@@ -81,6 +83,7 @@ namespace spiritsaway::behavior_tree::runtime
 			auto new_root = m_agent->create_tree(sub_tree_name, this);
 			if (!new_root)
 			{
+				m_logger->error("fail to create root for sub_tree in node {} tree {}", m_node_idx, btree_config.tree_name);
 				return;
 			}
 			m_children.push_back(new_root);
