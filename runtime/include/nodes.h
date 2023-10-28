@@ -120,8 +120,8 @@ namespace spiritsaway::behavior_tree::runtime
 	{
 		using node::node;
 	private:
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class sequence :public node
@@ -129,8 +129,8 @@ namespace spiritsaway::behavior_tree::runtime
 	protected:
 		using node::node;
 	private:
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class always_seq :public sequence
@@ -138,7 +138,7 @@ namespace spiritsaway::behavior_tree::runtime
 	protected:
 		using sequence::sequence;
 	private:
-		void on_revisit();
+		void on_revisit() override;
 		friend class node;
 	};
 	class random_seq : public node
@@ -147,8 +147,8 @@ namespace spiritsaway::behavior_tree::runtime
 		using node::node;
 	private:
 		std::vector<std::uint32_t> m_shuffle;
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	public:
 		const std::vector<std::uint32_t>& shuffle_children() const
@@ -164,8 +164,8 @@ namespace spiritsaway::behavior_tree::runtime
 	protected:
 		using node::node;
 	private:
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class probility : public node
@@ -174,46 +174,46 @@ namespace spiritsaway::behavior_tree::runtime
 	private:
 		std::vector<std::uint32_t> m_probilities;
 		
-		void on_enter();
+		void on_enter() override;
 		bool init_prob_parameters();
 		std::uint32_t prob_choose_child_idx() const;
-		void on_revisit();
+		void on_revisit() override;
 		friend class node;
 
 	};
 	class if_else : public node
 	{
 		using node::node;
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class while_loop : public node
 	{
 		using node::node;
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class negative : public node
 	{
 		using node::node;
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class always_true : public node
 	{
 		using node::node;
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class sub_tree : public node
 	{
 		using node::node;
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 
 	};
@@ -221,8 +221,8 @@ namespace spiritsaway::behavior_tree::runtime
 	class parallel : public node
 	{
 		using node::node;
-		void on_enter();
-		void on_revisit();
+		void on_enter() override;
+		void on_revisit() override;
 		friend class node;
 	};
 	class action : public node
@@ -230,7 +230,7 @@ namespace spiritsaway::behavior_tree::runtime
 		using node::node;
 		std::string action_name;
 		std::vector<std::pair<action_arg_type, json>> action_args;
-		void on_enter();
+		void on_enter() override;
 	public:
 		bool load_action_config();
 		friend class node;
@@ -240,8 +240,8 @@ namespace spiritsaway::behavior_tree::runtime
 	public:
 		event_type event;
 		using node::node;
-		void on_enter();
-		virtual bool handle_event(const event_type& cur_event)
+		void on_enter() override;
+		bool handle_event(const event_type& cur_event) override
 		{
 			return cur_event == event;
 		}
@@ -256,7 +256,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 
 		}
-		void on_enter();
+		void on_enter() override;
 		friend class node;
 	};
 
