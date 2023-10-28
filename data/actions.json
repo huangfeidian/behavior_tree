@@ -22,7 +22,7 @@
 				{
 					"comment": "要比较的值",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "判断黑板里特定key是否等于特定值",
@@ -39,7 +39,7 @@
 				{
 					"comment": "需要打印的值",
 					"name": "log_info",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "打印信息到log",
@@ -73,7 +73,7 @@
 				{
 					"comment": "用来增加的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "将特定黑板值增加一定数值 然后用结果更新次黑板值",
@@ -90,7 +90,7 @@
 				{
 					"comment": "用来减去的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "将特定黑板值减去一定数值 然后用结果更新次黑板值",
@@ -107,7 +107,7 @@
 				{
 					"comment": "用来乘以的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "将特定黑板值除以一定数值 然后用结果更新次黑板值",
@@ -124,7 +124,7 @@
 				{
 					"comment": "用来比较的值",
 					"name": "other_value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "判断特定黑板值是否大于传入的值",
@@ -141,7 +141,7 @@
 				{
 					"comment": "用来比较的值",
 					"name": "other_value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "判断特定黑板值是否小于传入的值",
@@ -158,7 +158,7 @@
 				{
 					"comment": "用来乘以的值 需要为数值类型",
 					"name": "value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "将特定黑板值乘于一定数值 然后用结果更新次黑板值",
@@ -175,7 +175,7 @@
 				{
 					"comment": "设置的新的值",
 					"name": "new_value",
-					"type": "const spiritsaway::serialize::any_value_type &"
+					"type": "any_value"
 				}
 			],
 			"brief": "将黑板里特定key设置为特定值",
@@ -192,7 +192,7 @@
 			],
 			"brief": "等待一段时间",
 			"name": "wait_for_seconds",
-			"return": "需要异步执行 永远返回true\t\t\t\t\t"
+			"return": "需要异步执行 永远返回true"
 		},
 		"nop":
 		{
@@ -201,6 +201,94 @@
 			"brief": "什么都不做",
 			"name": "nop",
 			"return": "永远返回true"
+		},
+		"get_array_size": {
+			"args": [
+				{
+					"comment": "来源的黑板名字",
+					"name": "array_bb_key",
+					"type": "string"
+				},
+				{
+					"comment": "结果存储的黑板名字",
+					"name": "sz_bb_key",
+					"type": "string"
+				}
+			],
+			"brief": "获取黑板中数组的大小，存储到目标位置",
+			"name": "get_array_size",
+			"return": "如果来源key对应的值不是数组则返回false，否则返回true"
+		},
+		"choose_idx": {
+			"args": [
+				{
+					"comment": "挑选的索引",
+					"name": "idx",
+					"type": "uint32"
+				},
+				{
+					"comment": "数据的来源",
+					"name": "array_bb_key",
+					"type": "string"
+				},
+				{
+					"comment": "结果的存储位置",
+					"name": "dest_bb_key",
+					"type": "string"
+				}
+			],
+			"brief": "从指定数据源里选择目标索引的元素存储到特定位置",
+			"name": "choose_idx",
+			"return": "如果数据源存在且是array且大小大于idx 返回true 否则返回false"
+		},
+		"choose_one_random": {
+			"args": [
+				{
+					"comment": "要抽取的vector在黑板里的key",
+					"name": "array_bb_key",
+					"type": "string"
+				},
+				{
+					"comment": "抽取的结果放在黑板里的key",
+					"name": "dest_bb_key",
+					"type": "string"
+				},
+				{
+					"comment": "是否是不放回抽样",
+					"name": "remove_chosen",
+					"type": "bool"
+				}
+			],
+			"brief": "在指定vector里随机抽取一个 支持不放回抽样",
+			"name": "choose_one_random",
+			"return": "如果array_bb_key对应的vec存在且不为空 则返回true 否则返回false"
+		},
+		"choose_random": {
+			"args": [
+				{
+					"comment": "要抽取的vector在黑板里的key",
+					"name": "array_bb_key",
+					"type": "string"
+				},
+				{
+					"comment": "抽取的结果vec放在黑板里的key",
+					"name": "dest_bb_key",
+					"type": "string"
+				},
+				{
+					"comment": "抽样的结果大小",
+					"name": "choose_sz",
+					"type": "int"
+				},
+				{
+					"comment": "是否是不放回抽样",
+					"name": "remove_chosen",
+					"type": "bool"
+				}
+			],
+			"brief": "在array_bb_key指定vector里随机抽取固定个数元素 放到黑板的dest_bb_key 支持不放回抽样",
+			"name": "choose_random",
+			"return": "如果array_bb_key对应的vec存在且大小不小于choose_sz则返回true 否则返回false"
 		}
 	}
 }

@@ -47,8 +47,6 @@ namespace spiritsaway::behavior_tree::runtime
 	class node
 	{
 	protected:
-		static std::mt19937 m_generator;
-		static std::uniform_int_distribution<std::uint32_t> m_distribution;
 	public:
 		node* m_parent = nullptr;
 		std::vector<node*> m_children;
@@ -176,7 +174,7 @@ namespace spiritsaway::behavior_tree::runtime
 		
 		void on_enter() override;
 		bool init_prob_parameters();
-		std::uint32_t prob_choose_child_idx() const;
+		std::uint32_t prob_choose_child_idx();
 		void on_revisit() override;
 		friend class node;
 

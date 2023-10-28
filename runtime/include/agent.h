@@ -10,6 +10,7 @@
 #include <memory>
 #include "btree_desc.h"
 #include <filesystem>
+#include <random>
 #include "btree_debug.h"
 
 namespace spiritsaway::behavior_tree::runtime
@@ -67,6 +68,8 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 	public:
 		node* create_tree(const std::string& btree_name, node* parent);
+		std::mt19937& random_generator() { return m_random_generator; }
+		auto& int_distribution() { return m_int_distribution; }
 		virtual ~agent();
 	protected:
 		bool m_during_poll = false;
@@ -80,7 +83,8 @@ namespace spiritsaway::behavior_tree::runtime
 		std::shared_ptr<spdlog::logger> m_logger;
 		bool m_enabled = false;
 		std::filesystem::path m_data_folder;
-
+		std::mt19937 m_random_generator;
+		std::uniform_int_distribution<std::uint32_t> m_int_distribution;
 	protected:
 		json::object_t m_blackboard;
 		std::vector<const btree_desc*> m_tree_descs;

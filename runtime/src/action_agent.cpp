@@ -22,6 +22,11 @@ namespace spiritsaway::behavior_tree::runtime
 		add_action("number_less_than", this, &action_agent::number_less_than);
 		add_action("log", this, &action_agent::log);
 		add_action("log_bb", this, &action_agent::log_bb);
+		add_action("nop", this, &action_agent::nop);
+		add_action("get_array_size", this, &action_agent::get_array_size);
+		add_action("choose_random", this, &action_agent::choose_random);
+		add_action("choose_one_random", this, &action_agent::choose_one_random);
+		add_action("choose_idx", this, &action_agent::choose_idx);
 		add_async_action("wait_for_seconds", this, &action_agent::wait_for_seconds);
 		add_node_closure_creator< timeout_closure>();
 	}
@@ -396,5 +401,68 @@ namespace spiritsaway::behavior_tree::runtime
 	void action_agent::do_remove_timer(std::uint64_t handler)
 	{
 		timer_manager::instance().cancel_timer(handler);
+	}
+
+	bool action_agent::choose_random(const std::string& array_bb_key, const std::string& dest_bb_key, std::uint32_t choose_sz, bool remove_chosen)
+	{
+		auto from_val = blackboard_get(array_bb_key);
+		if (!from_val.is_array())
+		{
+			return false;
+		}
+		if (from_val.size() < choose_sz)
+		{
+			return false;
+		}
+		std::shuffle(from_val.begin(), from_val.end(), m_random_generator);
+		json result(from_val.begin(), from_val.begin() + choose_sz);
+		blackboard_set(dest_bb_key, std::move(result));
+		if (remove_chosen)
+		{
+			blackboard_set(array_bb_key, json(from_val.begin() + choose_sz, from_val.end()));
+		}
+		return true;
+	}
+	bool action_agent::choose_one_random(const std::string& array_bb_key, const std::string& dest_bb_key, bool remove_chosen)
+	{
+		auto from_val = blackboard_get(array_bb_key);
+		if (!from_val.is_array())
+		{
+			return false;
+		}
+		if (from_val.size() < 1)
+		{
+			return false;
+		}
+		std::shuffle(from_val.begin(), from_val.end(), m_random_generator);
+
+		blackboard_set(dest_bb_key, from_val[0]);
+		if (remove_chosen)
+		{
+			blackboard_set(array_bb_key, json(from_val.begin() + 1, from_val.end()));
+		}
+		return true;
+	}
+
+	bool action_agent::choose_idx(std::uint32_t idx, const std::string& array_bb_key, const std::string& dest_bb_key)
+	{
+		const auto& pre_val = blackboard_get(array_bb_key);
+		if (!pre_val.is_array() || pre_val.size() < idx)
+		{
+			return false;
+		}
+		blackboard_set(dest_bb_key, pre_val[idx]);
+		return true;
+	}
+
+	bool action_agent::get_array_size(const std::string& array_bb_key, const std::string& sz_bb_key)
+	{
+		auto cur_val = blackboard_get(array_bb_key);
+		if (!cur_val.is_array())
+		{
+			return false;
+		}
+		blackboard_set(sz_bb_key, cur_val.size());
+		return true;
 	}
 }

@@ -9,6 +9,7 @@ namespace spiritsaway::behavior_tree::runtime
 	agent::agent(const std::filesystem::path& in_data_folder, std::shared_ptr<spdlog::logger> in_logger)
 		: m_logger(in_logger)
 		, m_data_folder(in_data_folder)
+		, m_random_generator(std::random_device{}())
 	{
 
 	}

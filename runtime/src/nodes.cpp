@@ -4,8 +4,6 @@
 namespace spiritsaway::behavior_tree::runtime
 {
 	using namespace spiritsaway::behavior_tree::common;
-	std::mt19937 node::m_generator;
-	std::uniform_int_distribution<std::uint32_t> node::m_distribution;
 	void node::set_result(bool new_result)
 	{
 		if (node_state_is_forbid_enter())
@@ -246,7 +244,7 @@ namespace spiritsaway::behavior_tree::runtime
 				m_shuffle.push_back(i);
 			}
 		}
-		std::shuffle(m_shuffle.begin(), m_shuffle.end(), m_generator);
+		std::shuffle(m_shuffle.begin(), m_shuffle.end(), m_agent->random_generator());
 		visit_child(m_shuffle[0]);
 	}
 	void random_seq::on_revisit()
@@ -355,10 +353,10 @@ namespace spiritsaway::behavior_tree::runtime
 
 		return true;
 	}
-	std::uint32_t probility::prob_choose_child_idx() const
+	std::uint32_t probility::prob_choose_child_idx()
 	{
 		std::uint32_t prob_sum = std::accumulate(m_probilities.begin(), m_probilities.end(), 0) * 100;
-		auto cur_choice = m_distribution(m_generator);
+		auto cur_choice = m_agent->int_distribution()(m_agent->random_generator());
 		std::uint32_t temp = cur_choice % prob_sum;
 		for (std::uint32_t i = 0; i < m_children.size(); i++)
 		{

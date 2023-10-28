@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "agent.h"
 #include "nodes.h"
+#include <random>
+
 namespace spiritsaway::behavior_tree::runtime
 {
 	class timeout_closure : public node_closure
@@ -192,6 +194,16 @@ namespace spiritsaway::behavior_tree::runtime
 
 		bool log_bb(const std::string& log_level, const std::string& bb_key);
 
+		bool nop();
+
+		bool get_array_size(const std::string& array_bb_key, const std::string& sz_bb_key);
+
+		bool choose_random(const std::string& array_bb_key, const std::string& dest_bb_key, std::uint32_t choose_sz, bool remove_chosen);
+
+		bool choose_one_random(const std::string& array_bb_key, const std::string& dest_bb_key, bool remove_chosen);
+
+		bool choose_idx(std::uint32_t idx, const std::string& array_bb_key, const std::string& dest_bb_key);
+
 	private:
 		std::unordered_map<std::string, action_func_type> m_action_funcs_map;
 		std::unordered_map<std::string, node_closure_creator_type> m_node_closure_creators;
@@ -260,6 +272,7 @@ namespace spiritsaway::behavior_tree::runtime
 	protected:
 		std::vector<std::pair<std::uint64_t, node*>> m_active_timers;
 		std::uint64_t m_next_timer_seq = 0;
+		
 		
 	public:
 		virtual std::uint64_t create_timer(std::uint64_t expire_gap_ms);
