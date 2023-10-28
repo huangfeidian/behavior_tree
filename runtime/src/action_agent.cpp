@@ -465,4 +465,9 @@ namespace spiritsaway::behavior_tree::runtime
 		blackboard_set(sz_bb_key, cur_val.size());
 		return true;
 	}
+
+	bool action_agent::nop()
+	{
+		return true;
+	}
 }
