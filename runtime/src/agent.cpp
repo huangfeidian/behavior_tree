@@ -280,6 +280,7 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	node* agent::create_tree(const std::string& btree_name, node* parent)
 	{
+		m_logger->debug("try create_tree {}", btree_name);
 		const btree_desc* cur_btree = nullptr;
 		for (const auto& one_item : m_tree_descs)
 		{
@@ -300,7 +301,9 @@ namespace spiritsaway::behavior_tree::runtime
 			if (cur_btree->tree_name != btree_name)
 			{
 				m_logger->error("btree name not match in file {}", btree_name);
+				return nullptr;
 			}
+			m_logger->debug("create_tree {} suc", btree_name);
 			m_tree_descs.push_back(cur_btree);
 			if (m_cmd_receiver)
 			{
