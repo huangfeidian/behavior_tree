@@ -637,6 +637,20 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		m_state = node_state::blocking;
 	}
+
+	bool wait_event::handle_event(const event_type& cur_event)
+	{
+		if(cur_event == event)
+		{
+			m_logger->info("{} suc handle event  {}", debug_info(), 
+					cur_event);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	void reset::on_enter()
 	{
 		node::on_enter();

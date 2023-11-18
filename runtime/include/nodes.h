@@ -239,10 +239,8 @@ namespace spiritsaway::behavior_tree::runtime
 		event_type event;
 		using node::node;
 		void on_enter() override;
-		bool handle_event(const event_type& cur_event) override
-		{
-			return cur_event == event;
-		}
+		bool handle_event(const event_type& cur_event) override;
+
 		friend class node;
 	};
 	class reset : public node

@@ -72,8 +72,10 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			for (auto one_node : m_fronts)
 			{
+				m_logger->info("poll event {} at node {}", one_event, one_node->debug_info());
 				if (one_node->handle_event(one_event))
 				{
+					one_node->set_result(true);
 					break;
 				}
 			}
