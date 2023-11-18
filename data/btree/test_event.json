@@ -1,0 +1,64 @@
+{
+    "extra": {},
+    "name": "test_event.json",
+    "nodes": [
+        {
+            "children": [
+                1
+            ],
+            "color": 0,
+            "comment": "",
+            "extra": {
+                "agent_name": "action_agent"
+            },
+            "idx": 0,
+            "is_collapsed": false,
+            "type": "root"
+        },
+        {
+            "children": [
+                2,
+                3
+            ],
+            "color": 4294967295,
+            "comment": "",
+            "extra": {},
+            "idx": 1,
+            "is_collapsed": false,
+            "parent": 0,
+            "type": "parallel"
+        },
+        {
+            "children": [],
+            "color": 4294967295,
+            "comment": "",
+            "extra": {
+                "action_args": [
+                    {
+                        "arg_type": "plain",
+                        "arg_value": 2
+                    }
+                ],
+                "action_name": "wait_for_seconds"
+            },
+            "idx": 2,
+            "is_collapsed": false,
+            "parent": 1,
+            "type": "action"
+        },
+        {
+            "children": [],
+            "color": 4294967295,
+            "comment": "",
+            "extra": {
+                "event": "test"
+            },
+            "idx": 3,
+            "is_collapsed": false,
+            "parent": 1,
+            "type": "wait_event"
+        }
+    ],
+    "signature": "19-11-2023 01:16:57",
+    "tree_type": ""
+}

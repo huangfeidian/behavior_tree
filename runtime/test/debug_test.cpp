@@ -138,7 +138,7 @@ struct btree_debug_cmd_receiver : public cmd_receiver
 };
 int main()
 {
-	std::string test_btree_name = "new_btree_1.json";
+	std::string test_btree_name = "test_event.json";
 	std::filesystem::path data_folder = "../../data/btree";
 	auto cur_logger = create_logger("btree");
 	action_agent cur_agent(data_folder, cur_logger);
@@ -150,6 +150,8 @@ int main()
 	cur_agent.enable(false);
 	cur_agent.decode(cur_agent_state);
 	cur_agent.enable(true);
+
+	cur_agent.dispatch_event("test");
 	spiritsaway::tree_editor::tree_state_traces _trace;
 	std::vector<node_trace_cmd> total_logs;
 	for (int i = 0; i < 5; i++)

@@ -87,6 +87,22 @@ namespace spiritsaway::behavior_tree::runtime
 			m_children.push_back(new_root);
 		}
 	}
+
+	std::uint32_t node::index_in_parent() const
+	{
+		if (!m_parent)
+		{
+			return 0;
+		}
+		for (std::uint32_t i = 0; i < m_parent->m_children.size(); i++)
+		{
+			if (m_parent->m_children[i] == this)
+			{
+				return i;
+			}
+		}
+		return m_parent->m_children.size();
+	}
 	void node::on_enter()
 	{
 		m_state = node_state::entering;
@@ -636,6 +652,7 @@ namespace spiritsaway::behavior_tree::runtime
 			event = event_iter->second.get<std::string>();
 		}
 		m_state = node_state::blocking;
+		m_agent->add_to_front(this);
 	}
 
 	bool wait_event::handle_event(const event_type& cur_event)

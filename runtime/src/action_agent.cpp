@@ -244,10 +244,11 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			front_nodes_chain.push_back({});
 			auto& cur_chain_vec = front_nodes_chain.back();
-			while (one_node)
+			auto temp_node = one_node;
+			while (temp_node->m_parent)
 			{
-				cur_chain_vec.push_back(std::make_pair(one_node->next_child_idx, one_node->encode()));
-				one_node = one_node->m_parent;
+				cur_chain_vec.push_back(std::make_pair(temp_node->index_in_parent(), temp_node->encode()));
+				temp_node = temp_node->m_parent;
 			}
 			std::reverse(cur_chain_vec.begin(), cur_chain_vec.end());
 		}
@@ -286,10 +287,10 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			const auto& cur_chain = front_nodes_chain[i];
 			auto cur_node = cur_root_node;
+			
 			for (int j = 0; j < cur_chain.size(); j++)
 			{
 				cur_node->create_children();
-				cur_node->decode(cur_chain[j].second);
 				cur_node->next_child_idx = cur_chain[j].first;
 				cur_node->m_state = node_state::wait_child;
 				if (cur_node->m_type == node_type::random_seq)
@@ -308,6 +309,8 @@ namespace spiritsaway::behavior_tree::runtime
 						cur_node = cur_node->m_children[cur_chain[j].first];
 					}
 				}
+				cur_node->decode(cur_chain[j].second);
+
 				
 			}
 			cur_node->m_state = node_state::blocking;

@@ -71,7 +71,7 @@
     },
     "parallel": {
         "child_min": 1,
-        "child_max": 1,
+        "child_max": 10,
         "editable_item": {
 
         }

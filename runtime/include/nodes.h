@@ -87,6 +87,7 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			return m_state == node_state::leaving || m_state == node_state::dead;
 		}
+		std::uint32_t index_in_parent() const;
 		void set_result(bool new_result);
 		virtual bool handle_event(const event_type& cur_event)
 		{
