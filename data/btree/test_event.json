@@ -18,7 +18,8 @@
         {
             "children": [
                 2,
-                3
+                3,
+                4
             ],
             "color": 4294967295,
             "comment": "",
@@ -57,8 +58,51 @@
             "is_collapsed": false,
             "parent": 1,
             "type": "wait_event"
+        },
+        {
+            "children": [
+                5,
+                6
+            ],
+            "color": 4294967295,
+            "comment": "",
+            "extra": {},
+            "idx": 4,
+            "is_collapsed": false,
+            "parent": 1,
+            "type": "parallel"
+        },
+        {
+            "children": [],
+            "color": 4294967295,
+            "comment": "",
+            "extra": {
+                "event": "test2"
+            },
+            "idx": 5,
+            "is_collapsed": false,
+            "parent": 4,
+            "type": "wait_event"
+        },
+        {
+            "children": [],
+            "color": 4294967295,
+            "comment": "",
+            "extra": {
+                "action_args": [
+                    {
+                        "arg_type": "plain",
+                        "arg_value": 2
+                    }
+                ],
+                "action_name": "wait_for_seconds"
+            },
+            "idx": 6,
+            "is_collapsed": false,
+            "parent": 4,
+            "type": "action"
         }
     ],
-    "signature": "19-11-2023 01:16:57",
+    "signature": "19-11-2023 23:06:38",
     "tree_type": ""
 }

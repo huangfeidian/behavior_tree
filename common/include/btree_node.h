@@ -593,7 +593,7 @@ namespace spiritsaway::behavior_tree::editor
 		{
 			if (m_comment.size())
 			{
-				return fmt::format("{}:{}:{}", m_type, m_idx, m_comment);
+				return fmt::format("{}:{}:{}", m_idx, m_type , m_comment);
 			}
 			else
 			{

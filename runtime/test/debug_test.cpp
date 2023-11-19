@@ -152,6 +152,8 @@ int main()
 	cur_agent.enable(true);
 
 	cur_agent.dispatch_event("test");
+
+	cur_agent.dispatch_event("test2");
 	spiritsaway::tree_editor::tree_state_traces _trace;
 	std::vector<node_trace_cmd> total_logs;
 	for (int i = 0; i < 5; i++)

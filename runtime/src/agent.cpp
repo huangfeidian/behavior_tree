@@ -72,14 +72,26 @@ namespace spiritsaway::behavior_tree::runtime
 		{
 			m_pre_fronts.clear();
 			std::swap(m_pre_fronts, m_fronts);
+			bool event_has_handled = false;
 			for (auto one_node : m_pre_fronts)
 			{
-				m_logger->info("poll event {} at node {}", one_event, one_node->debug_info());
-				if (one_node->handle_event(one_event))
+				if (!event_has_handled)
 				{
-					one_node->set_result(true);
-					break;
+					if (one_node->handle_event(one_event))
+					{
+						one_node->set_result(true);
+						event_has_handled = true;
+					}
+					else
+					{
+						add_to_front(one_node);
+					}
 				}
+				else
+				{
+					add_to_front(one_node);
+				}
+				
 			}
 		}
 		m_events.clear();

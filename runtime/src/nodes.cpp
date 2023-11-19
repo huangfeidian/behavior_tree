@@ -120,7 +120,6 @@ namespace spiritsaway::behavior_tree::runtime
 	void node::leave()
 	{
 		m_closure.reset();
-		m_state = node_state::leaving;
 		if (m_agent->during_debug())
 		{
 			m_agent->push_cmd_queue(m_agent->get_tree_idx(btree_config.tree_name), node_config.idx, agent_cmd::node_leave, {});
@@ -160,9 +159,14 @@ namespace spiritsaway::behavior_tree::runtime
 	}
 	void node::interrupt()
 	{
-		if (m_closure)
+		m_closure.reset();
+		if (m_state == node_state::dead)
 		{
-			m_closure.reset();
+			return;
+		}
+		if (next_child_idx < m_children.size())
+		{
+			m_children[next_child_idx]->interrupt();
 		}
 		m_state = node_state::dead;
 		next_child_idx = 0;
@@ -278,6 +282,20 @@ namespace spiritsaway::behavior_tree::runtime
 			return;
 		}
 		visit_child(m_shuffle[next_child_idx]);
+	}
+
+	void random_seq::interrupt()
+	{
+		if (m_state == node_state::dead)
+		{
+			return;
+		}
+		if (m_shuffle[next_child_idx] < m_children.size())
+		{
+			m_children[m_shuffle[next_child_idx]]->interrupt();
+		}
+		m_state = node_state::dead;
+		next_child_idx = 0;
 	}
 
 	json random_seq::encode() const
@@ -504,6 +522,22 @@ namespace spiritsaway::behavior_tree::runtime
 
 		set_result(final_result);
 	}
+
+	void parallel::interrupt()
+	{
+		if (m_state == node_state::dead)
+		{
+			return;
+		}
+		for (auto one_child : m_children)
+		{
+			one_child->interrupt();
+		}
+		m_state = node_state::dead;
+		next_child_idx = 0;
+	}
+
+
 	void action::on_enter()
 	{
 		node::on_enter();
@@ -659,8 +693,6 @@ namespace spiritsaway::behavior_tree::runtime
 	{
 		if(cur_event == event)
 		{
-			m_logger->info("{} suc handle event  {}", debug_info(), 
-					cur_event);
 			return true;
 		}
 		else

@@ -33,6 +33,9 @@ file(GLOB_RECURSE EDITOR_HEADER_FILES "${PROJECT_SOURCE_DIR}/include/*.h")
 find_package(spdlog CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${spdlog_include_dirs})
 
+find_package(fmt CONFIG REQUIRED)
+INCLUDE_DIRECTORIES(${fmt_include_dirs})
+
 # add json support
 find_package(nlohmann_json CONFIG REQUIRED)
 
@@ -59,4 +62,4 @@ add_executable(behavior_tree_editor ${UI_FILES}  ${TREE_EDITOR_HEADER} ${EDITOR_
 
 
 
-target_link_libraries(behavior_tree_editor PUBLIC tree_editor::tree_editor Qt5::Widgets nlohmann_json::nlohmann_json any_container)
+target_link_libraries(behavior_tree_editor PUBLIC tree_editor::tree_editor Qt5::Widgets nlohmann_json::nlohmann_json any_container spdlog::spdlog fmt::fmt)

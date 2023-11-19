@@ -33,7 +33,6 @@ namespace spiritsaway::behavior_tree::common
 		awaken,
 		revisiting,
 		blocking,
-		leaving,
 		wait_child,
 		dead,
 	};

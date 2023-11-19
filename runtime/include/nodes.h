@@ -85,7 +85,7 @@ namespace spiritsaway::behavior_tree::runtime
 		}
 		bool node_state_is_forbid_enter()
 		{
-			return m_state == node_state::leaving || m_state == node_state::dead;
+			return m_state == node_state::dead;
 		}
 		std::uint32_t index_in_parent() const;
 		void set_result(bool new_result);
@@ -148,6 +148,7 @@ namespace spiritsaway::behavior_tree::runtime
 		std::vector<std::uint32_t> m_shuffle;
 		void on_enter() override;
 		void on_revisit() override;
+		void interrupt() override;
 		friend class node;
 	public:
 		const std::vector<std::uint32_t>& shuffle_children() const
@@ -222,6 +223,7 @@ namespace spiritsaway::behavior_tree::runtime
 		using node::node;
 		void on_enter() override;
 		void on_revisit() override;
+		void interrupt() override;
 		friend class node;
 	};
 	class action : public node
