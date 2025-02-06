@@ -24,19 +24,6 @@ INCLUDE_DIRECTORIES(${BTREE_COMMON_INCLUDE_DIR})
 file(GLOB SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 
-# add log support
-find_package(spdlog CONFIG REQUIRED)
-INCLUDE_DIRECTORIES(${spdlog_include_dirs})
-
-find_package(any_container CONFIG REQUIRED)
-
-# add json support
-find_package(nlohmann_json CONFIG REQUIRED)
-
-# add enum support
-find_package(magic_enum CONFIG REQUIRED)
-INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
-
 add_library(behavior_tree_runtime  ${SRC_FILES})
 
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container spdlog::spdlog magic_enum::magic_enum)
