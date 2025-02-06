@@ -40,6 +40,8 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 
+find_package(Boost 1.71.0 REQUIRED COMPONENTS  system date_time)
+
 # add http support
 find_package(http_utils CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${http_utils_include_dirs})
