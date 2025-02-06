@@ -13,15 +13,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 endif(MSVC)
 
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(BTREE_COMMON_DIR ${PROJECT_SOURCE_DIR}/../common)
+set(BTREE_COMMON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../common)
 set(BTREE_COMMON_INCLUDE_DIR ${BTREE_COMMON_DIR}/include/)
 
 INCLUDE_DIRECTORIES(${BTREE_COMMON_INCLUDE_DIR})
 
 
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+file(GLOB SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 
 # add log support
@@ -41,7 +41,7 @@ add_library(behavior_tree_runtime  ${SRC_FILES})
 
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container spdlog::spdlog magic_enum::magic_enum)
 if(WITH_TEST)
-add_executable(debug_test ${PROJECT_SOURCE_DIR}/test/debug_test.cpp)
+add_executable(debug_test ${CMAKE_CURRENT_SOURCE_DIR}/test/debug_test.cpp)
 target_link_libraries(debug_test behavior_tree_runtime)
 endif()
 
@@ -70,7 +70,7 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
     RUNTIME DESTINATION bin
   )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ ${BTREE_COMMON_INCLUDE_DIR} DESTINATION include/${PROJECT_NAME})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ ${BTREE_COMMON_INCLUDE_DIR} DESTINATION include/${PROJECT_NAME})
 
 install(EXPORT ${PROJECT_NAME}Targets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
