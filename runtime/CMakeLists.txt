@@ -40,7 +40,7 @@ INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 add_library(behavior_tree_runtime  ${SRC_FILES})
 
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container spdlog::spdlog)
-if(NOT WITHOUT_TEST)
+if(WITH_TEST)
 add_executable(debug_test ${PROJECT_SOURCE_DIR}/test/debug_test.cpp)
 target_link_libraries(debug_test behavior_tree_runtime)
 endif()
@@ -53,16 +53,16 @@ foreach(p LIB BIN INCLUDE)
 	endif()
 endforeach()
 
-export(TARGETS ${CMAKE_PROJECT_NAME}
-     FILE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Targets.cmake)
+export(TARGETS ${PROJECT_NAME}
+     FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
 
 file(WRITE
-    ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
-    "include(\${CMAKE_CURRENT_LIST_DIR}/${CMAKE_PROJECT_NAME}Targets.cmake)\n")
+    ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    "include(\${CMAKE_CURRENT_LIST_DIR}/${PROJECT_NAME}Targets.cmake)\n")
 
 install(FILES
-        ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME})
+        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
    ARCHIVE  DESTINATION lib
@@ -72,5 +72,5 @@ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ ${BTREE_COMMON_INCLUDE_DIR} DESTINATION include/${PROJECT_NAME})
 
-install(EXPORT ${CMAKE_PROJECT_NAME}Targets
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME})
+install(EXPORT ${PROJECT_NAME}Targets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
