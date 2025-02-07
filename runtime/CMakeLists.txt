@@ -27,10 +27,11 @@ file(GLOB SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 add_library(behavior_tree_runtime  ${SRC_FILES})
 
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container spdlog::spdlog magic_enum::magic_enum)
-if(WITH_TEST)
+
+if(IS_TOPLEVEL_PROJECT)
 add_executable(debug_test ${CMAKE_CURRENT_SOURCE_DIR}/test/debug_test.cpp)
 target_link_libraries(debug_test behavior_tree_runtime)
-endif()
+
 
 foreach(p LIB BIN INCLUDE)
 	set(var CMAKE_INSTALL_${p}DIR)
@@ -61,3 +62,5 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ ${BTREE_COMMON_INCLUDE_DI
 
 install(EXPORT ${PROJECT_NAME}Targets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+endif(IS_TOPLEVEL_PROJECT)

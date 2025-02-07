@@ -27,9 +27,18 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 INCLUDE_DIRECTORIES(${magic_enum_include_dirs})
 
+
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  set(IS_TOPLEVEL_PROJECT TRUE)
+else()
+  set(IS_TOPLEVEL_PROJECT FALSE)
+endif()
+
 add_subdirectory(runtime)
 
-if(WITH_GUI)
+if(IS_TOPLEVEL_PROJECT)
+
 add_subdirectory(editor)
 add_subdirectory(debugger)
-endif(WITH_GUI)
+endif(IS_TOPLEVEL_PROJECT)
