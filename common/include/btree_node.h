@@ -5,7 +5,7 @@
 #include "btree_actions.h"
 #include <tree_editor/common/dialogs/editable_item.h>
 #include <tree_editor/common/choice_manager.h>
-#include <magic_enum.hpp>
+#include <magic_enum/magic_enum.hpp>
 #include <tree_editor/common/logger.h>
 
 namespace spiritsaway::behavior_tree::editor
