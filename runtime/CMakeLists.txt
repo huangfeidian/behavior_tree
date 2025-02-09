@@ -29,9 +29,11 @@ add_library(behavior_tree_runtime  ${SRC_FILES})
 target_link_libraries(behavior_tree_runtime PUBLIC nlohmann_json::nlohmann_json any_container spdlog::spdlog magic_enum::magic_enum)
 
 if(IS_TOPLEVEL_PROJECT)
+
+if(WITH_TEST)
 add_executable(debug_test ${CMAKE_CURRENT_SOURCE_DIR}/test/debug_test.cpp)
 target_link_libraries(debug_test behavior_tree_runtime)
-
+endif(WITH_TEST)
 
 foreach(p LIB BIN INCLUDE)
 	set(var CMAKE_INSTALL_${p}DIR)

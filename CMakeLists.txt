@@ -37,8 +37,8 @@ endif()
 
 add_subdirectory(runtime)
 
-if(IS_TOPLEVEL_PROJECT)
+if(WITH_GUI)
 
 add_subdirectory(editor)
 add_subdirectory(debugger)
-endif(IS_TOPLEVEL_PROJECT)
+endif(WITH_GUI)
